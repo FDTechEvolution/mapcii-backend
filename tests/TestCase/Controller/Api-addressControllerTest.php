@@ -1,13 +1,13 @@
 <?php
 namespace App\Test\TestCase\Controller;
 
-use App\Controller\Api-addressController;
+use App\Controller\ApiAddressController;
 use Cake\TestSuite\IntegrationTestCase;
 
 /**
  * App\Controller\Api-addressController Test Case
  */
-class Api-addressControllerTest extends IntegrationTestCase
+class ApiAddressControllerTest extends IntegrationTestCase
 {
 
     /**

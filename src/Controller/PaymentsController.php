@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\ORM\TableRegistry;
 
 /**
  * Payments Controller
@@ -20,13 +21,22 @@ class PaymentsController extends AppController {
      */
     public function index() {
 
-        $q = $this->Payments->find()
-                ->contain(['Users', 'FinancialAccounts'])
-                ->order(['Payments.documentno']);
-        $payments = $q->toArray();
         $docStatusList = $this->Core->getStatusCode();
-        $this->log($docStatusList, 'debug');
-        $this->set(compact('payments', 'docStatusList'));
+        $docStatusPayment = $this->Core->getStatusCodePayment();
+        $notificationPayment = $this->loadComponent('Notification');
+
+        $q = $this->Payments->find()
+                ->contain(['Users', 'Packages'])
+                ->order(['Payments.modified' => 'DESC']);
+        $payments = $q->toArray();
+        $this->set(compact('payments', 'docStatusPayment', 'notificationPayment'));
+
+        $this->PaymentLines = TableRegistry::get('payment_lines');
+        $query = $this->PaymentLines->find()
+                    ->contain(['Payments' => ['Users'], 'FinancialAccounts', 'Images'])
+                    ->order(['payment_lines.created' => 'DESC']);
+        $paymentlines = $query->toArray();
+        $this->set(compact('paymentlines', 'docStatusList'));
     }
 
     /**
@@ -38,7 +48,7 @@ class PaymentsController extends AppController {
      */
     public function view($id = null) {
         $payment = $this->Payments->get($id, [
-            'contain' => ['Users', 'FinancialAccounts']
+            'contain' => ['Users']
         ]);
 
         $this->set('payment', $payment);
@@ -111,19 +121,23 @@ class PaymentsController extends AppController {
 
     public function approve($id = null) {
         $this->request->allowMethod(['post', 'delete']);
-        $payment = $this->Payments->get($id, [
-            'contain' => []
-        ]);
-
-        $payment->status = 'CO';
-        if ($this->Payments->save($payment)) {
-            $this->Flash->success(__('The payment has been paid.'));
-
-            return $this->redirect(['action' => 'index']);
+        $this->PaymentLines = TableRegistry::get('payment_lines');
+        $payment_line = $this->PaymentLines->get($id);
+        $date = date('Y-m-d');
+        $payment_line->status = 'CO';
+        if ($this->PaymentLines->save($payment_line)) {
+            $payment = $this->Payments->get($payment_line->payment_id);
+            $payment->status = 'CO';
+            $payment->duration = date('Y-m-d', strtotime($date. ($payment->package_duration == '1 เดือน' ? ' + 30 days' : ($payment->package_duration == '1 ปี' ? ' + 1 years' : ''))));
+            if($this->Payments->save($payment)) {
+                $this->Flash->success(__('The payment has been paid.'));
+                return $this->redirect(['action' => 'index']);
+            } else {
+                $this->Flash->error(__('The payment could not be paid. Please, try again.'));
+            }
+            
         }
-        $this->Flash->error(__('The payment could not be paid. Please, try again.'));
-
-
+        $this->Flash->error(__('The payment line could not be paid. Please, try again.'));
 
         $this->set(compact('payment'));
     }

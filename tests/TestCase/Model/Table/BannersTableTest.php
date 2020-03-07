@@ -26,7 +26,8 @@ class BannersTableTest extends TestCase
     public $fixtures = [
         'app.banners',
         'app.users',
-        'app.images'
+        'app.payments',
+        'app.banner_lines'
     ];
 
     /**

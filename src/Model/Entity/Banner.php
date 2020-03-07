@@ -9,16 +9,17 @@ use Cake\ORM\Entity;
  * @property string $id
  * @property string $type
  * @property string $user_id
- * @property string $image_id
+ * @property string $payment_id
  * @property string $description
- * @property string $position
- * @property string $isactive
+ * @property string $position_id
  * @property string $isapproved
+ * @property int $limit
  * @property \Cake\I18n\FrozenTime $created
  * @property string $createdby
  *
  * @property \App\Model\Entity\User $user
- * @property \App\Model\Entity\Image $image
+ * @property \App\Model\Entity\Payment $payment
+ * @property \App\Model\Entity\BannerLine[] $banner_lines
  */
 class Banner extends Entity
 {
@@ -35,14 +36,15 @@ class Banner extends Entity
     protected $_accessible = [
         'type' => true,
         'user_id' => true,
-        'image_id' => true,
+        'payment_id' => true,
         'description' => true,
-        'position' => true,
-        'isactive' => true,
+        'position_id' => true,
         'isapproved' => true,
+        'limit' => true,
         'created' => true,
         'createdby' => true,
         'user' => true,
-        'image' => true
+        'payment' => true,
+        'banner_lines' => true
     ];
 }

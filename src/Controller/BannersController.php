@@ -1,7 +1,7 @@
 <?php
 namespace App\Controller;
-
 use App\Controller\AppController;
+use Cake\ORM\TableRegistry;
 
 /**
  * Banners Controller
@@ -26,11 +26,19 @@ class BannersController extends AppController
 //        $banners = $this->paginate($this->Banners);
 
 //        $this->set(compact('banners'));
-        $q = $this->Banners->find()
-                 ->contain(['Users', 'Images']);
-        $banners = $q->toArray();
-        //  $this->log($assets, 'debug');
-        $this->set(compact('banners'));
+        // $q = $this->Banners->find()
+        //          ->contain(['Users', 'Images']);
+        // $banners = $q->toArray();
+        // //  $this->log($assets, 'debug');
+        // $this->set(compact('banners'));
+
+        $this->BannerLines = TableRegistry::get('banner_lines');
+
+        $q = $this->BannerLines->find()
+                    ->contain(['Banners' => ['Users','Positions'], 'Images'])
+                    ->order(['banner_lines.created' => 'DESC']);
+        $banner_lines = $q->toArray();
+        $this->set(compact('banner_lines'));
     }
 
     /**
@@ -116,21 +124,20 @@ class BannersController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+
      public function saveactive() {
-
-
+        $this->BannerLines = TableRegistry::get('banner_lines');
         $this->autoRender = false;
 
         $id = $this->request->getQuery('id');
-
-        $banner = $this->Banners->get($id);
+        $banner = $this->BannerLines->get($id);
 
         if ($banner->isactive == 'Y') {
             $banner->isactive = "N";
         } else {
             $banner->isactive = "Y";
         }
-        if ($this->Banners->save($banner)) {
+        if ($this->BannerLines->save($banner)) {
             echo json_encode('Success');
             $this->Flash->success(__('Success.'));
         }else{

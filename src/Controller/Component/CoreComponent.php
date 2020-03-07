@@ -156,17 +156,38 @@ class CoreComponent extends Component {
          * DR = Draft
          * CO = Complete
          * VO = Void
+         * EX = EXP
          */
         $data = [];
         if (is_null($type)) {
             $data = [
-                'DR' => ['code' => 'DR', 'name' => 'ค้างชำระ'],
+                'DR' => ['code' => 'DR', 'name' => 'รอตรวจสอบ'],
                 'CO' => ['code' => 'CO', 'name' => 'ชำระเงินแล้ว'],
-                
                 'VO' => ['code' => 'VO', 'name' => 'ยกเลิกแล้ว']
             ];
         } elseif ($type == 'list') {
-            $data = ['DR' => 'ค้างชำระ', 'CO' => 'ชำระเงินแล้ว', 'VO' => 'ยกเลิกแล้ว'];
+            $data = ['DR' => 'รอตรวจสอบ', 'CO' => 'ชำระเงินแล้ว', 'VO' => 'ยกเลิกแล้ว'];
+        }
+        return $data;
+    }
+
+    public function getStatusCodePayment($type = null) {
+        /*
+         * DR = Draft
+         * CO = Complete
+         * VO = Void
+         * EX = EXP
+         */
+        $data = [];
+        if (is_null($type)) {
+            $data = [
+                'DR' => ['code' => 'DR', 'name' => 'รอตรวจสอบ'],
+                'CO' => ['code' => 'CO', 'name' => 'เปิดใช้งานแล้ว'],
+                'VO' => ['code' => 'VO', 'name' => 'ยกเลิกแล้ว'],
+                'EX' => ['code' => 'EX', 'name' => 'หมดอายุแล้ว'],
+            ];
+        } elseif ($type == 'list') {
+            $data = ['DR' => 'รอตรวจสอบ', 'CO' => 'เปิดใช้งานแล้ว', 'VO' => 'ยกเลิกแล้ว', 'EX' => 'หมดอายุแล้ว'];
         }
         return $data;
     }

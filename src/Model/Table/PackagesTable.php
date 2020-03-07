@@ -9,6 +9,9 @@ use Cake\Validation\Validator;
 /**
  * Packages Model
  *
+ * @property \App\Model\Table\SizesTable|\Cake\ORM\Association\BelongsTo $Sizes
+ * @property |\Cake\ORM\Association\BelongsTo $Positions
+ * @property \App\Model\Table\PaymentsTable|\Cake\ORM\Association\HasMany $Payments
  * @property \App\Model\Table\UserPackagesTable|\Cake\ORM\Association\HasMany $UserPackages
  *
  * @method \App\Model\Entity\Package get($primaryKey, $options = [])
@@ -41,6 +44,17 @@ class PackagesTable extends Table
 
         $this->addBehavior('Timestamp');
 
+        $this->belongsTo('Sizes', [
+            'foreignKey' => 'size_id',
+            'joinType' => 'INNER'
+        ]);
+        $this->belongsTo('Positions', [
+            'foreignKey' => 'position_id',
+            'joinType' => 'INNER'
+        ]);
+        $this->hasMany('Payments', [
+            'foreignKey' => 'package_id'
+        ]);
         $this->hasMany('UserPackages', [
             'foreignKey' => 'package_id'
         ]);
@@ -86,9 +100,34 @@ class PackagesTable extends Table
             ->allowEmpty('annual_price');
 
         $validator
+            ->scalar('showpage')
+            ->requirePresence('showpage', 'create')
+            ->notEmpty('showpage');
+
+        $validator
+            ->scalar('showcase')
+            ->requirePresence('showcase', 'create')
+            ->notEmpty('showcase');
+
+        $validator
             ->uuid('createdby')
             ->allowEmpty('createdby');
 
         return $validator;
+    }
+
+    /**
+     * Returns a rules checker object that will be used for validating
+     * application integrity.
+     *
+     * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
+     * @return \Cake\ORM\RulesChecker
+     */
+    public function buildRules(RulesChecker $rules)
+    {
+        $rules->add($rules->existsIn(['size_id'], 'Sizes'));
+        $rules->add($rules->existsIn(['position_id'], 'Positions'));
+
+        return $rules;
     }
 }

@@ -21,6 +21,11 @@
         <?= $this->Html->script('/assetdist/js/jquery.validate.min.js') ?>
         <?php $actionName = $this->request->getParam('action'); ?>
         <script src='https://www.google.com/recaptcha/api.js'></script>
+
+        <!-- Vue & Axios -->
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
         <script>
 
             var site_url = '<?= SITE_URL ?>';

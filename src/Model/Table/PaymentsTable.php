@@ -10,7 +10,9 @@ use Cake\Validation\Validator;
  * Payments Model
  *
  * @property \App\Model\Table\UsersTable|\Cake\ORM\Association\BelongsTo $Users
- * @property \App\Model\Table\FinancialAccountsTable|\Cake\ORM\Association\BelongsTo $FinancialAccounts
+ * @property |\Cake\ORM\Association\BelongsTo $Packages
+ * @property \App\Model\Table\BannersTable|\Cake\ORM\Association\HasMany $Banners
+ * @property \App\Model\Table\PaymentLinesTable|\Cake\ORM\Association\HasMany $PaymentLines
  *
  * @method \App\Model\Entity\Payment get($primaryKey, $options = [])
  * @method \App\Model\Entity\Payment newEntity($data = null, array $options = [])
@@ -46,9 +48,15 @@ class PaymentsTable extends Table
             'foreignKey' => 'user_id',
             'joinType' => 'INNER'
         ]);
-        $this->belongsTo('FinancialAccounts', [
-            'foreignKey' => 'financial_account_id',
+        $this->belongsTo('Packages', [
+            'foreignKey' => 'package_id',
             'joinType' => 'INNER'
+        ]);
+        $this->hasMany('Banners', [
+            'foreignKey' => 'payment_id'
+        ]);
+        $this->hasMany('PaymentLines', [
+            'foreignKey' => 'payment_id'
         ]);
     }
 
@@ -65,42 +73,28 @@ class PaymentsTable extends Table
             ->allowEmpty('id', 'create');
 
         $validator
-            ->scalar('documentno')
-            ->maxLength('documentno', 50)
-            ->allowEmpty('documentno');
-
-        $validator
-            ->dateTime('paymentdate')
-            ->requirePresence('paymentdate', 'create')
-            ->notEmpty('paymentdate');
-
-        $validator
-            ->scalar('payment_method')
-            ->maxLength('payment_method', 50)
-            ->requirePresence('payment_method', 'create')
-            ->notEmpty('payment_method');
-
-        $validator
-            ->decimal('amount')
-            ->requirePresence('amount', 'create')
-            ->notEmpty('amount');
-
-        $validator
             ->scalar('status')
             ->maxLength('status', 2)
             ->allowEmpty('status');
 
         $validator
+            ->date('duration')
+            ->allowEmpty('duration');
+
+        $validator
+            ->decimal('package_amount')
+            ->requirePresence('package_amount', 'create')
+            ->notEmpty('package_amount');
+
+        $validator
+            ->scalar('package_duration')
+            ->maxLength('package_duration', 30)
+            ->requirePresence('package_duration', 'create')
+            ->notEmpty('package_duration');
+
+        $validator
             ->scalar('isapproved')
             ->allowEmpty('isapproved');
-
-        $validator
-            ->uuid('payment_slip')
-            ->allowEmpty('payment_slip');
-
-        $validator
-            ->scalar('description')
-            ->allowEmpty('description');
 
         return $validator;
     }
@@ -115,7 +109,7 @@ class PaymentsTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['user_id'], 'Users'));
-        $rules->add($rules->existsIn(['financial_account_id'], 'FinancialAccounts'));
+        $rules->add($rules->existsIn(['package_id'], 'Packages'));
 
         return $rules;
     }

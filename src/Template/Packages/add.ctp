@@ -10,54 +10,58 @@
                 <div class="col-lg-6   " style="text-align: right">
                     <?= $this->Html->link(BT_BACK, ['action' => 'index'], ['escape' => false]) ?>
                 </div>
-
             </div>
 
-            <div class="row" id="customer_box" >
-                
-                <div class="col-lg-3 col-md-3 form-group" >
+            <div class="row justify-content-md-center" id="customer_box" >
+                <div class="col-lg-4 col-md-3 form-group" >
                     <label for="username"  >ชื่อ แพ็คเกจ<?= REQUIRE_FIELD ?></label>
                     <?= $this->Form->control('name', ['id' => 'name', 'class' => 'form-control', 'label' => false]) ?>
                 </div>
-                <div class="col-lg-6 col-md-6 form-group">
-                    <label for="role_id">รายละเอียด </label>
-                    <?= $this->Form->control('description', ['id' => 'description', 'class' => 'form-control', 'label' => false]) ?>
-
-                </div>
-                <div class="col-lg-3 col-md-3   form-group" >
-                    
-                </div>
-                
-            </div>
-            <div class="row" id="customer_box" >
-                
                 <div class="col-lg-3 col-md-3 form-group" >
-                    <label for="username"  >ราคา 1 เดือน <?= REQUIRE_FIELD ?></label>
+                    <label for="username"  >ราคา 1 เดือน (บาท) <?= REQUIRE_FIELD ?></label>
                     <?= $this->Form->control('monthly_price', ['id' => 'monthly_price', 'class' => 'form-control', 'label' => false, 'type' => 'number']) ?>
                 </div>
-                <div class="col-lg-3 col-md-3 form-group">
-                    <label for="role_id">ราคา 3 เดือน <?= REQUIRE_FIELD ?></label>
-                    <?= $this->Form->control('quarterly_price', ['id' => 'quarterly_price', 'class' => 'form-control', 'label' => false, 'type' => 'number']) ?>
-
-                </div>
-                <div class="col-lg-3 col-md-3   form-group" >
-                     <label for="role_id">ราคา 6 เดือน <?= REQUIRE_FIELD ?></label>
-                    <?= $this->Form->control('semiannual_price', ['id' => 'semiannual_price', 'class' => 'form-control', 'label' => false, 'type' => 'number']) ?>
-
-                </div>
                 <div class="col-lg-3 col-md-3 form-group" >
-                     <label for="role_id">ราคา 1 ปี <?= REQUIRE_FIELD ?></label>
+                     <label for="role_id">ราคา 1 ปี (บาท) <?= REQUIRE_FIELD ?></label>
                     <?= $this->Form->control('annual_price', ['id' => 'annual_price', 'class' => 'form-control', 'label' => false, 'type' => 'number']) ?>
-
+                </div>                
+            </div>
+            <div class="row justify-content-md-center" id="customer_box" >
+                <div class="col-lg-5 col-md-6 form-group">
+                    <label for="role_id">หน้าที่แสดง <?= REQUIRE_FIELD ?></label>
+                    <?= $this->Form->textarea('showpage', ['id' => 'showpage', 'class' => 'form-control', 'label' => false]) ?>
+                </div>
+                <div class="col-lg-5 col-md-6 form-group">
+                    <label for="role_id">รายละเอียดการแสดงผล <?= REQUIRE_FIELD ?></label>
+                    <?= $this->Form->textarea('showcase', ['id' => 'showcase', 'class' => 'form-control', 'label' => false, 'placeholder'=>'1. เป็นการสุ่มแสดง Banner ตอนเริ่มต้น จากนั้นจะแสดง Banner ต่อไปแบบเรียลำดับ
+2. สามารถลง Banner และแก้ไขได้ด้วยตนเอง ตลอด 24 ชั่วโมง']) ?>
+                </div>
+            </div>
+            <div id="package-form">
+                <div class="row justify-content-md-center" id="customer_box">
+                    <div class="col-md-5 form-group">
+                        <label for="role_id">ขนาดที่แสดง <?= REQUIRE_FIELD ?></label>
+                        <select class="form-control" name="size_id" id="size_id" required>
+                            <option value="" disabled selected>เลือกขนาด</option>
+                        <?php foreach ($sizes as $size): ?>
+                            <option value="<?= h($size->id); ?>"><?= h($size->width); ?> x <?= h($size->height); ?></option>
+                        <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <label for="role_id">ตำแหน่งการแสดงผล <?= REQUIRE_FIELD ?></label>
+                        <select class="form-control" name="position_id" id="position_id" required>
+                            <option value="" disabled selected>เลือกตำแหน่ง</option>
+                        <?php foreach ($positions as $position): ?>
+                            <option value="<?= h($position->id); ?>"><?= h($position->position); ?></option>
+                        <?php endforeach; ?>
+                        </select>
+                    </div>
                 </div>
             </div>
 
-
-
             <div class="row m-t-20">
-
                 <div class="col-lg-12 text-center">
-
                     <?= BT_SAVE ?>
                     <?= BT_RESET ?>
                 </div>
@@ -67,13 +71,27 @@
     </div>
 </div>
 
+<script>
+let packageForm = new Vue ({
+    el: '#package-form',
+    data () {
+        return {
+            sizes: null
+        }
+    },
+    mounted () {
+
+    },
+    methods: {
+        selectSize: function () {
+
+        }
+    }
+})
+</script>
 
 <script>
-
     $(function () {
-
-
-
         $("#package").validate({
             rules: {
 
@@ -83,15 +101,18 @@
                 monthly_price: {
                     required: true
                 },
-                quarterly_price: {
-                    required: true
-                },
-                semiannual_price: {
-                    required: true
-                },
                 annual_price: {
                     required: true
                 },
+                showpage: {
+                    required: true
+                },
+                showcase: {
+                    required: true
+                },
+                size_id: {
+                    required: true
+                }
             },
             messages: {
 
@@ -101,15 +122,18 @@
                 monthly_price: {
                     required: "กรุณากรอกราคา รายเดือน"
                 },
-                quarterly_price: {
-                    required: "กรุณากรอกราคา ราย 3 เดือน"
-                },
-                semiannual_price: {
-                    required: "กรุณากรอกราคา ราย 6 เดือน"
-                },
                 annual_price: {
                     required: "กรุณากรอกราคา ราย 1 ปี"
                 },
+                showpage: {
+                    required: "กรุณาระบุหน้าแสดงแพ็คเกจ"
+                },
+                showcase: {
+                    required: "กรุณาระบุการแสดงผล"
+                },
+                size_id: {
+                    required: "กรุณาเลือกขนาดของการแสดงผล"
+                }
             },
             submitHandler: function (form) {
                 form.submit();

@@ -128,6 +128,68 @@ class UploadImageComponent extends Component {
         }
     }
 
+    public function uploadSlip($file = null) {
+        $handle = new upload($file);
+        $fullpath = $this->COVER_UPLOAD.'slips/';
+        $data = [];
+        if ($handle->uploaded) {
+            $setNewFileName = 'slip-image-' . time() . "_" . rand(000000, 999999);
+            $handle->file_new_name_body = $setNewFileName;
+            $handle->image_resize = true;
+            $handle->image_ratio_pixels = 500000;
+            $handle->process(WWW_ROOT . $fullpath);
+            if ($handle->processed) {
+                $image_id = $this->getSaveImage($handle, $fullpath);
+                $handle->clean();
+                $data = [
+                    'status' => '200',
+                    'image_id' => $image_id
+                ];
+            } else {
+                $this->log($handle->error, 'debug');
+                $data = [
+                    'status' => '500',
+                    'image_id' => null
+                ];
+            }
+
+            return $data;
+        }
+    }
+
+    public function uploadBanner($file = null) {
+        $handle = new upload($file);
+        $image_info = getimagesize($file);
+        $this->log($image_info);
+        $fullpath = $this->COVER_UPLOAD.'package_banners/';
+        $data = [];
+        if ($handle->uploaded) {
+            $setNewFileName = 'banner-package-image-' . time() . "_" . rand(000000, 999999);
+            $handle->file_new_name_body = $setNewFileName;
+            $handle->image_resize = true;
+            $handle->image_ratio_pixels = 100000;
+            $handle->image_y = 400;
+            $handle->image_x = 1500;
+            $handle->process(WWW_ROOT . $fullpath);
+            if ($handle->processed) {
+                $image_id = $this->getSaveImage($handle, $fullpath);
+                $handle->clean();
+                $data = [
+                    'status' => '200',
+                    'image_id' => $image_id
+                ];
+            } else {
+                $this->log($handle->error, 'debug');
+                $data = [
+                    'status' => '500',
+                    'image_id' => null
+                ];
+            }
+
+            return $data;
+        }
+    }
+
     private function getSaveImage($handle = null, $path = '') {
         $this->Images = TableRegistry::get('Images');
         $image = $this->Images->newEntity();

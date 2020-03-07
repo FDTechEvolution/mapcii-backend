@@ -29,7 +29,9 @@ class ApiPackagesController extends AppController {
 
         if ($this->request->is(['get', 'ajax'])) {
 
-            $q = $this->Packages->find('all');
+            $q = $this->Packages->find('all')
+                ->contain(['Sizes'])
+                ->order(['Packages.created' => 'ASC']);
             $packages = $q->toArray();
 
             if (sizeof($packages) > 0) {
@@ -44,8 +46,9 @@ class ApiPackagesController extends AppController {
             $data['message'] = "incorrect method.";
         }
 
-        $json = json_encode($data);
+        $json = json_encode($data,JSON_PRETTY_PRINT);
         $this->set(compact('json'));
+        $this->set('_serialize', 'json');
     }
 
     public function packages() {

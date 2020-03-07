@@ -7,21 +7,19 @@ use Cake\ORM\Entity;
  * Payment Entity
  *
  * @property string $id
- * @property string $documentno
- * @property \Cake\I18n\FrozenTime $paymentdate
- * @property string $payment_method
  * @property string $user_id
- * @property float $amount
  * @property string $status
+ * @property \Cake\I18n\FrozenDate $duration
+ * @property string $package_id
+ * @property float $package_amount
+ * @property string $package_duration
  * @property string $isapproved
- * @property string $financial_account_id
- * @property string $payment_slip
- * @property string $description
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
  *
  * @property \App\Model\Entity\User $user
- * @property \App\Model\Entity\FinancialAccount $financial_account
+ * @property \App\Model\Entity\Banner[] $banners
+ * @property \App\Model\Entity\PaymentLine[] $payment_lines
  */
 class Payment extends Entity
 {
@@ -36,19 +34,17 @@ class Payment extends Entity
      * @var array
      */
     protected $_accessible = [
-        'documentno' => true,
-        'paymentdate' => true,
-        'payment_method' => true,
         'user_id' => true,
-        'amount' => true,
         'status' => true,
+        'duration' => true,
+        'package_id' => true,
+        'package_amount' => true,
+        'package_duration' => true,
         'isapproved' => true,
-        'financial_account_id' => true,
-        'payment_slip' => true,
-        'description' => true,
         'created' => true,
         'modified' => true,
         'user' => true,
-        'financial_account' => true
+        'banners' => true,
+        'payment_lines' => true
     ];
 }

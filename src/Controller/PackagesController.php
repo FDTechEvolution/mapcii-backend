@@ -19,13 +19,14 @@ class PackagesController extends AppController {
     public function beforeFilter(Event $event) {
         parent::beforeFilter($event);
 
-
-
         $this->UserPackages = TableRegistry::get('UserPackages');
+        $this->Sizes = TableRegistry::get('Sizes');
+        $this->Positions = TableRegistry::get('Positions');
     }
     public function index() {
       
-        $packages = $this->Packages->find('all');
+        $packages = $this->Packages->find('all')
+                    ->contain(['Sizes']);
         $this->set(compact('packages'));
     }
 
@@ -38,7 +39,7 @@ class PackagesController extends AppController {
      */
     public function view($id = null) {
         $package = $this->Packages->get($id, [
-            'contain' => ['UserPackages']
+            'contain' => ['Sizes']
         ]);
 
         $this->set('package', $package);
@@ -61,6 +62,12 @@ class PackagesController extends AppController {
             $this->Flash->error(__('The package could not be saved. Please, try again.'));
         }
         $this->set(compact('package'));
+
+        $sizes = $this->Sizes->find('all');
+        $this->set(compact('sizes'));
+
+        $positions = $this->Positions->find('all');
+        $this->set(compact('positions'));
     }
 
     /**

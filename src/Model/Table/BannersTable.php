@@ -10,7 +10,9 @@ use Cake\Validation\Validator;
  * Banners Model
  *
  * @property \App\Model\Table\UsersTable|\Cake\ORM\Association\BelongsTo $Users
- * @property \App\Model\Table\ImagesTable|\Cake\ORM\Association\BelongsTo $Images
+ * @property \App\Model\Table\PaymentsTable|\Cake\ORM\Association\BelongsTo $Payments
+ * @property |\Cake\ORM\Association\BelongsTo $Positions
+ * @property \App\Model\Table\BannerLinesTable|\Cake\ORM\Association\HasMany $BannerLines
  *
  * @method \App\Model\Entity\Banner get($primaryKey, $options = [])
  * @method \App\Model\Entity\Banner newEntity($data = null, array $options = [])
@@ -46,8 +48,16 @@ class BannersTable extends Table
             'foreignKey' => 'user_id',
             'joinType' => 'INNER'
         ]);
-        $this->belongsTo('Images', [
-            'foreignKey' => 'image_id'
+        $this->belongsTo('Payments', [
+            'foreignKey' => 'payment_id',
+            'joinType' => 'INNER'
+        ]);
+        $this->belongsTo('Positions', [
+            'foreignKey' => 'position_id',
+            'joinType' => 'INNER'
+        ]);
+        $this->hasMany('BannerLines', [
+            'foreignKey' => 'banner_id'
         ]);
     }
 
@@ -74,18 +84,12 @@ class BannersTable extends Table
             ->allowEmpty('description');
 
         $validator
-            ->scalar('position')
-            ->maxLength('position', 100)
-            ->requirePresence('position', 'create')
-            ->notEmpty('position');
-
-        $validator
-            ->scalar('isactive')
-            ->allowEmpty('isactive');
-
-        $validator
             ->scalar('isapproved')
             ->allowEmpty('isapproved');
+
+        $validator
+            ->integer('limit')
+            ->allowEmpty('limit');
 
         $validator
             ->uuid('createdby')
@@ -104,7 +108,8 @@ class BannersTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['user_id'], 'Users'));
-        $rules->add($rules->existsIn(['image_id'], 'Images'));
+        $rules->add($rules->existsIn(['payment_id'], 'Payments'));
+        $rules->add($rules->existsIn(['position_id'], 'Positions'));
 
         return $rules;
     }

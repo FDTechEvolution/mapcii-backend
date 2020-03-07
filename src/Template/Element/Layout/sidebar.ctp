@@ -37,6 +37,7 @@
                     <ul class="list-unstyled">
                         
                         <li><a href="<?= SITE_URL . 'payments' ?>">รายการแจ้งชำระเงิน</a></li>
+                        <li><a href="<?= SITE_URL . 'financial-accounts' ?>">วิธีการชำระเงิน</a></li>
                     </ul>
                 </li>
                 <li>
@@ -55,12 +56,6 @@
                     <a href="<?= SITE_URL . 'email-settings' ?>" class="waves-effect waves-primary"><i
                             class="ti-layout-cta-btn-right"></i><span> Email </span></a>
                 </li>
-
-
-
-
-
-
 
             </ul>
 

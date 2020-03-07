@@ -1,57 +1,34 @@
-<?php
-/**
- * @var \App\View\AppView $this
- * @var \App\Model\Entity\FinancialAccount[]|\Cake\Collection\CollectionInterface $financialAccounts
- */
-?>
-<nav class="large-3 medium-4 columns" id="actions-sidebar">
-    <ul class="side-nav">
-        <li class="heading"><?= __('Actions') ?></li>
-        <li><?= $this->Html->link(__('New Financial Account'), ['action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Payments'), ['controller' => 'Payments', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Payment'), ['controller' => 'Payments', 'action' => 'add']) ?></li>
-    </ul>
-</nav>
-<div class="financialAccounts index large-9 medium-8 columns content">
-    <h3><?= __('Financial Accounts') ?></h3>
-    <table cellpadding="0" cellspacing="0">
-        <thead>
-            <tr>
-                <th scope="col"><?= $this->Paginator->sort('id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('name') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('type') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('accountno') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('created') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('modified') ?></th>
-                <th scope="col" class="actions"><?= __('Actions') ?></th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($financialAccounts as $financialAccount): ?>
-            <tr>
-                <td><?= h($financialAccount->id) ?></td>
-                <td><?= h($financialAccount->name) ?></td>
-                <td><?= h($financialAccount->type) ?></td>
-                <td><?= h($financialAccount->accountno) ?></td>
-                <td><?= h($financialAccount->created) ?></td>
-                <td><?= h($financialAccount->modified) ?></td>
-                <td class="actions">
-                    <?= $this->Html->link(__('View'), ['action' => 'view', $financialAccount->id]) ?>
-                    <?= $this->Html->link(__('Edit'), ['action' => 'edit', $financialAccount->id]) ?>
-                    <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $financialAccount->id], ['confirm' => __('Are you sure you want to delete # {0}?', $financialAccount->id)]) ?>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-    <div class="paginator">
-        <ul class="pagination">
-            <?= $this->Paginator->first('<< ' . __('first')) ?>
-            <?= $this->Paginator->prev('< ' . __('previous')) ?>
-            <?= $this->Paginator->numbers() ?>
-            <?= $this->Paginator->next(__('next') . ' >') ?>
-            <?= $this->Paginator->last(__('last') . ' >>') ?>
-        </ul>
-        <p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
+<?= $this->element('Lib/data_table') ?>
+<div id="financial" class="row">
+    <div class="col-lg-12">
+        <div class="card m-b-20 ">
+            <h3 class="m-t-0 m-b-20  card-header">วิธีการชำระเงิน </h3>
+            <div class=" col-12 m-b-20"style="text-align: right">
+                <?= $this->Html->link(BT_ADD, ['action' => 'add'], ['escape' => false]) ?>
+            </div>
+            <table id="datatable" class="table table-responsive-lg " cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th scope="col">ชื่อบัญชี</th>
+                        <th scope="col">ประเภท</th>
+                        <th scope="col">เลขบัญชี</th>
+                        <th scope="col" class="actions"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($financialAccounts as $financialAccount): ?>
+                    <tr>
+                        <td><?= h($financialAccount->name) ?></td>
+                        <td><?= h($financialAccount->type) ?></td>
+                        <td><?= h($financialAccount->accountno) ?></td>
+                        <td class="actions">
+                            <?= $this->Html->link(BT_EDIT, ['action' => 'edit', $financialAccount->id], ['escape' => false, 'label' => false]) ?>
+                            <?= $this->Form->postLink(BT_DELETE, ['action' => 'delete', $financialAccount->id], ['confirm' => __('ท่านต้องการลบข้อมูล ใช่ หรือ ไม่ '), 'escape' => false]) ?>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
