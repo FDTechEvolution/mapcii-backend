@@ -39,7 +39,7 @@
             </div>
             <div id="package-form">
                 <div class="row justify-content-md-center" id="customer_box">
-                    <div class="col-md-5 form-group">
+                    <div class="col-md-3 form-group">
                         <label for="role_id">ขนาดที่แสดง <?= REQUIRE_FIELD ?></label>
                         <select class="form-control" name="size_id" id="size_id" required>
                             <option value="" disabled selected>เลือกขนาด</option>
@@ -48,12 +48,21 @@
                         <?php endforeach; ?>
                         </select>
                     </div>
-                    <div class="col-md-5">
+                    <div class="col-md-3">
                         <label for="role_id">ตำแหน่งการแสดงผล <?= REQUIRE_FIELD ?></label>
                         <select class="form-control" name="position_id" id="position_id" required>
                             <option value="" disabled selected>เลือกตำแหน่ง</option>
                         <?php foreach ($positions as $position): ?>
                             <option value="<?= h($position->id); ?>"><?= h($position->position); ?></option>
+                        <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="role_id">ประเภท <?= REQUIRE_FIELD ?></label>
+                        <select class="form-control" name="package_type_id" id="package_type_id" required>
+                            <option value="" disabled selected>เลือกประเภท</option>
+                        <?php foreach ($types as $type): ?>
+                            <option value="<?= h($type->id); ?>"><?= h($type->name); ?></option>
                         <?php endforeach; ?>
                         </select>
                     </div>

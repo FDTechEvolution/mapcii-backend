@@ -1,22 +1,22 @@
 <?php
 namespace App\Test\TestCase\Model\Table;
 
-use App\Model\Table\PackagesTable;
+use App\Model\Table\AssetAdsTable;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 
 /**
- * App\Model\Table\PackagesTable Test Case
+ * App\Model\Table\AssetAdsTable Test Case
  */
-class PackagesTableTest extends TestCase
+class AssetAdsTableTest extends TestCase
 {
 
     /**
      * Test subject
      *
-     * @var \App\Model\Table\PackagesTable
+     * @var \App\Model\Table\AssetAdsTable
      */
-    public $Packages;
+    public $AssetAds;
 
     /**
      * Fixtures
@@ -24,11 +24,9 @@ class PackagesTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
-        'app.packages',
-        'app.sizes',
-        'app.positions',
-        'app.payments',
-        'app.user_packages'
+        'app.asset_ads',
+        'app.assets',
+        'app.payments'
     ];
 
     /**
@@ -39,8 +37,8 @@ class PackagesTableTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $config = TableRegistry::getTableLocator()->exists('Packages') ? [] : ['className' => PackagesTable::class];
-        $this->Packages = TableRegistry::getTableLocator()->get('Packages', $config);
+        $config = TableRegistry::getTableLocator()->exists('AssetAds') ? [] : ['className' => AssetAdsTable::class];
+        $this->AssetAds = TableRegistry::getTableLocator()->get('AssetAds', $config);
     }
 
     /**
@@ -50,7 +48,7 @@ class PackagesTableTest extends TestCase
      */
     public function tearDown()
     {
-        unset($this->Packages);
+        unset($this->AssetAds);
 
         parent::tearDown();
     }

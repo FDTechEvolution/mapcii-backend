@@ -26,7 +26,8 @@ class ProvincesTableTest extends TestCase
     public $fixtures = [
         'app.provinces',
         'app.addresses',
-        'app.districts'
+        'app.districts',
+        'app.subdistricts'
     ];
 
     /**

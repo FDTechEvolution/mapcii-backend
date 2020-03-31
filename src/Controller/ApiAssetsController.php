@@ -31,6 +31,7 @@ class ApiAssetsController extends AppController {
         $this->Options = TableRegistry::get('Options');
         $this->AssetTypes = TableRegistry::get('AssetTypes');
         $this->AssetImages = TableRegistry::get('AssetImages');
+        $this->AssetAds = TableRegistry::get('AssetAds');
 
         $this->Connection = ConnectionManager::get('default');
     }
@@ -54,8 +55,8 @@ class ApiAssetsController extends AppController {
             if (isset($allVariable['category']) && $allVariable['category'] != '') {
                 
             }
-            if (isset($allVariable['asset_type']) && $allVariable['asset_type'] != '') {
-                $spl = explode(',', $allVariable['asset_type']);
+            if (isset($allVariable['search_asset_type_id']) && $allVariable['search_asset_type_id'] != '') {
+                $spl = explode(',', $allVariable['search_asset_type_id']);
                 $assetTypeCondition = '';
                 foreach ($spl as $item) {
                     $assetTypeCondition .= '"' . $item . '",';
@@ -87,11 +88,11 @@ class ApiAssetsController extends AppController {
                 
                 
             }
-            if (isset($allVariable['subdistrict']) && $allVariable['subdistrict'] != '') {
-                
+            if (isset($allVariable['search_sub_district_id']) && $allVariable['search_sub_district_id'] != '') {
+                $condition .= ' and ad.subdistrict_id ="' . $allVariable['search_sub_district_id'] . '"';
             }
-            if (isset($allVariable['district']) && $allVariable['district'] != '') {
-                
+            if (isset($allVariable['search_district_id']) && $allVariable['search_district_id'] != '') {
+                $condition .= ' and ad.district_id ="' . $allVariable['search_district_id'] . '"';
             }
             if (isset($allVariable['province']) && $allVariable['province'] != '') {
                 $condition .= ' and ad.province_id ="' . $allVariable['province'] . '"';
@@ -244,6 +245,223 @@ class ApiAssetsController extends AppController {
         $this->set(compact('json'));
     }
 
+    public function listassetads () {
+        $data = ['message' => '', 'status' => 400];
+        if ($this->request->is(['get', 'ajax'])) {
+            $getUser = $this->request->getQuery('user');
+            $user = isset($getUser) ? $getUser : '';
+            $asset_ads = $this->AssetAds->find('all')
+                        ->contain(['Assets'])
+                        ->where(['Assets.user_id' => $user])
+                        ->toArray();
+            if(sizeof($asset_ads)) {
+                $data['status'] = 200;
+                $data['list_ads'] = $asset_ads;
+            } else {
+                $data['message'] = 'Ads is null.';
+            }
+        }
+
+        $json = json_encode($data);
+        $this->set(compact('json'));
+    }
+
+    public function getlistasset () {
+        $data = ['message' => '', 'status' => 400];
+        if ($this->request->is(['get', 'ajax'])) {
+            $newList = [];
+            $newListAds = [];
+            $getUser = $this->request->getQuery('user');
+            $user = isset($getUser) ? $getUser : '';
+            $assets = $this->Assets->find('all')
+                        ->where(['user_id' => $user])
+                        ->toArray();
+            if(sizeof($assets)) {
+                foreach($assets as $asset) {
+                    $asset_ads = $this->AssetAds->find('all')
+                                ->contain(['Assets', 'Payments'])
+                                ->where(['AssetAds.asset_id' => $asset->id])
+                                ->first();
+                    if(sizeof($asset_ads) > 0) {
+                        array_push($newListAds,$asset_ads);
+                    } else {
+                        array_push($newList,$asset);
+                    }
+                }
+                $data['status'] = 200;
+                $data['list'] = $newList;
+                $data['ads'] = $newListAds;
+            } else {
+                $data['message'] = 'Ads is null.';
+            }
+        }
+
+        $json = json_encode($data);
+        $this->set(compact('json'));
+    }
+
+    public function listassetaddress () {
+        $data = ['message' => '', 'status' => 400];
+        $newData = [];
+        $getType = [];
+        if ($this->request->is(['get', 'ajax'])) {
+            $getSale = $this->request->getQuery('issales');
+            $getRent = $this->request->getQuery('isrent');
+            $getType = $this->request->getQuery('type');
+            // $this->log($getType, 'debug');
+            if(isset($getType) && $getType != '') {
+                $array_type = [];
+                $type = '';
+                $spl = explode(',', $getType);
+                foreach ($spl as $item) {
+                    array_push($array_type,$item);
+                }
+                $type = (['Assets.asset_type_id IN' => $array_type]);
+            }else{
+                $type = '';
+            }
+            // $this->log($type, 'debug');
+            // $getText = $this->request->getQuery('search_text');
+            $getProvince = $this->request->getQuery('province');
+            $this->log($getProvince, 'debug');
+            $getDistrict = $this->request->getQuery('search_district_id');
+            $getSubdistrict = $this->request->getQuery('search_sub_district_id');
+            $getPriceStart = $this->request->getQuery('price_start');
+            $getPriceEnd = $this->request->getQuery('price_end');
+
+            $sales = ($getSale != 'null' && $getSale != '') ? (['Assets.issales' => $getSale]) : '';
+            $rent = ($getRent != 'null' && $getRent != '') ? (['Assets.isrent' => $getRent]) : '';
+            // $type = ($getType != 'null' && $getType != '') ? (['Assets.asset_type_id' => $getType]) : '';
+            // $text = ($getText != '' ? (['Assets.asset_type_id' => $getText]) : '');
+            $province = ($getProvince != 'null' && $getProvince != '') ? (['Addresses.province_id' => $getProvince]) : '';
+            $district = ($getDistrict != 'null' && $getDistrict != '') ? (['Addresses.district_id' => $getDistrict]) : '';
+            $subdistrict = ($getSubdistrict != 'null' && $getSubdistrict != '') ? (['Addresses.subdistrict_id' => $getSubdistrict]) : '';
+            $pricestart = ($getPriceStart != 'null' && $getPriceStart != '') ? (['Assets.price >=' => $getPriceStart]) : (['Assets.price >=' => '0']);
+            $priceend = ($getPriceEnd != 'null' && $getPriceEnd != '') ? (['Assets.price <=' => $getPriceEnd]) : (['Assets.price <=' => '1000000000']);
+
+            // $this->log($type, 'debug');
+            // $this->log($district, 'debug');
+            $asset_address = $this->Assets->find('all')
+                            ->contain(['Addresses' => ['Provinces']])
+                            ->where([$sales, $rent, $province, $district, $subdistrict, $pricestart, $priceend, 'Assets.status' => 'CO'])
+                            ->where([$type])
+                            ->toArray();
+            // $this->log($asset_address, 'debug');
+            if(sizeof($asset_address) > 0) {
+                foreach($asset_address as $asset){
+                    $asset_image = $this->AssetImages->find('all')
+                                ->contain(['Images'])
+                                ->where(['asset_id' => $asset->id, 'isdefault' => 'Y'])
+                                ->order(['AssetImages.created' => 'DESC'])
+                                ->first();
+                    $image_url['img_url'] = $asset_image->image->url;
+                    array_push($newData,$image_url);
+                }
+                    $data['status'] = 200;
+                    $data['list'] = $asset_address;
+                    $data['image'] = $newData;
+            } else {
+                $data['status'] = 400;
+                $data['message'] = "Asset is empty.";
+            }
+        } else {
+            $data['message'] = "incorrect method.";
+        }
+
+        $json = json_encode($data);
+        $this->set(compact('json'));
+    }
+
+    public function loadassetads () {
+        $data = ['message' => '', 'status' => 400];
+        $allVariable = $this->request->getQueryParams();
+        $provinces = [];
+        $districts = [];
+        $getType = [];
+        if ($this->request->is(['get', 'ajax'])) {
+            $getSale = $this->request->getQuery('issales');
+            $getRent = $this->request->getQuery('isrent');
+            $getType = $this->request->getQuery('type');
+            // $this->log($getType, 'debug');
+            if(isset($getType) && $getType != '') {
+                $type = [];
+                $spl = explode(',', $getType);
+                foreach ($spl as $item) {
+                    array_push($type,$item);
+                }
+            }else{
+                $type = '';
+            }
+            // $this->log($type, 'debug');
+            // $getText = $this->request->getQuery('search_text');
+            $getProvince = $this->request->getQuery('province');
+            $getDistrict = $this->request->getQuery('search_district_id');
+            $getSubdistrict = $this->request->getQuery('search_sub_district_id');
+            $getPriceStart = $this->request->getQuery('price_start');
+            $getPriceEnd = $this->request->getQuery('price_end');
+
+            $sales = ($getSale != 'null' && $getSale != '') ? (['Assets.issales' => $getSale]) : '';
+            $rent = ($getRent != 'null' && $getRent != '') ? (['Assets.isrent' => $getRent]) : '';
+            // $type = ($getType != 'null' && $getType != '') ? (['Assets.asset_type_id' => $getType]) : '';
+            // $this->log($type, 'debug');
+            // $text = ($getText != '' ? (['Assets.asset_type_id' => $getText]) : '');
+            $province = ($getProvince != 'null' && $getProvince != '') ? (['Addresses.province_id' => $getProvince]) : '';
+            $district = ($getDistrict != 'null' && $getDistrict != '') ? (['Addresses.district_id' => $getDistrict]) : '';
+            $subdistrict = ($getSubdistrict != 'null' && $getSubdistrict != '') ? (['Addresses.subdistrict_id' => $getSubdistrict]) : '';
+            $pricestart = ($getPriceStart != 'null' && $getPriceStart != '') ? (['Assets.price >=' => $getPriceStart]) : (['Assets.price >=' => '0']);
+            $priceend = ($getPriceEnd != 'null' && $getPriceEnd != '') ? (['Assets.price <=' => $getPriceEnd]) : (['Assets.price <=' => '1000000000']);
+
+            $asset_ads = $this->AssetAds->find('all')
+                            ->contain(['Assets' => ['Addresses'], 'Payments', 'Positions'])
+                            ->order(['AssetAds.modified' => 'DESC'])
+                            ->where([$sales, $rent, $province, $district, $subdistrict, $pricestart, $priceend, 'Payments.status' => 'CO'])
+                            ->where(['Assets.asset_type_id IN' => $type])
+                            ->limit(5)
+                            ->toArray();
+            // $this->log($type, 'debug');
+            // $this->log($asset_ads, 'debug');
+            if(sizeof($asset_ads) > 0) {
+                foreach($asset_ads as $ads){
+                    if($ads->position->position == 'province'){
+                        array_push($provinces, $ads);
+                    }else if($ads->position->position == 'district'){
+                        array_push($districts, $ads);
+                    }
+                }
+                $data['status'] = 200;
+                $data['listprovince'] = $provinces;
+                $data['listdistrict'] = $districts;
+            }
+        }
+
+        $json = json_encode($data);
+        $this->set(compact('json'));
+    }
+
+    public function listassetimage () {
+        $data = ['message' => '', 'status' => 400];
+        if ($this->request->is(['get', 'ajax'])) {
+            $getId = $this->request->getQuery('id');
+            $id = isset($getId) ? $getId : '';
+            $asset_image = $this->AssetImages->find('all')
+                            ->contain(['Images'])
+                            ->where(['asset_id' => $id])
+                            ->toArray();
+            if(sizeof($asset_image) > 0) {
+                $data['status'] = 200;
+                $data['list'] = $asset_image;
+            } else {
+                $data['status'] = 200;
+                $data['message'] = "Asset is empty.";
+            }
+        } else {
+            $data['message'] = "incorrect method.";
+        }
+
+        $json = json_encode($data);
+        $this->set(compact('json'));
+    }
+
     public function listasset() {
         $data = ['message' => '', 'status' => 400];
         $_order = 'assets.created';
@@ -305,7 +523,7 @@ class ApiAssetsController extends AppController {
                 $condition .= ($condition != '' ? ' AND ' : '') . ' addresses.province_id ="' . $province . '"';
             }
             //  $this->log($condition, 'debug');
-            $sql = 'select assets.id,assets.name,assets.isactive,assets.status,DATE_FORMAT(assets.created,"%d/%m/%Y เวลา %H:%i") as created   
+            $sql = 'select assets.id,assets.name,assets.isactive,assets.status,assets.isnewproject,assets.issales,assets.isrent,DATE_FORMAT(assets.created,"%d/%m/%Y เวลา %H:%i") as created   
                             from assets
                             LEFT JOIN users ON user_id = users.id
                             LEFT JOIN asset_types ON asset_type_id = asset_types.id
@@ -314,7 +532,7 @@ class ApiAssetsController extends AppController {
                         WHERE ' . $condition . '
                        
                     ORDER BY ' . $_order;
-            $sql2 = 'select assets.id,assets.name,assets.isactive,assets.status,DATE_FORMAT(assets.created,"%d/%m/%Y เวลา %H:%i") as created   
+            $sql2 = 'select assets.id,assets.name,assets.isactive,assets.status,assets.isnewproject,assets.issales,assets.isrent,DATE_FORMAT(assets.created,"%d/%m/%Y เวลา %H:%i") as created   
                             from assets
                             LEFT JOIN users ON user_id = users.id
                             LEFT JOIN asset_types ON asset_type_id = asset_types.id
@@ -333,8 +551,6 @@ class ApiAssetsController extends AppController {
             }
 
             if (sizeof($result) > 0) {
-
-
                 $data['status'] = 200;
                 $data['list'] = $result;
             } else {
@@ -348,6 +564,7 @@ class ApiAssetsController extends AppController {
         $json = json_encode($data);
         $this->set(compact('json'));
     }
+
 
     public function create() {
         $data = ['message' => '', 'status' => 400, 'asset' => null];
@@ -476,7 +693,7 @@ class ApiAssetsController extends AppController {
                         ->contain(['Users', 'AssetImages' => ['Images'], 'Addresses' => ['Provinces', 'Districts', 'Subdistricts'], 'AssetOptions' => ['Options']])
                         ->where(['Assets.id' => $assetid])
                         ->first();
-                        $this->log($q,'debug');
+                        // $this->log($q,'debug');
                 if (!is_null($q->startdate) && $q->startdate != '') {
                     $q->startdate = $q->startdate->i18nFormat(DATE_FORMATE, null);
                 }
@@ -596,7 +813,7 @@ class ApiAssetsController extends AppController {
         if ($this->request->is(['post', 'ajax'])) {
             $this->loadComponent('UploadImage');
             $postData = $this->request->getData();
-            $this->log($postData, 'debug');
+            // $this->log($postData, 'debug');
             $file = $postData['image_file'];
             if (!is_null($file['name']) && $file['name'] != '') {
                 $asset = $this->Assets->get($asset_id);
@@ -672,6 +889,32 @@ class ApiAssetsController extends AppController {
       $json = json_encode($result);
       $this->set(compact('json'));
 
+    }
+
+
+    public function setassetads () {
+        $data = ['message' => '', 'status' => 400];
+
+        if ($this->request->is(['post', 'ajax'])) {
+            $postData = $this->request->getData();
+            $asset_ads = $this->AssetAds->newEntity();
+            $asset_ads = $this->AssetAds->patchEntity($asset_ads, $postData);
+            $asset_ads->status = 'DR';
+
+            // $this->log($postData, 'debug');
+
+            // $this->log($asset_ads, 'debug');
+
+            if($this->AssetAds->save($asset_ads)) {
+                $data['status'] = 200;
+                $data['message'] = 'Asset Ads Saved.';
+            } else {
+                $data['message'] = 'Asset Ads Failed.';
+            }
+        }
+
+        $json = json_encode($data);
+        $this->set(compact('json'));
     }
 
 }

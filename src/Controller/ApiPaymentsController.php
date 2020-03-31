@@ -113,10 +113,14 @@ class ApiPaymentsController extends AppController {
             $payment = $this->Payments->patchEntity($payment, $postData);
             $payment->package_amount = $postData['amount'];
             if ($this->Payments->save($payment)) {
+                $this->Packages = TableRegistry::get('packages');
+                $package = $this->Packages->find('all')->where(['id' => $postData['package_id']])->first();
+                $this->log($package->position_id, 'debug');
+
                 $this->PaymentLines = TableRegistry::get('payment_lines');
                 $payment_line = $this->PaymentLines->newEntity();
                 $payment_line = $this->PaymentLines->patchEntity($payment_line, $postData);
-                $payment_line->documentno = "mc-ads_". date('Ymsu');
+                $payment_line->documentno = "mc-ads_". date('Yms');
                 $payment_line->payment_id = $payment->id;
                 $payment_line->payment_date = date('Y-m-d');
                 $payment_line->status = 'DR';
@@ -129,7 +133,8 @@ class ApiPaymentsController extends AppController {
 
                 if($this->PaymentLines->save($payment_line)){
                     $data['status'] = 200;
-                    $data['message'] = "Created success.";
+                    $data['payment'] = $payment->id;
+                    $data['position'] = $package->position_id;
                 } else {
                     $data['status'] = 400;
                     $data['message'] = "Payment Line could not be created.";

@@ -19,8 +19,6 @@
                         <li><a href="<?= SITE_URL . 'assets' ?>">รายการอสังหาทั้งหมด</a></li>
                         <li><a href="<?= SITE_URL . 'asset-categories' ?>">ประเภทอสังหา</a></li>
                         <li><a href="<?= SITE_URL . 'options' ?>">ส่วนเสริม</a></li>
-
-
                     </ul>
                 </li>
                 <li class="has_sub">

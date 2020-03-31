@@ -81,13 +81,18 @@ class ApiBannersController extends AppController
 
     public function loadbannerimages () {
         $data = ['message' => '', 'status' => 400];
-        $point = $this->request->getQuery('position');
+        $getPosition = $this->request->getQuery('position');
+        $getLimit = $this->request->getQuery('limit');
+        $getStyle = $this->request->getQuery('style');
         if ($this->request->is(['get', 'ajax'])) {
-            $position = isset($point) ? $point : '';
+            $position = isset($getPosition) ? $getPosition : '';
+            $limit = isset($getLimit)?$limit = $getLimit:$limit = 100;
+            $style = isset($getStyle) ? $getStyle : '';
             if ($position != '') {
                 $q = $this->BannerLines->find('all')
-                        ->contain(['Banners' => ['Positions'], 'Images'])
-                        ->where(['Positions.position' => $position, 'banner_lines.isactive' => 'Y']);
+                        ->contain(['Banners' => ['Positions', 'Payments' => ['Packages']], 'Images'])
+                        ->where(['Positions.position' => $position, 'banner_lines.isactive' => 'Y'])
+                        ->limit($limit);
                 $banner_line = $q->toArray();
                 if (sizeof($banner_line) > 0) {
                     $data['status'] = 200;

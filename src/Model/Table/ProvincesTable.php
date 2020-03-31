@@ -11,7 +11,7 @@ use Cake\Validation\Validator;
  *
  * @property \App\Model\Table\AddressesTable|\Cake\ORM\Association\HasMany $Addresses
  * @property \App\Model\Table\DistrictsTable|\Cake\ORM\Association\HasMany $Districts
- * @property |\Cake\ORM\Association\HasMany $Subdistricts
+ * @property \App\Model\Table\SubdistrictsTable|\Cake\ORM\Association\HasMany $Subdistricts
  *
  * @method \App\Model\Entity\Province get($primaryKey, $options = [])
  * @method \App\Model\Entity\Province newEntity($data = null, array $options = [])
@@ -84,6 +84,19 @@ class ProvincesTable extends Table
             ->integer('geoid')
             ->requirePresence('geoid', 'create')
             ->notEmpty('geoid');
+
+        $validator
+            ->numeric('lat')
+            ->allowEmpty('lat');
+
+        $validator
+            ->numeric('lng')
+            ->allowEmpty('lng');
+
+        $validator
+            ->numeric('zoom')
+            ->requirePresence('zoom', 'create')
+            ->notEmpty('zoom');
 
         return $validator;
     }

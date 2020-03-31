@@ -17,11 +17,13 @@ use Cake\ORM\Entity;
  * @property string $showcase
  * @property string $size_id
  * @property string $position_id
+ * @property string $package_type_id
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
  * @property string $createdby
  *
  * @property \App\Model\Entity\Size $size
+ * @property \App\Model\Entity\Position $position
  * @property \App\Model\Entity\Payment[] $payments
  * @property \App\Model\Entity\UserPackage[] $user_packages
  */
@@ -48,10 +50,12 @@ class Package extends Entity
         'showcase' => true,
         'size_id' => true,
         'position_id' => true,
+        'package_type_id' => true,
         'created' => true,
         'modified' => true,
         'createdby' => true,
         'size' => true,
+        'position' => true,
         'payments' => true,
         'user_packages' => true
     ];

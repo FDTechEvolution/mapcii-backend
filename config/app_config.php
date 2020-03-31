@@ -7,5 +7,5 @@ define('DB_USER', 'mapcii_user');
 define('DB_PASS', 'lwIQ4V2Wr');
 
 
-
-define('SITE_URL', 'http://localhost:8888/Dropbox/mapcii/');
+define('SITE_URL', 'http://localhost/git/mapcii-backend/');
+//define('SITE_URL', 'http://localhost:8888/Dropbox/mapcii/');

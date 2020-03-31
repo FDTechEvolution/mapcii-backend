@@ -10,7 +10,8 @@ use Cake\Validation\Validator;
  * Packages Model
  *
  * @property \App\Model\Table\SizesTable|\Cake\ORM\Association\BelongsTo $Sizes
- * @property |\Cake\ORM\Association\BelongsTo $Positions
+ * @property \App\Model\Table\PositionsTable|\Cake\ORM\Association\BelongsTo $Positions
+ * @property |\Cake\ORM\Association\BelongsTo $PackageTypes
  * @property \App\Model\Table\PaymentsTable|\Cake\ORM\Association\HasMany $Payments
  * @property \App\Model\Table\UserPackagesTable|\Cake\ORM\Association\HasMany $UserPackages
  *
@@ -50,6 +51,10 @@ class PackagesTable extends Table
         ]);
         $this->belongsTo('Positions', [
             'foreignKey' => 'position_id',
+            'joinType' => 'INNER'
+        ]);
+        $this->belongsTo('PackageTypes', [
+            'foreignKey' => 'package_type_id',
             'joinType' => 'INNER'
         ]);
         $this->hasMany('Payments', [
@@ -127,6 +132,7 @@ class PackagesTable extends Table
     {
         $rules->add($rules->existsIn(['size_id'], 'Sizes'));
         $rules->add($rules->existsIn(['position_id'], 'Positions'));
+        $rules->add($rules->existsIn(['package_type_id'], 'PackageTypes'));
 
         return $rules;
     }

@@ -9,6 +9,9 @@ use Cake\Validation\Validator;
 /**
  * Positions Model
  *
+ * @property |\Cake\ORM\Association\HasMany $Banners
+ * @property |\Cake\ORM\Association\HasMany $Packages
+ *
  * @method \App\Model\Entity\Position get($primaryKey, $options = [])
  * @method \App\Model\Entity\Position newEntity($data = null, array $options = [])
  * @method \App\Model\Entity\Position[] newEntities(array $data, array $options = [])
@@ -38,6 +41,13 @@ class PositionsTable extends Table
         $this->setPrimaryKey('id');
 
         $this->addBehavior('Timestamp');
+
+        $this->hasMany('Banners', [
+            'foreignKey' => 'position_id'
+        ]);
+        $this->hasMany('Packages', [
+            'foreignKey' => 'position_id'
+        ]);
     }
 
     /**

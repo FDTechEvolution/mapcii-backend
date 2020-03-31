@@ -11,9 +11,13 @@ use Cake\ORM\Entity;
  * @property string $name
  * @property string $name_en
  * @property int $geoid
+ * @property float $lat
+ * @property float $lng
+ * @property float $zoom
  *
  * @property \App\Model\Entity\Address[] $addresses
  * @property \App\Model\Entity\District[] $districts
+ * @property \App\Model\Entity\Subdistrict[] $subdistricts
  */
 class Province extends Entity
 {
@@ -32,7 +36,11 @@ class Province extends Entity
         'name' => true,
         'name_en' => true,
         'geoid' => true,
+        'lat' => true,
+        'lng' => true,
+        'zoom' => true,
         'addresses' => true,
-        'districts' => true
+        'districts' => true,
+        'subdistricts' => true
     ];
 }

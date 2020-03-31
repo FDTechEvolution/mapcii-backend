@@ -22,6 +22,7 @@ class PackagesController extends AppController {
         $this->UserPackages = TableRegistry::get('UserPackages');
         $this->Sizes = TableRegistry::get('Sizes');
         $this->Positions = TableRegistry::get('Positions');
+        $this->PackageTypes = TableRegistry::get('PackageTypes');
     }
     public function index() {
       
@@ -61,13 +62,14 @@ class PackagesController extends AppController {
             }
             $this->Flash->error(__('The package could not be saved. Please, try again.'));
         }
-        $this->set(compact('package'));
 
         $sizes = $this->Sizes->find('all');
-        $this->set(compact('sizes'));
 
         $positions = $this->Positions->find('all');
-        $this->set(compact('positions'));
+
+        $types = $this->PackageTypes->find('all');        
+
+        $this->set(compact('package','sizes','positions','types'));
     }
 
     /**

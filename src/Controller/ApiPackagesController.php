@@ -28,15 +28,23 @@ class ApiPackagesController extends AppController {
         $data = ['message' => '', 'status' => 400];
 
         if ($this->request->is(['get', 'ajax'])) {
+            $getType = $this->request->getQuery('type');
+            $getNewProject = $this->request->getQuery('newproject');
+            $getSales = $this->request->getQuery('sales');
+            $getRent = $this->request->getQuery('rest');
+
+            $type = isset($getType)?(['PackageTypes.name' => $getType]):'';
+            $newProject = ($getNewProject == 'Y')?(['Packages.name LIKE' => '%โครงการใหม่%']):'';
+            $sales = ($getSales == 'Y')?(['Packages.name LIKE' => '%อสังหาขายด่วน%']):'';
+            $rent = ($getRent == 'Y')?(['Packages.name LIKE' => '%อสังหามือสอง%']):'';
 
             $q = $this->Packages->find('all')
-                ->contain(['Sizes'])
+                ->contain(['Sizes','PackageTypes'])
+                ->where([$type, $newProject, $sales, $rent])
                 ->order(['Packages.created' => 'ASC']);
             $packages = $q->toArray();
 
             if (sizeof($packages) > 0) {
-
-
                 $data['status'] = 200;
                 $data['packagelist'] = $packages;
             } else {

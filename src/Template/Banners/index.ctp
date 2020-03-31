@@ -65,7 +65,7 @@
 </div>
 <style>
     .modal-dialog {
-        max-width: 70%;
+        max-width: 50%;
     }
     .img-fluid {
         width: 100%;

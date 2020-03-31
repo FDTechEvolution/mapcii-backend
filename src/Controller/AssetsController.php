@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\ORM\TableRegistry;
 
 /**
  * Assets Controller
@@ -26,6 +27,46 @@ class AssetsController extends AppController {
         $assets = $q->toArray();
         //  $this->log($assets, 'debug');
         $this->set(compact('assets'));
+    }
+
+    public function ads() {
+        $this->AssetAds = TableRegistry::get('AssetAds');
+        $this->PaymentLines = TableRegistry::get('PaymentLines');
+        $q = $this->AssetAds->find()
+                ->contain(['Assets' => ['AssetTypes'], 'Payments'])
+                ->order(['AssetAds.id' => 'DESC']);
+        $ads = $q->toArray();
+        $paymentline = [];
+        foreach($ads as $ad) {
+            $query = $this->PaymentLines->find()
+                        ->contain(['Images'])
+                        ->where(['PaymentLines.payment_id' => $ad->payment_id])
+                        ->last();
+            array_push($paymentline, $query);
+        }
+        $this->set(compact('ads', 'paymentline'));
+    }
+
+    public function adsapprove ($id = null) {
+        $this->PaymentLines = TableRegistry::get('payment_lines');
+        $this->Payments = TableRegistry::get('payments');
+        $payment_line = $this->PaymentLines->get($id);
+        $date = date('Y-m-d');
+        $payment_line->status = 'CO';
+        if ($this->PaymentLines->save($payment_line)) {
+            $payment = $this->Payments->get($payment_line->payment_id);
+            $payment->status = 'CO';
+            $payment->duration = date('Y-m-d', strtotime($date. ($payment->package_duration == '1 เดือน' ? ' + 30 days' : ($payment->package_duration == '1 ปี' ? ' + 1 years' : ''))));
+            if($this->Payments->save($payment)) {
+                $this->Flash->success(__('The payment has been paid.'));
+                return $this->redirect(['action' => 'ads']);
+            } else {
+                $this->Flash->error(__('The payment could not be paid. Please, try again.'));
+            }
+        }
+        $this->Flash->error(__('The payment line could not be paid. Please, try again.'));
+
+        $this->set(compact('payment'));
     }
     
     public function approveRequest(){
