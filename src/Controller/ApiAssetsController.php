@@ -508,7 +508,7 @@ class ApiAssetsController extends AppController {
                             ->order(['Assets.created' => 'DESC'])
                             ->where([$sales, $rent, $province, $district, $subdistrict, $pricestart, $priceend, 'status' => 'CO'])
                             ->where([$type])
-                            ->limit(5)
+                            ->limit(20)
                             ->toArray();
             if(sizeof($assets) > 0) {
                 foreach ($assets as $asset) {
@@ -531,6 +531,27 @@ class ApiAssetsController extends AppController {
                     ->order(['AssetImages.created' => 'DESC'])
                     ->first();
         return $image_url['img_url'] = $asset_image->image->url;
+    }
+
+    public function assetFavorite () {
+        $data = ['message' => '', 'status' => 400];
+
+        if ($this->request->is(['get', 'ajax'])) {
+            $this->UserFavorites = TableRegistry::get('UserFavorites');
+            $user_id = $this->request->getQuery('id');
+            $favorite_array = [];
+
+            $favorites = $this->UserFavorites->find('all')->where(['user_id' => $user_id])->toArray();
+            if(sizeof($favorites) > 0) {
+                foreach($favorites as $favorite){
+                    array_push($favorite_array, $favorite->asset_id);
+                }
+                $data['status'] = 200;
+                $data['assetfavorite'] = $favorite_array;
+            }
+        }
+        $json = json_encode($data);
+        $this->set(compact('json'));
     }
 
     public function listassetimage () {
