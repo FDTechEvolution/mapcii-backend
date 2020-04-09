@@ -56,6 +56,7 @@ class ApiAssetsController extends AppController {
                 
             }
             if (isset($allVariable['search_asset_type_id']) && $allVariable['search_asset_type_id'] != '') {
+                // $this->log($allVariable['search_asset_type_id'], 'debug');
                 $spl = explode(',', $allVariable['search_asset_type_id']);
                 $assetTypeCondition = '';
                 foreach ($spl as $item) {
@@ -63,6 +64,7 @@ class ApiAssetsController extends AppController {
                 }
                 $assetTypeCondition = rtrim($assetTypeCondition, ',');
                 $condition .= ' and assets.asset_type_id in (' . $assetTypeCondition . ')';
+                // $this->log($assetTypeCondition, 'debug');
             }
             if (isset($allVariable['user']) && $allVariable['user'] != '') {
                 
@@ -302,7 +304,10 @@ class ApiAssetsController extends AppController {
 
     public function listassetaddress () {
         $data = ['message' => '', 'status' => 400];
-        $newData = [];
+        $imgAsset = [];
+        $imgAds = [];
+        $listAsset = [];
+        $adsAsset = [];
         $getType = [];
         if ($this->request->is(['get', 'ajax'])) {
             $getSale = $this->request->getQuery('issales');
@@ -323,7 +328,7 @@ class ApiAssetsController extends AppController {
             // $this->log($type, 'debug');
             // $getText = $this->request->getQuery('search_text');
             $getProvince = $this->request->getQuery('province');
-            $this->log($getProvince, 'debug');
+            // $this->log($getProvince, 'debug');
             $getDistrict = $this->request->getQuery('search_district_id');
             $getSubdistrict = $this->request->getQuery('search_sub_district_id');
             $getPriceStart = $this->request->getQuery('price_start');
@@ -349,20 +354,29 @@ class ApiAssetsController extends AppController {
             // $this->log($asset_address, 'debug');
             if(sizeof($asset_address) > 0) {
                 foreach($asset_address as $asset){
-                    $asset_image = $this->AssetImages->find('all')
-                                ->contain(['Images'])
-                                ->where(['asset_id' => $asset->id, 'isdefault' => 'Y'])
-                                ->order(['AssetImages.created' => 'DESC'])
+                    $asset_ads = $this->AssetAds->find('all')
+                                ->contain(['Assets' => ['Addresses' => ['Provinces']], 'Payments', 'Positions'])
+                                ->where(['AssetAds.asset_id' => $asset->id, 'Payments.status' => 'CO'])
                                 ->first();
-                    $image_url['img_url'] = $asset_image->image->url;
-                    array_push($newData,$image_url);
+                    if(sizeof($asset_ads) > 0) {
+                        array_push($imgAds,$this->getimglistaddress($asset->id));
+                        array_push($adsAsset,$asset_ads);
+                    } else {
+                        array_push($imgAsset,$this->getimglistaddress($asset->id));
+                        array_push($listAsset,$asset);
+                    }
                 }
                     $data['status'] = 200;
-                    $data['list'] = $asset_address;
-                    $data['image'] = $newData;
+                    $data['list'] = $listAsset;
+                    $data['ads'] = $adsAsset;
+                    $data['image'] = $imgAsset;
+                    $data['imgads'] = $imgAds;
             } else {
+                $this->Provinces = TableRegistry::get('Provinces');
+                $asset_position = $this->Provinces->find('all')->where(['id' => $getProvince])->first();
                 $data['status'] = 400;
                 $data['message'] = "Asset is empty.";
+                $data['position'] = $asset_position;
             }
         } else {
             $data['message'] = "incorrect method.";
@@ -372,23 +386,35 @@ class ApiAssetsController extends AppController {
         $this->set(compact('json'));
     }
 
+    private function getimglistaddress ($asset_id) {
+        $asset_image = $this->AssetImages->find('all')
+                    ->contain(['Images'])
+                    ->where(['asset_id' => $asset_id, 'isdefault' => 'Y'])
+                    ->order(['AssetImages.created' => 'DESC'])
+                    ->first();
+        return $image_url['img_url'] = $asset_image->image->url;
+    }
+
     public function loadassetads () {
         $data = ['message' => '', 'status' => 400];
-        $allVariable = $this->request->getQueryParams();
         $provinces = [];
         $districts = [];
         $getType = [];
+        $imgProvince = [];
+        $imgDistrict = [];
         if ($this->request->is(['get', 'ajax'])) {
             $getSale = $this->request->getQuery('issales');
             $getRent = $this->request->getQuery('isrent');
             $getType = $this->request->getQuery('type');
             // $this->log($getType, 'debug');
             if(isset($getType) && $getType != '') {
-                $type = [];
+                $array_type = [];
+                $type = '';
                 $spl = explode(',', $getType);
                 foreach ($spl as $item) {
-                    array_push($type,$item);
+                    array_push($array_type,$item);
                 }
+                $type = (['Assets.asset_type_id IN' => $array_type]);
             }else{
                 $type = '';
             }
@@ -415,7 +441,7 @@ class ApiAssetsController extends AppController {
                             ->contain(['Assets' => ['Addresses'], 'Payments', 'Positions'])
                             ->order(['AssetAds.modified' => 'DESC'])
                             ->where([$sales, $rent, $province, $district, $subdistrict, $pricestart, $priceend, 'Payments.status' => 'CO'])
-                            ->where(['Assets.asset_type_id IN' => $type])
+                            ->where([$type])
                             ->limit(5)
                             ->toArray();
             // $this->log($type, 'debug');
@@ -424,18 +450,87 @@ class ApiAssetsController extends AppController {
                 foreach($asset_ads as $ads){
                     if($ads->position->position == 'province'){
                         array_push($provinces, $ads);
+                        array_push($imgProvince, $this->getimglistasset($ads->asset->id));
                     }else if($ads->position->position == 'district'){
                         array_push($districts, $ads);
+                        array_push($imgDistrict, $this->getimglistasset($ads->asset->id));
                     }
                 }
                 $data['status'] = 200;
                 $data['listprovince'] = $provinces;
                 $data['listdistrict'] = $districts;
+                $data['imgprovince'] = $imgProvince;
+                $data['imgdistrict'] = $imgDistrict;
             }
         }
 
         $json = json_encode($data);
         $this->set(compact('json'));
+    }
+    
+    public function loadassets() {
+        $data = ['message' => '', 'status' => 400];
+        $provinces = [];
+        $districts = [];
+        $getType = [];
+        $imgAssets = [];
+        if ($this->request->is(['get', 'ajax'])) {
+            $getSale = $this->request->getQuery('issales');
+            $getRent = $this->request->getQuery('isrent');
+            $getType = $this->request->getQuery('type');
+            if(isset($getType) && $getType != '') {
+                $array_type = [];
+                $type = '';
+                $spl = explode(',', $getType);
+                foreach ($spl as $item) {
+                    array_push($array_type,$item);
+                }
+                $type = (['Assets.asset_type_id IN' => $array_type]);
+            }else{
+                $type = '';
+            }
+            $getProvince = $this->request->getQuery('province');
+            $getDistrict = $this->request->getQuery('search_district_id');
+            $getSubdistrict = $this->request->getQuery('search_sub_district_id');
+            $getPriceStart = $this->request->getQuery('price_start');
+            $getPriceEnd = $this->request->getQuery('price_end');
+
+            $sales = ($getSale != 'null' && $getSale != '') ? (['Assets.issales' => $getSale]) : '';
+            $rent = ($getRent != 'null' && $getRent != '') ? (['Assets.isrent' => $getRent]) : '';
+            $province = ($getProvince != 'null' && $getProvince != '') ? (['Addresses.province_id' => $getProvince]) : '';
+            $district = ($getDistrict != 'null' && $getDistrict != '') ? (['Addresses.district_id' => $getDistrict]) : '';
+            $subdistrict = ($getSubdistrict != 'null' && $getSubdistrict != '') ? (['Addresses.subdistrict_id' => $getSubdistrict]) : '';
+            $pricestart = ($getPriceStart != 'null' && $getPriceStart != '') ? (['Assets.price >=' => $getPriceStart]) : (['Assets.price >=' => '0']);
+            $priceend = ($getPriceEnd != 'null' && $getPriceEnd != '') ? (['Assets.price <=' => $getPriceEnd]) : (['Assets.price <=' => '1000000000']);
+
+            $assets = $this->Assets->find('all')
+                            ->contain(['Addresses'])
+                            ->order(['Assets.created' => 'DESC'])
+                            ->where([$sales, $rent, $province, $district, $subdistrict, $pricestart, $priceend, 'status' => 'CO'])
+                            ->where([$type])
+                            ->limit(5)
+                            ->toArray();
+            if(sizeof($assets) > 0) {
+                foreach ($assets as $asset) {
+                    array_push($imgAssets, $this->getimglistasset($asset->id));
+                }
+                $data['status'] = 200;
+                $data['listasset'] = $assets;
+                $data['imgasset'] = $imgAssets;
+            }
+        }
+
+        $json = json_encode($data);
+        $this->set(compact('json'));
+    }
+
+    private function getimglistasset ($asset_id) {
+        $asset_image = $this->AssetImages->find('all')
+                    ->contain(['Images'])
+                    ->where(['asset_id' => $asset_id, 'isdefault' => 'Y'])
+                    ->order(['AssetImages.created' => 'DESC'])
+                    ->first();
+        return $image_url['img_url'] = $asset_image->image->url;
     }
 
     public function listassetimage () {
@@ -797,6 +892,23 @@ class ApiAssetsController extends AppController {
                     ->contain(['Images'])
                     ->where(['AssetImages.asset_id' => $asset_id])
                     ->order(['AssetImages.isdefault' => 'ASC']);
+
+            $assetImage = $q->toArray();
+            $data['status'] = 200;
+            $data['data'] = $assetImage;
+        }
+
+        $json = json_encode($data);
+        $this->set(compact('json'));
+    }
+
+    public function assetImageList() {
+        $data = ['message' => '', 'status' => 400];
+        $asset_id = $this->request->getQuery('id');
+        if ($this->request->is(['get'])) {
+            $q = $this->AssetImages->find()
+                    ->contain(['Images'])
+                    ->where(['AssetImages.asset_id' => $asset_id, 'AssetImages.isdefault' => 'Y']);
 
             $assetImage = $q->toArray();
             $data['status'] = 200;
