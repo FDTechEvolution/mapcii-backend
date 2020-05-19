@@ -16,12 +16,7 @@
             <table id="datatable" class="table table-responsive-lg " cellspacing="0" width="100%">
                 <thead>
                     <tr>
-
                         <th scope="col">Name</th>
-
-
-                      
-
                         <th scope="col"style="text-align: center">Status</th>
                         <th  style="text-align: center"><?= __('เครื่องมือ') ?></th>
                     </tr>
@@ -29,18 +24,20 @@
                 <tbody>
                     <?php foreach ($users as $user): ?>
                         <tr>
-
                             <td><?= h($user->firstname) ?></td>
-
-
-                           
-
                             <td style="text-align: center"><?= $user->isactive == 'Y' ? ACTIVE : INACTIVE ?></td>
                             <td style="text-align: center" >
                                 <?= $this->Html->link(BT_EDIT, ['action' => 'edit', $user->id], ['escape' => false, 'label' => false]) ?>
                                 <?= $this->Form->postLink(BT_DELETE, ['action' => 'delete', $user->id], ['confirm' => __('ท่านต้องการลบข้อมูล ใช่ หรือ ไม่ '), 'escape' => false]) ?>
-
-
+                                <?php
+                                    if($user->islocked == 'N') { ?>
+                                        <?=$this->Html->link('<i class="fa fa-unlock"></i>',['controller'=>'Users','action'=>'block-user',$user->id],['class'=>'btn btn-outline-success waves-effect waves-light', 'escape' => false])?>
+                                <?php
+                                    }else{ ?>
+                                        <?=$this->Html->link('<i class="fa fa-lock"></i>',['controller'=>'Users','action'=>'unblock-user',$user->id],['class'=>'btn btn-outline-danger waves-effect waves-light', 'escape' => false])?>
+                                <?php
+                                    }
+                                ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>

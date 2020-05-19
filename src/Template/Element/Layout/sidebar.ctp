@@ -17,6 +17,7 @@
                     <ul class="list-unstyled">
                         <li><?=$this->Html->link('รายการรออนุมัติ',['controller'=>'assets','action'=>'approve-request'])?></li>
                         <li><a href="<?= SITE_URL . 'assets' ?>">รายการอสังหาทั้งหมด</a></li>
+                        <li><?=$this->Html->link('รายการอสังหาหมดอายุ',['controller'=>'assets','action'=>'asset-exp'])?></li>
                         <li><a href="<?= SITE_URL . 'asset-categories' ?>">ประเภทอสังหา</a></li>
                         <li><a href="<?= SITE_URL . 'options' ?>">ส่วนเสริม</a></li>
                     </ul>
@@ -26,7 +27,6 @@
                         <span class="menu-arrow"></span></a>
                     <ul class="list-unstyled">
                         <li><a href="<?= SITE_URL . 'banners' ?>">Banner ทั้งหมด</a></li>
-
                     </ul>
                 </li>
                 <li class="has_sub">

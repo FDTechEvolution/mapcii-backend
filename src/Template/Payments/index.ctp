@@ -1,86 +1,8 @@
-
 <?= $this->element('Lib/data_table') ?>
 <div class="row">
     <div class="col-lg-12">
         <div class="card m-b-20 card-body">
             <h3 class="m-t-0 gold-title card-header">รายการแจ้งชำระเงิน </h3>
-            <!--
-            <div class="card-body">
-                <table id="datatable" class="table table-responsive-lg " cellspacing="0" width="100%">
-                    <thead>
-                        <tr>
-                            <th>เลขที่</th>
-                            <th >ลูกค้า</th>
-                            <th style="text-align: center">สถานะ</th>
-                            <th class="text-center">วันที่ </th>
-                            <th>รายละเอียด</th>
-                            <th class="text-center">สลิป</th>
-                            <th  style="text-align: center"><?= __('ยกเลิก') ?></th>
-                            <th  style="text-align: center"><?= __('รับเงินแล้ว') ?></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($paymentlines as $index => $payment): ?>
-                            <tr>
-                                <td><?= $payment->documentno ?></td>
-                                <td><?= h($payment->payment->user->firstname) ?> <?= h($payment->payment->user->lastname) ?></td>
-
-                                <td style="text-align: center" class="">
-                                    <span class="badge badge-<?php
-                                    $displaynone = 'text-align: center';
-                                    if ($payment->status == 'CO') {
-                                        echo 'success';
-                                        $displaynone = 'text-align: center;display: none';
-                                    } else if ($payment->payment->status == 'VO') {
-                                        echo 'warning';
-                                        $displaynone = 'text-align: center;display: none';
-                                    } else {
-                                        echo 'secondary';
-                                    }
-                                    ?>">
-                                              <?= h($docStatusList[$payment->status]['name']) ?>
-                                    </span>
-                                </td>
-                                <?php
-                                $date = '';
-
-                                if (!is_null($payment->payment_date)) {
-                                    $date = $payment->payment_date->i18nFormat(DATE_FORMATE, null, TH_DATE);
-                                }
-                                ?>
-
-                                <td class="text-center"><?= h($date) ?></td>
-                                <td><?= $payment->package_name ?> - <?= $payment->package_duration ?> : <?= number_format($payment->amount) ?> บาท<br><?= h($payment->description) ?></td>
-                                <td class="text-center"><button class="g-px-0 g-pt-0 g-pb-2 openImageDialog" type="button" data-toggle="modal" data-target="#modalSlip" data-id="<?= $payment->image->url ?>"><i class="fa fa-image g-font-size-20"></i></button></td>
-                                <td style="text-align: center" >
-                                    <?= $this->Form->postLink('<button type="button" class="btn btn-danger waves-effect"><i class=" fa fa-trash-o"></i></button> ', ['action' => 'delete', $payment->id], ['confirm' => __('ท่านต้องการยกเลิกรายการชำระเงิน ใช่ หรือ ไม่ '), 'escape' => false]) ?>
-                                </td>
-                                <td style="<?= $displaynone ?>" >
-                                    <?= $this->Form->postLink('<button type="button" class="btn btn-success waves-effect"><i class=" fa fa-check"></i></button> ', ['action' => 'approve', $payment->id], ['escape' => false, 'label' => false]) ?>
-                                </td>
-
-                            </tr>
-
-                            <div class="modal fade" id="modalSlip" role="dialog">
-                                <div class="modal-dialog">
-                                
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <button type="button" class="close" data-dismiss="modal"><i class="fa fa-window-close g-font-size-20 g-color-red"></i></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <img id="slipImage" class="img-fluid" src="">
-                                    </div>
-                                </div>
-                                
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-
-            -->
 
             <div class="card-body">
                 <div class="row" style="padding: 0 20px; font-weight: 700;">

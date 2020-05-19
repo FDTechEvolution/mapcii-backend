@@ -15,10 +15,12 @@ use Cake\ORM\Entity;
  * @property string $isapproved
  * @property int $limit
  * @property \Cake\I18n\FrozenTime $created
+ * @property \Cake\I18n\FrozenTime $modified
  * @property string $createdby
  *
  * @property \App\Model\Entity\User $user
  * @property \App\Model\Entity\Payment $payment
+ * @property \App\Model\Entity\Position $position
  * @property \App\Model\Entity\BannerLine[] $banner_lines
  */
 class Banner extends Entity
@@ -42,9 +44,11 @@ class Banner extends Entity
         'isapproved' => true,
         'limit' => true,
         'created' => true,
+        'modified' => true,
         'createdby' => true,
         'user' => true,
         'payment' => true,
+        'position' => true,
         'banner_lines' => true
     ];
 }

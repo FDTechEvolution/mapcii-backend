@@ -11,7 +11,7 @@ use Cake\Validation\Validator;
  *
  * @property \App\Model\Table\UsersTable|\Cake\ORM\Association\BelongsTo $Users
  * @property \App\Model\Table\PaymentsTable|\Cake\ORM\Association\BelongsTo $Payments
- * @property |\Cake\ORM\Association\BelongsTo $Positions
+ * @property \App\Model\Table\PositionsTable|\Cake\ORM\Association\BelongsTo $Positions
  * @property \App\Model\Table\BannerLinesTable|\Cake\ORM\Association\HasMany $BannerLines
  *
  * @method \App\Model\Entity\Banner get($primaryKey, $options = [])

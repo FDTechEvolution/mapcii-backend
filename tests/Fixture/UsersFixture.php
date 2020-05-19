@@ -39,6 +39,8 @@ class UsersFixture extends TestFixture
         'verifycode' => ['type' => 'string', 'length' => 255, 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'position' => ['type' => 'string', 'length' => 100, 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'image_id' => ['type' => 'uuid', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
+        'issubscription' => ['type' => 'string', 'length' => null, 'null' => true, 'default' => 'Y', 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
+        'locktime' => ['type' => 'date', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
         '_constraints' => [
             'primary' => ['type' => 'primary', 'columns' => ['id'], 'length' => []],
         ],
@@ -58,7 +60,7 @@ class UsersFixture extends TestFixture
     {
         $this->records = [
             [
-                'id' => 'd6b78914-5d5e-4682-af42-50264416c820',
+                'id' => '5c734e2b-7c05-44fb-b8c7-ac9c5bef54b6',
                 'usercode' => 'Lorem ipsum dolor sit amet',
                 'title' => 'Lorem ipsum dolor sit amet',
                 'firstname' => 'Lorem ipsum dolor sit amet',
@@ -75,11 +77,13 @@ class UsersFixture extends TestFixture
                 'iscustomer' => 'Lorem ipsum dolor sit amet',
                 'isseller' => 'Lorem ipsum dolor sit amet',
                 'gender' => 'Lorem ipsum dolor sit amet',
-                'created' => '2018-09-28 09:33:03',
-                'updated' => '2018-09-28 09:33:03',
+                'created' => '2020-05-07 09:13:54',
+                'updated' => '2020-05-07 09:13:54',
                 'verifycode' => 'Lorem ipsum dolor sit amet',
                 'position' => 'Lorem ipsum dolor sit amet',
-                'image_id' => 'cbaf3630-75ae-484f-873e-a180f6734a02'
+                'image_id' => 'f6b74f9f-45c8-4ff1-87bf-9d09c67485b4',
+                'issubscription' => 'Lorem ipsum dolor sit amet',
+                'locktime' => '2020-05-07'
             ],
         ];
         parent::init();

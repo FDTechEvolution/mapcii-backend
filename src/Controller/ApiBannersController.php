@@ -84,14 +84,26 @@ class ApiBannersController extends AppController
         $getPosition = $this->request->getQuery('position');
         $getLimit = $this->request->getQuery('limit');
         $getStyle = $this->request->getQuery('style');
+        $getPackage = $this->request->getQuery('package');
         if ($this->request->is(['get', 'ajax'])) {
             $position = isset($getPosition) ? $getPosition : '';
             $limit = isset($getLimit)?$limit = $getLimit:$limit = 100;
             $style = isset($getStyle) ? $getStyle : '';
+            $setpackage = isset($getPackage) ? $getPackage : '';
+            $this->log($setpackage, 'debug');
+            if($setpackage == 'a') {
+                $package = 'Banner A';
+            }else if($setpackage == 'b') {
+                $package = 'Banner B';
+            }else if($setpackage == 'c') {
+                $package = 'Banner C';
+            }
+            $this->log($package, 'debug');
             if ($position != '') {
                 $q = $this->BannerLines->find('all')
                         ->contain(['Banners' => ['Positions', 'Payments' => ['Packages']], 'Images'])
-                        ->where(['Positions.position' => $position, 'banner_lines.isactive' => 'Y'])
+                        ->where(['Positions.position' => $position, 'banner_lines.isactive' => 'Y', 'Payments.status' => 'CO', 'Packages.name' => $package])
+                        ->order(['RAND()'])
                         ->limit($limit);
                 $banner_line = $q->toArray();
                 if (sizeof($banner_line) > 0) {
@@ -137,6 +149,8 @@ class ApiBannersController extends AppController
                 }
 
                 if($this->BannerLines->save($banner_line)){
+                    $checkbanner->payment_id = $postData['payment_id'];
+                    $this->Banners->save($checkbanner);
                     $data['status'] = 200;
                     $data['message'] = "Insert banner image success.";
                 } else {

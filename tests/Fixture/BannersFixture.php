@@ -26,6 +26,7 @@ class BannersFixture extends TestFixture
         'isapproved' => ['type' => 'string', 'length' => null, 'null' => true, 'default' => 'N', 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'limit' => ['type' => 'integer', 'length' => 10, 'unsigned' => false, 'null' => true, 'default' => '10', 'comment' => '', 'precision' => null, 'autoIncrement' => null],
         'created' => ['type' => 'datetime', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
+        'modified' => ['type' => 'datetime', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
         'createdby' => ['type' => 'uuid', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
         '_constraints' => [
             'primary' => ['type' => 'primary', 'columns' => ['id'], 'length' => []],
@@ -46,16 +47,17 @@ class BannersFixture extends TestFixture
     {
         $this->records = [
             [
-                'id' => 'b790b102-e602-4f09-bc36-c92ab9a96a30',
+                'id' => 'a95958fa-0527-4395-847d-8562e1879ff5',
                 'type' => 'Lorem ipsum dolor sit amet',
-                'user_id' => 'edebb450-a94e-4f60-985a-1d7a030096e1',
-                'payment_id' => '14d515ff-32be-4c14-ab21-712e194f0687',
+                'user_id' => 'c8c76fa2-ead0-4420-8479-35166eb20e44',
+                'payment_id' => '18e7c791-5874-4c76-80eb-a24b892b1ddf',
                 'description' => 'Lorem ipsum dolor sit amet',
-                'position_id' => 'dadc1f1d-5514-40f0-92e2-74e7196bd180',
+                'position_id' => '98a7982d-e8d5-4b15-8720-aac36c3a4664',
                 'isapproved' => 'Lorem ipsum dolor sit amet',
                 'limit' => 1,
-                'created' => '2020-03-06 08:26:08',
-                'createdby' => '41bfbcdf-a57b-47ca-aeb5-2c91de75dc00'
+                'created' => '2020-05-19 07:41:32',
+                'modified' => '2020-05-19 07:41:32',
+                'createdby' => 'f963549b-b157-4d80-8028-eb91794fa6aa'
             ],
         ];
         parent::init();

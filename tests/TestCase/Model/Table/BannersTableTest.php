@@ -27,6 +27,7 @@ class BannersTableTest extends TestCase
         'app.banners',
         'app.users',
         'app.payments',
+        'app.positions',
         'app.banner_lines'
     ];
 

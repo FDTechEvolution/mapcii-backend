@@ -34,4 +34,17 @@ class NotificationComponent extends Component
         }
         return $notice;
     }
+
+    public function getNoificationBanner($id = null) {
+        $this->BannerLines = TableRegistry::get('banner_lines');
+        $notification = $this->BannerLines->find()
+                        ->where(['banner_id' => $id, 'isactive' => 'N'])
+                        ->first();
+        if(isset($notification)){
+            $notice = 1;
+        }else{
+            $notice = '';
+        }
+        return $notice;
+    }
 }

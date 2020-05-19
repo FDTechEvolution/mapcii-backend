@@ -10,8 +10,13 @@ use Cake\Validation\Validator;
  * Users Model
  *
  * @property \App\Model\Table\ImagesTable|\Cake\ORM\Association\BelongsTo $Images
+ * @property |\Cake\ORM\Association\HasMany $Accesses
  * @property \App\Model\Table\AssetsTable|\Cake\ORM\Association\HasMany $Assets
+ * @property |\Cake\ORM\Association\HasMany $Banners
+ * @property |\Cake\ORM\Association\HasMany $PaymentBackups
+ * @property |\Cake\ORM\Association\HasMany $Payments
  * @property \App\Model\Table\UserAddressesTable|\Cake\ORM\Association\HasMany $UserAddresses
+ * @property |\Cake\ORM\Association\HasMany $UserFavorites
  * @property \App\Model\Table\UserPackagesTable|\Cake\ORM\Association\HasMany $UserPackages
  *
  * @method \App\Model\Entity\User get($primaryKey, $options = [])
@@ -47,10 +52,25 @@ class UsersTable extends Table
         $this->belongsTo('Images', [
             'foreignKey' => 'image_id'
         ]);
+        $this->hasMany('Accesses', [
+            'foreignKey' => 'user_id'
+        ]);
         $this->hasMany('Assets', [
             'foreignKey' => 'user_id'
         ]);
+        $this->hasMany('Banners', [
+            'foreignKey' => 'user_id'
+        ]);
+        $this->hasMany('PaymentBackups', [
+            'foreignKey' => 'user_id'
+        ]);
+        $this->hasMany('Payments', [
+            'foreignKey' => 'user_id'
+        ]);
         $this->hasMany('UserAddresses', [
+            'foreignKey' => 'user_id'
+        ]);
+        $this->hasMany('UserFavorites', [
             'foreignKey' => 'user_id'
         ]);
         $this->hasMany('UserPackages', [
@@ -154,6 +174,14 @@ class UsersTable extends Table
             ->scalar('position')
             ->maxLength('position', 100)
             ->allowEmpty('position');
+
+        $validator
+            ->scalar('issubscription')
+            ->allowEmpty('issubscription');
+
+        $validator
+            ->date('locktime')
+            ->allowEmpty('locktime');
 
         return $validator;
     }

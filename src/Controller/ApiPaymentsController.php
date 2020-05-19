@@ -23,6 +23,7 @@ class ApiPaymentsController extends AppController {
 
         $this->Payments = TableRegistry::get('Payments');
         $this->PaymentLines = TableRegistry::get('payment_lines');
+        $this->AssetAds = TableRegistry::get('AssetAds');
     }
 
     public function listpayment() {
@@ -31,13 +32,26 @@ class ApiPaymentsController extends AppController {
         if ($this->request->is(['get', 'ajax'])) {
             $userid = isset($id) ? $id : '';
             if ($userid != '') {
-                $q = $this->Payments->find('all')
-                        ->contain(['Packages' => ['Sizes','Positions']])
+                // $this->log($userid, 'debug');
+                $q = $this->Payments->find()
+                        ->contain(['Packages' => ['Sizes','Positions','PackageTypes']])
                         ->where(['user_id' => $userid]);
                 $payment = $q->toArray();
                 if (sizeof($payment) > 0) {
+                    $newPayment = [];
+                    foreach($payment as $index=>$item){
+                        $ads = $this->AssetAds->find()->where(['payment_id' => $item->id])->first();
+                        if($ads){
+                            $item['ads'] = $ads;
+                            array_push($newPayment, $item);
+                            // $this->log($ads, 'debug');
+                            // $newPayment = $item;
+                        }else{
+                            array_push($newPayment, $item);
+                        }
+                        $data['paymentlist'] = $newPayment;
+                    }
                     $data['status'] = 200;
-                    $data['paymentlist'] = $payment;
                 } else {
                     $data['message'] = "Payment list is empty.";
                 }
@@ -204,6 +218,33 @@ class ApiPaymentsController extends AppController {
             }
         } else {
             $data['message'] = "incorrect method.";
+        }
+        $json = json_encode($data);
+        $this->set(compact('json'));
+    }
+
+    public function paymentExp() {
+        if ($this->request->is(['get', 'ajax'])) {
+            $date_now = date_create(date('Y-m-d'));
+            // $date2=date_create("2013-12-12");
+            // $diff = date_diff($date_now,$date2);
+            // if($diff->format("%R%a") <= 0) {
+            //     $this->log('check pass', 'debug');
+            // }else{
+            //     $this->log('check fail', 'debug');
+            // }
+            // $this->log($diff->format("%R%a"), 'debug');
+            // $this->log($date_now, 'debug');
+            $payments = $this->Payments->find('all')->where(['status' => 'CO'])->toArray();
+            if(sizeof($payments) > 0) {
+                foreach($payments as $payment) {
+                    if($date_now >= $payment->duration) {
+                        $payment->status = 'EX';
+                        $this->Payments->save($payment);
+                    }
+                }
+                $data['message'] = "OK";
+            }
         }
         $json = json_encode($data);
         $this->set(compact('json'));

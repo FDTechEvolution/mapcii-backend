@@ -20,34 +20,36 @@ class BannersController extends AppController
      */
     public function index()
     {
-//        $this->paginate = [
-//            'contain' => ['Users', 'Images']
-//        ];
-//        $banners = $this->paginate($this->Banners);
+        $docStatusList = $this->Core->getStatusCode();
+        $docStatusPayment = $this->Core->getStatusCodePayment();
+        $notificationBanner = $this->loadComponent('Notification');
 
-//        $this->set(compact('banners'));
-        // $q = $this->Banners->find()
-        //          ->contain(['Users', 'Images']);
-        // $banners = $q->toArray();
-        // //  $this->log($assets, 'debug');
-        // $this->set(compact('banners'));
+        $banners = $this->Banners->find()
+                        ->contain(['Users', 'Positions', 'Payments' => ['Packages']])
+                        ->order(['Banners.modified' => 'DESC'])
+                        ->toArray();
+        $this->set(compact('banners', 'docStatusPayment', 'notificationBanner'));
 
+        $this->BannerLines = TableRegistry::get('banner_lines');
+        $q = $this->BannerLines->find()
+                    ->contain(['Banners' => ['Users','Positions','Payments'], 'Images'])
+                    ->order(['banner_lines.created' => 'DESC']);
+        $banner_lines = $q->toArray();
+
+        $this->set(compact('banner_lines', 'docStatusList'));
+    }
+
+    public function bannerExp() {
         $this->BannerLines = TableRegistry::get('banner_lines');
 
         $q = $this->BannerLines->find()
-                    ->contain(['Banners' => ['Users','Positions'], 'Images'])
+                    ->contain(['Banners' => ['Users','Positions','Payments'], 'Images'])
+                    ->where(['Payments.status' => 'EX'])
                     ->order(['banner_lines.created' => 'DESC']);
         $banner_lines = $q->toArray();
         $this->set(compact('banner_lines'));
     }
 
-    /**
-     * View method
-     *
-     * @param string|null $id Banner id.
-     * @return \Cake\Http\Response|void
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
     public function view($id = null)
     {
         $banner = $this->Banners->get($id, [

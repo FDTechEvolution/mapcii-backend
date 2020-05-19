@@ -2,7 +2,7 @@
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
-use Cake\Auth\DefaultPasswordHasher;
+
 /**
  * User Entity
  *
@@ -28,6 +28,8 @@ use Cake\Auth\DefaultPasswordHasher;
  * @property string $verifycode
  * @property string $position
  * @property string $image_id
+ * @property string $issubscription
+ * @property \Cake\I18n\FrozenDate $locktime
  *
  * @property \App\Model\Entity\Image $image
  * @property \App\Model\Entity\Asset[] $assets
@@ -68,6 +70,8 @@ class User extends Entity
         'verifycode' => true,
         'position' => true,
         'image_id' => true,
+        'issubscription' => true,
+        'locktime' => true,
         'image' => true,
         'assets' => true,
         'user_addresses' => true,
@@ -82,7 +86,4 @@ class User extends Entity
     protected $_hidden = [
         'password'
     ];
-     protected function _setPassword($password) {
-        return (new DefaultPasswordHasher)->hash($password);
-    }
 }

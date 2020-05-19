@@ -140,4 +140,22 @@ class UsersController extends AppController
         }
         $this->set(compact('id'));
     }
+
+    public function blockUser ($id = null) {
+
+        $user = $this->Users->get($id);
+        $user->islocked = 'Y';
+        $this->Users->save($user);
+
+        return $this->redirect(['action'=>'index']);
+    }
+
+    public function unblockUser ($id = null) {
+
+        $user = $this->Users->get($id);
+        $user->islocked = 'N';
+        $this->Users->save($user);
+
+        return $this->redirect(['action'=>'index']);
+    }
 }

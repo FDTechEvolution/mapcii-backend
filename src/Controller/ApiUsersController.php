@@ -122,7 +122,7 @@ class ApiUsersController extends AppController {
 
         $data = ['message' => '', 'status' => 400, 'data' => []];
 
-         $this->log($this->request->getQueryParams(),'debug');
+        //  $this->log($this->request->getQueryParams(),'debug');
         $assetId = $this->request->getQuery('asset_id');
         $userId = $this->request->getQuery('user_id');
         
@@ -150,6 +150,22 @@ class ApiUsersController extends AppController {
         }
         $json = json_encode($data);
         $this->set(compact('json'));
+    }
+
+    public function autoUnblockUser () {
+        if ($this->request->is(['post', 'ajax'])) {
+            $postData = $this->request->getData();
+            $date = date("Y-m-d");
+            $users = $this->Users->find()->where(['islocked' => 'Y'])->toArray();
+            if(sizeof($users) > 0) {
+                foreach($users as $user) {
+                    if($user->locktime == $date){
+                        $user->islocked = 'N';
+                        $this->Users->save($user);
+                    }
+                }
+            }
+        }
     }
 
 }

@@ -23,6 +23,7 @@ class AssetsController extends AppController {
 
         $q = $this->Assets->find()
                 ->contain(['AssetTypes' => 'AssetCategories', 'Users', 'Addresses'])
+                ->where(['Assets.status' => 'CO'])
                 ->order(['Assets.created' => 'ASC']);
         $assets = $q->toArray();
         //  $this->log($assets, 'debug');
@@ -77,6 +78,42 @@ class AssetsController extends AppController {
         $assets = $q->toArray();
         //  $this->log($assets, 'debug');
         $this->set(compact('assets'));
+    }
+
+    public function assetExp() {
+        $q = $this->Assets->find()
+                ->contain(['AssetTypes' => 'AssetCategories', 'Users', 'Addresses'])
+                ->where(['Assets.status' => 'EX'])
+                ->order(['Assets.created' => 'ASC']);
+        $assets = $q->toArray();
+        //  $this->log($assets, 'debug');
+        $this->set(compact('assets'));
+    }
+
+    public function blockUser () {
+        $this->Users = TableRegistry::get('users');
+
+        if ($this->request->is('post')) {
+            $postData = $this->request->getData();
+
+            $user = $this->Users->get($postData['user_id']);
+            $user->islocked = 'Y';
+            $user->locktime = $postData['block_time'];
+            
+            if($this->Users->save($user)){
+                return $this->redirect(['action'=>'index']);
+            }
+        }
+    }
+
+    public function unblockUser ($id = null) {
+        $this->Users = TableRegistry::get('users');
+
+        $user = $this->Users->get($id);
+        $user->islocked = 'N';
+        $this->Users->save($user);
+
+        return $this->redirect(['action'=>'index']);
     }
     
     public function approve($asset_id = null){
