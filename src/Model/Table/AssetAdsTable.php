@@ -10,8 +10,7 @@ use Cake\Validation\Validator;
  * AssetAds Model
  *
  * @property \App\Model\Table\AssetsTable|\Cake\ORM\Association\BelongsTo $Assets
- * @property \App\Model\Table\PaymentsTable|\Cake\ORM\Association\BelongsTo $Payments
- * @property |\Cake\ORM\Association\BelongsTo $Positions
+ * @property |\Cake\ORM\Association\BelongsTo $UserPackages
  *
  * @method \App\Model\Entity\AssetAd get($primaryKey, $options = [])
  * @method \App\Model\Entity\AssetAd newEntity($data = null, array $options = [])
@@ -47,12 +46,8 @@ class AssetAdsTable extends Table
             'foreignKey' => 'asset_id',
             'joinType' => 'INNER'
         ]);
-        $this->belongsTo('Payments', [
-            'foreignKey' => 'payment_id',
-            'joinType' => 'INNER'
-        ]);
-        $this->belongsTo('Positions', [
-            'foreignKey' => 'position_id',
+        $this->belongsTo('UserPackages', [
+            'foreignKey' => 'user_package_id',
             'joinType' => 'INNER'
         ]);
     }
@@ -71,7 +66,6 @@ class AssetAdsTable extends Table
 
         $validator
             ->scalar('status')
-            ->maxLength('status', 2)
             ->allowEmpty('status');
 
         return $validator;
@@ -87,8 +81,7 @@ class AssetAdsTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['asset_id'], 'Assets'));
-        $rules->add($rules->existsIn(['payment_id'], 'Payments'));
-        $rules->add($rules->existsIn(['position_id'], 'Positions'));
+        $rules->add($rules->existsIn(['user_package_id'], 'UserPackages'));
 
         return $rules;
     }

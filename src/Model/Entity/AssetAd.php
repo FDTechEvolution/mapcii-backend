@@ -8,14 +8,14 @@ use Cake\ORM\Entity;
  *
  * @property string $id
  * @property string $asset_id
- * @property string $payment_id
- * @property string $position_id
+ * @property string $user_package_id
  * @property string $status
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
  *
  * @property \App\Model\Entity\Asset $asset
  * @property \App\Model\Entity\Payment $payment
+ * @property \App\Model\Entity\Position $position
  */
 class AssetAd extends Entity
 {
@@ -31,12 +31,12 @@ class AssetAd extends Entity
      */
     protected $_accessible = [
         'asset_id' => true,
-        'payment_id' => true,
-        'position_id' => true,
+        'user_package_id' => true,
         'status' => true,
         'created' => true,
         'modified' => true,
         'asset' => true,
-        'payment' => true
+        'payment' => true,
+        'position' => true
     ];
 }

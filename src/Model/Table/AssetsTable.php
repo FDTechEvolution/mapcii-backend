@@ -12,8 +12,11 @@ use Cake\Validation\Validator;
  * @property \App\Model\Table\AssetTypesTable|\Cake\ORM\Association\BelongsTo $AssetTypes
  * @property \App\Model\Table\UsersTable|\Cake\ORM\Association\BelongsTo $Users
  * @property \App\Model\Table\AddressesTable|\Cake\ORM\Association\BelongsTo $Addresses
+ * @property \App\Model\Table\AssetAdsTable|\Cake\ORM\Association\HasMany $AssetAds
  * @property \App\Model\Table\AssetImagesTable|\Cake\ORM\Association\HasMany $AssetImages
  * @property \App\Model\Table\AssetOptionsTable|\Cake\ORM\Association\HasMany $AssetOptions
+ * @property \App\Model\Table\MessagesTable|\Cake\ORM\Association\HasMany $Messages
+ * @property \App\Model\Table\UserFavoritesTable|\Cake\ORM\Association\HasMany $UserFavorites
  *
  * @method \App\Model\Entity\Asset get($primaryKey, $options = [])
  * @method \App\Model\Entity\Asset newEntity($data = null, array $options = [])
@@ -56,10 +59,19 @@ class AssetsTable extends Table
         $this->belongsTo('Addresses', [
             'foreignKey' => 'address_id'
         ]);
+        $this->hasMany('AssetAds', [
+            'foreignKey' => 'asset_id'
+        ]);
         $this->hasMany('AssetImages', [
             'foreignKey' => 'asset_id'
         ]);
         $this->hasMany('AssetOptions', [
+            'foreignKey' => 'asset_id'
+        ]);
+        $this->hasMany('Messages', [
+            'foreignKey' => 'asset_id'
+        ]);
+        $this->hasMany('UserFavorites', [
             'foreignKey' => 'asset_id'
         ]);
     }
@@ -81,6 +93,12 @@ class AssetsTable extends Table
             ->maxLength('code', 255)
             ->requirePresence('code', 'create')
             ->notEmpty('code');
+
+        $validator
+            ->scalar('announce')
+            ->maxLength('announce', 40)
+            ->requirePresence('announce', 'create')
+            ->notEmpty('announce');
 
         $validator
             ->scalar('name')
@@ -134,8 +152,16 @@ class AssetsTable extends Table
             ->allowEmpty('expire_date');
 
         $validator
-            ->decimal('landsize')
-            ->allowEmpty('landsize');
+            ->decimal('landsize_1')
+            ->allowEmpty('landsize_1');
+
+        $validator
+            ->decimal('landsize_2')
+            ->allowEmpty('landsize_2');
+
+        $validator
+            ->decimal('landsize_3')
+            ->allowEmpty('landsize_3');
 
         $validator
             ->decimal('usefulspace')
@@ -149,8 +175,7 @@ class AssetsTable extends Table
 
         $validator
             ->integer('total_publish_day')
-            ->requirePresence('total_publish_day', 'create')
-            ->notEmpty('total_publish_day');
+            ->allowEmpty('total_publish_day');
 
         $validator
             ->date('startdate')
@@ -161,18 +186,37 @@ class AssetsTable extends Table
             ->allowEmpty('enddate');
 
         $validator
+            ->dateTime('up_to_top')
+            ->allowEmpty('up_to_top');
+
+        $validator
             ->scalar('status')
             ->maxLength('status', 45)
             ->allowEmpty('status');
 
         $validator
             ->decimal('price')
-            ->requirePresence('price', 'create')
-            ->notEmpty('price');
+            ->allowEmpty('price');
 
         $validator
             ->decimal('discount')
             ->allowEmpty('discount');
+
+        $validator
+            ->decimal('rental')
+            ->allowEmpty('rental');
+
+        $validator
+            ->scalar('isnewproject')
+            ->allowEmpty('isnewproject');
+
+        $validator
+            ->scalar('issales')
+            ->allowEmpty('issales');
+
+        $validator
+            ->scalar('isrent')
+            ->allowEmpty('isrent');
 
         return $validator;
     }

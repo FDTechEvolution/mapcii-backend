@@ -7,10 +7,11 @@ use Cake\ORM\Entity;
  * Size Entity
  *
  * @property string $id
- * @property int $width
- * @property int $height
+ * @property string $name
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
+ *
+ * @property \App\Model\Entity\Package[] $packages
  */
 class Size extends Entity
 {
@@ -25,9 +26,9 @@ class Size extends Entity
      * @var array
      */
     protected $_accessible = [
-        'width' => true,
-        'height' => true,
+        'name' => true,
         'created' => true,
-        'modified' => true
+        'modified' => true,
+        'packages' => true
     ];
 }

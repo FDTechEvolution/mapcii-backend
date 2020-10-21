@@ -8,6 +8,8 @@
     <ul class="side-nav">
         <li class="heading"><?= __('Actions') ?></li>
         <li><?= $this->Html->link(__('New Size'), ['action' => 'add']) ?></li>
+        <li><?= $this->Html->link(__('List Packages'), ['controller' => 'Packages', 'action' => 'index']) ?></li>
+        <li><?= $this->Html->link(__('New Package'), ['controller' => 'Packages', 'action' => 'add']) ?></li>
     </ul>
 </nav>
 <div class="sizes index large-9 medium-8 columns content">
@@ -16,8 +18,7 @@
         <thead>
             <tr>
                 <th scope="col"><?= $this->Paginator->sort('id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('width') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('height') ?></th>
+                <th scope="col"><?= $this->Paginator->sort('name') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('created') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('modified') ?></th>
                 <th scope="col" class="actions"><?= __('Actions') ?></th>
@@ -27,8 +28,7 @@
             <?php foreach ($sizes as $size): ?>
             <tr>
                 <td><?= h($size->id) ?></td>
-                <td><?= $this->Number->format($size->width) ?></td>
-                <td><?= $this->Number->format($size->height) ?></td>
+                <td><?= h($size->name) ?></td>
                 <td><?= h($size->created) ?></td>
                 <td><?= h($size->modified) ?></td>
                 <td class="actions">

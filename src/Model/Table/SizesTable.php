@@ -9,6 +9,8 @@ use Cake\Validation\Validator;
 /**
  * Sizes Model
  *
+ * @property \App\Model\Table\PackagesTable|\Cake\ORM\Association\HasMany $Packages
+ *
  * @method \App\Model\Entity\Size get($primaryKey, $options = [])
  * @method \App\Model\Entity\Size newEntity($data = null, array $options = [])
  * @method \App\Model\Entity\Size[] newEntities(array $data, array $options = [])
@@ -38,6 +40,10 @@ class SizesTable extends Table
         $this->setPrimaryKey('id');
 
         $this->addBehavior('Timestamp');
+
+        $this->hasMany('Packages', [
+            'foreignKey' => 'size_id'
+        ]);
     }
 
     /**
@@ -53,14 +59,10 @@ class SizesTable extends Table
             ->allowEmpty('id', 'create');
 
         $validator
-            ->integer('width')
-            ->requirePresence('width', 'create')
-            ->notEmpty('width');
-
-        $validator
-            ->integer('height')
-            ->requirePresence('height', 'create')
-            ->notEmpty('height');
+            ->scalar('name')
+            ->maxLength('name', 20)
+            ->requirePresence('name', 'create')
+            ->notEmpty('name');
 
         return $validator;
     }

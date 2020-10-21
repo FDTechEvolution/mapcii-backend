@@ -8,6 +8,8 @@
     <ul class="side-nav">
         <li class="heading"><?= __('Actions') ?></li>
         <li><?= $this->Html->link(__('List Sizes'), ['action' => 'index']) ?></li>
+        <li><?= $this->Html->link(__('List Packages'), ['controller' => 'Packages', 'action' => 'index']) ?></li>
+        <li><?= $this->Html->link(__('New Package'), ['controller' => 'Packages', 'action' => 'add']) ?></li>
     </ul>
 </nav>
 <div class="sizes form large-9 medium-8 columns content">
@@ -15,8 +17,7 @@
     <fieldset>
         <legend><?= __('Add Size') ?></legend>
         <?php
-            echo $this->Form->control('width');
-            echo $this->Form->control('height');
+            echo $this->Form->control('name');
         ?>
     </fieldset>
     <?= $this->Form->button(__('Submit')) ?>

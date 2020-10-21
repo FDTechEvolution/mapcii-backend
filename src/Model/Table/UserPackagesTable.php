@@ -10,7 +10,7 @@ use Cake\Validation\Validator;
  * UserPackages Model
  *
  * @property \App\Model\Table\UsersTable|\Cake\ORM\Association\BelongsTo $Users
- * @property \App\Model\Table\PackagesTable|\Cake\ORM\Association\BelongsTo $Packages
+ * @property \App\Model\Table\UserPackageLinesTable|\Cake\ORM\Association\HasMany $UserPackageLines
  *
  * @method \App\Model\Entity\UserPackage get($primaryKey, $options = [])
  * @method \App\Model\Entity\UserPackage newEntity($data = null, array $options = [])
@@ -46,9 +46,8 @@ class UserPackagesTable extends Table
             'foreignKey' => 'user_id',
             'joinType' => 'INNER'
         ]);
-        $this->belongsTo('Packages', [
-            'foreignKey' => 'package_id',
-            'joinType' => 'INNER'
+        $this->hasMany('UserPackageLines', [
+            'foreignKey' => 'user_package_id'
         ]);
     }
 
@@ -65,28 +64,37 @@ class UserPackagesTable extends Table
             ->allowEmpty('id', 'create');
 
         $validator
-            ->scalar('plant')
-            ->maxLength('plant', 100)
-            ->requirePresence('plant', 'create')
-            ->notEmpty('plant');
+            ->scalar('order_code')
+            ->maxLength('order_code', 20)
+            ->requirePresence('order_code', 'create')
+            ->notEmpty('order_code');
 
         $validator
-            ->dateTime('start_date')
-            ->requirePresence('start_date', 'create')
-            ->notEmpty('start_date');
+            ->integer('duration')
+            ->requirePresence('duration', 'create')
+            ->notEmpty('duration');
 
         $validator
-            ->dateTime('end_date')
-            ->requirePresence('end_date', 'create')
-            ->notEmpty('end_date');
+            ->integer('credit')
+            ->requirePresence('credit', 'create')
+            ->notEmpty('credit');
+
+        $validator
+            ->integer('used')
+            ->requirePresence('used', 'create')
+            ->notEmpty('used');
+
+        $validator
+            ->date('start_date')
+            ->allowEmpty('start_date');
+
+        $validator
+            ->date('end_date')
+            ->allowEmpty('end_date');
 
         $validator
             ->scalar('isexpire')
             ->allowEmpty('isexpire');
-
-        $validator
-            ->scalar('ispaid')
-            ->allowEmpty('ispaid');
 
         $validator
             ->scalar('description')
@@ -106,7 +114,6 @@ class UserPackagesTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['user_id'], 'Users'));
-        $rules->add($rules->existsIn(['package_id'], 'Packages'));
 
         return $rules;
     }

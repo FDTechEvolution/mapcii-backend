@@ -92,4 +92,15 @@ class ApiAddressController extends AppController {
         $json = json_encode($addressOptions);
         $this->set(compact('json'));
     }
+
+    public function positions() {
+        $id = $this->request->getQuery('id');
+        $latlng = $this->Provinces->find()
+                    ->select(['lat','lng','zoom'])
+                    ->where(['id' => $id])
+                    ->first();
+
+        $json = json_encode($latlng);
+        $this->set(compact('json'));
+    }
 }

@@ -19,9 +19,8 @@ class AssetAdsFixture extends TestFixture
     public $fields = [
         'id' => ['type' => 'uuid', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
         'asset_id' => ['type' => 'uuid', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
-        'payment_id' => ['type' => 'uuid', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
-        'position_id' => ['type' => 'uuid', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
-        'status' => ['type' => 'string', 'length' => 2, 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
+        'user_package_id' => ['type' => 'uuid', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
+        'status' => ['type' => 'string', 'length' => null, 'null' => true, 'default' => 'DW', 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'created' => ['type' => 'datetime', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
         'modified' => ['type' => 'datetime', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
         '_constraints' => [
@@ -43,13 +42,12 @@ class AssetAdsFixture extends TestFixture
     {
         $this->records = [
             [
-                'id' => 'e518ea6b-ba9a-41aa-b61d-4a95dd9d9f42',
-                'asset_id' => '8abbbca0-e9ce-48a1-9f5d-7de828fa0e84',
-                'payment_id' => 'fd74df50-d069-4d6b-a882-6d76d01759bf',
-                'position_id' => '705b8224-36a8-4dfa-aa0c-16820e09be56',
-                'status' => '',
-                'created' => '2020-03-18 05:58:58',
-                'modified' => '2020-03-18 05:58:58'
+                'id' => 'd3263b41-1020-415b-8490-820c96fc7c0e',
+                'asset_id' => '8121e880-64c5-4cf7-b289-89df1453d91c',
+                'user_package_id' => '931340c8-3a9c-402b-bcdf-3d0c1f914e0b',
+                'status' => 'Lorem ipsum dolor sit amet',
+                'created' => '2020-10-14 08:49:48',
+                'modified' => '2020-10-14 08:49:48'
             ],
         ];
         parent::init();

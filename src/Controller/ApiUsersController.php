@@ -80,17 +80,13 @@ class ApiUsersController extends AppController {
                 $firstname = isset($postData['firstname']) ? $postData['firstname'] : '';
                 $lastname = isset($postData['lastname']) ? $postData['lastname'] : '';
 
-                if ($firstname != '' && $lastname != '') {
-                    $user = $this->Users->patchEntity($user, $postData);
-                    if ($this->Users->save($user)) {
-                        $data['status'] = 200;
-                        $data['message'] = "Updated success.";
-                    } else {
-                        $data['status'] = 400;
-                        $data['message'] = "could not be Updated.";
-                    }
+                $user = $this->Users->patchEntity($user, $postData);
+                if ($this->Users->save($user)) {
+                    $data['status'] = 200;
+                    $data['message'] = "Updated success.";
                 } else {
-                    $data['message'] = "firstname and lastname can't be empty.";
+                    $data['status'] = 400;
+                    $data['message'] = "could not be Updated.";
                 }
             } else {
                 $data['message'] = "Member id can't be empty.";
@@ -107,7 +103,7 @@ class ApiUsersController extends AppController {
         $data = ['message' => '', 'status' => 400, 'data' => []];
 
         $id = $this->request->getQuery('id');
-        $user = $this->Users->find()->where(['id' => $id])->first();
+        $user = $this->Users->find()->contain(['Images'])->where(['Users.id' => $id])->first();
         if (!is_null($user)) {
             $data['data'] = $user;
             $data['status'] = 200;
@@ -166,6 +162,43 @@ class ApiUsersController extends AppController {
                 }
             }
         }
+    }
+
+    public function updateProfileImage () {
+        $data = ['message' => '', 'status' => 400];
+        $postData = $this->request->getData();
+        // $this->log($postData, 'debug');
+        $id = $this->request->getQuery('id');
+        if ($this->request->is(['post', 'ajax'])) {
+
+            if($postData['image_id']['tmp_name'] !=''){
+
+                $this->loadComponent('UploadImage');
+                $imageId = $this->UploadImage->uploadUserProfile($postData['image_id']);
+
+                $user = $this->Users->find()->where(['id' => $id])->first();
+                if($user->image_id != ''){
+                    $this->Images = TableRegistry::get('Images');
+                    $image = $this->Images->get($user->image_id);
+                    $this->Images->delete($image);
+                }
+                $user->image_id = $imageId['image_id'];
+
+                if($this->Users->save($user)){
+                    $data['status'] = 200;
+                    $data['message'] = "Insert profile image success.";
+                } else {
+                    $data['status'] = 400;
+                    $data['message'] = "Insert profile image failed.";
+                }
+            }
+
+        } else {
+            $data['message'] = "incorrect method.";
+        }
+
+        $json = json_encode($data);
+        $this->set(compact('json'));
     }
 
 }

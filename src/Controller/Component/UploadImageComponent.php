@@ -160,7 +160,7 @@ class UploadImageComponent extends Component {
     public function uploadBanner($file = null) {
         $handle = new upload($file);
         $image_info = getimagesize($file);
-        $this->log($image_info);
+        // $this->log($image_info);
         $fullpath = $this->COVER_UPLOAD.'package_banners/';
         $data = [];
         if ($handle->uploaded) {
@@ -170,6 +170,37 @@ class UploadImageComponent extends Component {
             $handle->image_ratio_pixels = 100000;
             $handle->image_y = 400;
             $handle->image_x = 1500;
+            $handle->process(WWW_ROOT . $fullpath);
+            if ($handle->processed) {
+                $image_id = $this->getSaveImage($handle, $fullpath);
+                $handle->clean();
+                $data = [
+                    'status' => '200',
+                    'image_id' => $image_id
+                ];
+            } else {
+                $this->log($handle->error, 'debug');
+                $data = [
+                    'status' => '500',
+                    'image_id' => null
+                ];
+            }
+
+            return $data;
+        }
+    }
+
+    public function uploadUserProfile($file = null) {
+        $handle = new upload($file);
+        $image_info = getimagesize($file);
+        // $this->log($image_info);
+        $fullpath = $this->COVER_UPLOAD.'user_profiles/';
+        $data = [];
+        if ($handle->uploaded) {
+            $setNewFileName = 'user-profile-image-' . time() . "_" . rand(000000, 999999);
+            $handle->file_new_name_body = $setNewFileName;
+            $handle->image_resize = true;
+            $handle->image_ratio_pixels = 100000;
             $handle->process(WWW_ROOT . $fullpath);
             if ($handle->processed) {
                 $image_id = $this->getSaveImage($handle, $fullpath);

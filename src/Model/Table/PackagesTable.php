@@ -10,10 +10,11 @@ use Cake\Validation\Validator;
  * Packages Model
  *
  * @property \App\Model\Table\SizesTable|\Cake\ORM\Association\BelongsTo $Sizes
- * @property \App\Model\Table\PositionsTable|\Cake\ORM\Association\BelongsTo $Positions
- * @property |\Cake\ORM\Association\BelongsTo $PackageTypes
+ * @property \App\Model\Table\PackageDurationsTable|\Cake\ORM\Association\BelongsTo $PackageDurations
+ * @property \App\Model\Table\PackageTypesTable|\Cake\ORM\Association\BelongsTo $PackageTypes
+ * @property |\Cake\ORM\Association\HasMany $PackageLines
  * @property \App\Model\Table\PaymentsTable|\Cake\ORM\Association\HasMany $Payments
- * @property \App\Model\Table\UserPackagesTable|\Cake\ORM\Association\HasMany $UserPackages
+ * @property |\Cake\ORM\Association\HasMany $UserPackageLines
  *
  * @method \App\Model\Entity\Package get($primaryKey, $options = [])
  * @method \App\Model\Entity\Package newEntity($data = null, array $options = [])
@@ -46,21 +47,21 @@ class PackagesTable extends Table
         $this->addBehavior('Timestamp');
 
         $this->belongsTo('Sizes', [
-            'foreignKey' => 'size_id',
-            'joinType' => 'INNER'
+            'foreignKey' => 'size_id'
         ]);
-        $this->belongsTo('Positions', [
-            'foreignKey' => 'position_id',
-            'joinType' => 'INNER'
+        $this->belongsTo('PackageDurations', [
+            'foreignKey' => 'package_duration_id'
         ]);
         $this->belongsTo('PackageTypes', [
-            'foreignKey' => 'package_type_id',
-            'joinType' => 'INNER'
+            'foreignKey' => 'package_type_id'
+        ]);
+        $this->hasMany('PackageLines', [
+            'foreignKey' => 'package_id'
         ]);
         $this->hasMany('Payments', [
             'foreignKey' => 'package_id'
         ]);
-        $this->hasMany('UserPackages', [
+        $this->hasMany('UserPackageLines', [
             'foreignKey' => 'package_id'
         ]);
     }
@@ -89,30 +90,28 @@ class PackagesTable extends Table
             ->allowEmpty('description');
 
         $validator
-            ->decimal('monthly_price')
-            ->allowEmpty('monthly_price');
+            ->decimal('isprice')
+            ->allowEmpty('isprice');
 
         $validator
-            ->decimal('quarterly_price')
-            ->allowEmpty('quarterly_price');
+            ->integer('isqty')
+            ->allowEmpty('isqty');
 
         $validator
-            ->decimal('semiannual_price')
-            ->allowEmpty('semiannual_price');
+            ->decimal('proprice')
+            ->allowEmpty('proprice');
 
         $validator
-            ->decimal('annual_price')
-            ->allowEmpty('annual_price');
+            ->integer('proqty')
+            ->allowEmpty('proqty');
 
         $validator
             ->scalar('showpage')
-            ->requirePresence('showpage', 'create')
-            ->notEmpty('showpage');
+            ->allowEmpty('showpage');
 
         $validator
             ->scalar('showcase')
-            ->requirePresence('showcase', 'create')
-            ->notEmpty('showcase');
+            ->allowEmpty('showcase');
 
         $validator
             ->uuid('createdby')
@@ -131,7 +130,7 @@ class PackagesTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['size_id'], 'Sizes'));
-        $rules->add($rules->existsIn(['position_id'], 'Positions'));
+        $rules->add($rules->existsIn(['package_duration_id'], 'PackageDurations'));
         $rules->add($rules->existsIn(['package_type_id'], 'PackageTypes'));
 
         return $rules;

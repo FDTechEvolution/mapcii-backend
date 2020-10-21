@@ -16,7 +16,8 @@ class SizesControllerTest extends IntegrationTestCase
      * @var array
      */
     public $fixtures = [
-        'app.sizes'
+        'app.sizes',
+        'app.packages'
     ];
 
     /**

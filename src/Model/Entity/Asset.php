@@ -8,6 +8,7 @@ use Cake\ORM\Entity;
  *
  * @property string $id
  * @property string $code
+ * @property string $announce
  * @property string $name
  * @property string $asset_type_id
  * @property string $user_id
@@ -25,21 +26,31 @@ use Cake\ORM\Entity;
  * @property \Cake\I18n\FrozenDate $expire_date
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
- * @property float $landsize
+ * @property float $landsize_1
+ * @property float $landsize_2
+ * @property float $landsize_3
  * @property float $usefulspace
  * @property string $type
  * @property int $total_publish_day
  * @property \Cake\I18n\FrozenDate $startdate
  * @property \Cake\I18n\FrozenDate $enddate
+ * @property \Cake\I18n\FrozenTime $up_to_top
  * @property string $status
  * @property float $price
  * @property float $discount
+ * @property float $rental
+ * @property string $isnewproject
+ * @property string $issales
+ * @property string $isrent
  *
  * @property \App\Model\Entity\AssetType $asset_type
  * @property \App\Model\Entity\User $user
  * @property \App\Model\Entity\Address $address
+ * @property \App\Model\Entity\AssetAd[] $asset_ads
  * @property \App\Model\Entity\AssetImage[] $asset_images
  * @property \App\Model\Entity\AssetOption[] $asset_options
+ * @property \App\Model\Entity\Message[] $messages
+ * @property \App\Model\Entity\UserFavorite[] $user_favorites
  */
 class Asset extends Entity
 {
@@ -55,6 +66,7 @@ class Asset extends Entity
      */
     protected $_accessible = [
         'code' => true,
+        'announce' => true,
         'name' => true,
         'asset_type_id' => true,
         'user_id' => true,
@@ -72,19 +84,29 @@ class Asset extends Entity
         'expire_date' => true,
         'created' => true,
         'modified' => true,
-        'landsize' => true,
+        'landsize_1' => true,
+        'landsize_2' => true,
+        'landsize_3' => true,
         'usefulspace' => true,
         'type' => true,
         'total_publish_day' => true,
         'startdate' => true,
         'enddate' => true,
+        'up_to_top' => true,
         'status' => true,
         'price' => true,
         'discount' => true,
+        'rental' => true,
+        'isnewproject' => true,
+        'issales' => true,
+        'isrent' => true,
         'asset_type' => true,
         'user' => true,
         'address' => true,
+        'asset_ads' => true,
         'asset_images' => true,
-        'asset_options' => true
+        'asset_options' => true,
+        'messages' => true,
+        'user_favorites' => true
     ];
 }

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
+use Cake\Auth\AbstractPasswordHasher;
 
 /**
  * ApiAuthen Controller
@@ -146,6 +147,37 @@ class ApiAuthenController extends AppController {
             } else {
                 $data['message'] = "email and code can't be empty.";
             }
+        } else {
+            $data['message'] = "incorrect method.";
+        }
+
+        $json = json_encode($data);
+        $this->set(compact('json'));
+    }
+
+    public function ischangepassword() { // new changepassword from frontend
+        $data = ['message' => '', 'status' => 400];
+
+        if ($this->request->is(['post', 'ajax'])) {
+            $postData = $this->request->getData();
+            $id = isset($postData['id']) ? $postData['id'] : '';
+            $oldpass = isset($postData['old']) ? $postData['old'] : '';
+            $newpass = isset($postData['new']) ? $postData['new'] : '';
+            $user = $this->Users->find()
+                        ->where(['id' => $id])
+                        ->first();
+                if (!is_null($user)) {
+                    $checkOldPassword = DefaultPasswordHasher::check($oldpass, $user->password);
+                    $this->log($checkOldPassword, 'debug');
+                    if($checkOldPassword){
+                        $user->password = $newpass;
+                        $this->Users->save($user);
+                        $data['status'] = 200;
+                    }else{
+                        $data['status'] = 400;
+                        $data['message'] = 'Old Password Not incorrect.';
+                    }
+                }
         } else {
             $data['message'] = "incorrect method.";
         }

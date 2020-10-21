@@ -10,13 +10,13 @@ use Cake\Validation\Validator;
  * Users Model
  *
  * @property \App\Model\Table\ImagesTable|\Cake\ORM\Association\BelongsTo $Images
- * @property |\Cake\ORM\Association\HasMany $Accesses
+ * @property \App\Model\Table\AccessesTable|\Cake\ORM\Association\HasMany $Accesses
  * @property \App\Model\Table\AssetsTable|\Cake\ORM\Association\HasMany $Assets
- * @property |\Cake\ORM\Association\HasMany $Banners
- * @property |\Cake\ORM\Association\HasMany $PaymentBackups
- * @property |\Cake\ORM\Association\HasMany $Payments
+ * @property \App\Model\Table\BannersTable|\Cake\ORM\Association\HasMany $Banners
+ * @property \App\Model\Table\PaymentBackupsTable|\Cake\ORM\Association\HasMany $PaymentBackups
+ * @property \App\Model\Table\PaymentsTable|\Cake\ORM\Association\HasMany $Payments
  * @property \App\Model\Table\UserAddressesTable|\Cake\ORM\Association\HasMany $UserAddresses
- * @property |\Cake\ORM\Association\HasMany $UserFavorites
+ * @property \App\Model\Table\UserFavoritesTable|\Cake\ORM\Association\HasMany $UserFavorites
  * @property \App\Model\Table\UserPackagesTable|\Cake\ORM\Association\HasMany $UserPackages
  *
  * @method \App\Model\Entity\User get($primaryKey, $options = [])
@@ -135,6 +135,11 @@ class UsersTable extends Table
             ->scalar('lineid')
             ->maxLength('lineid', 100)
             ->allowEmpty('lineid');
+
+        $validator
+            ->scalar('facebook')
+            ->maxLength('facebook', 255)
+            ->allowEmpty('facebook');
 
         $validator
             ->scalar('fax')

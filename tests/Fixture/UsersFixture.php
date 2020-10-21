@@ -27,6 +27,7 @@ class UsersFixture extends TestFixture
         'email' => ['type' => 'string', 'length' => 100, 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'phone' => ['type' => 'string', 'length' => 100, 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'lineid' => ['type' => 'string', 'length' => 100, 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
+        'facebook' => ['type' => 'string', 'length' => 255, 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'fax' => ['type' => 'string', 'length' => 100, 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'isactive' => ['type' => 'string', 'length' => null, 'null' => true, 'default' => 'N', 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'isverify' => ['type' => 'string', 'length' => null, 'null' => true, 'default' => 'N', 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
@@ -60,7 +61,7 @@ class UsersFixture extends TestFixture
     {
         $this->records = [
             [
-                'id' => '5c734e2b-7c05-44fb-b8c7-ac9c5bef54b6',
+                'id' => '55824194-8388-4f4b-a69e-d79ec5447d05',
                 'usercode' => 'Lorem ipsum dolor sit amet',
                 'title' => 'Lorem ipsum dolor sit amet',
                 'firstname' => 'Lorem ipsum dolor sit amet',
@@ -70,6 +71,7 @@ class UsersFixture extends TestFixture
                 'email' => 'Lorem ipsum dolor sit amet',
                 'phone' => 'Lorem ipsum dolor sit amet',
                 'lineid' => 'Lorem ipsum dolor sit amet',
+                'facebook' => 'Lorem ipsum dolor sit amet',
                 'fax' => 'Lorem ipsum dolor sit amet',
                 'isactive' => 'Lorem ipsum dolor sit amet',
                 'isverify' => 'Lorem ipsum dolor sit amet',
@@ -77,13 +79,13 @@ class UsersFixture extends TestFixture
                 'iscustomer' => 'Lorem ipsum dolor sit amet',
                 'isseller' => 'Lorem ipsum dolor sit amet',
                 'gender' => 'Lorem ipsum dolor sit amet',
-                'created' => '2020-05-07 09:13:54',
-                'updated' => '2020-05-07 09:13:54',
+                'created' => '2020-07-31 07:02:39',
+                'updated' => '2020-07-31 07:02:39',
                 'verifycode' => 'Lorem ipsum dolor sit amet',
                 'position' => 'Lorem ipsum dolor sit amet',
-                'image_id' => 'f6b74f9f-45c8-4ff1-87bf-9d09c67485b4',
+                'image_id' => 'd376e214-a1f0-4be9-a4c1-1482012c7f14',
                 'issubscription' => 'Lorem ipsum dolor sit amet',
-                'locktime' => '2020-05-07'
+                'locktime' => '2020-07-31'
             ],
         ];
         parent::init();

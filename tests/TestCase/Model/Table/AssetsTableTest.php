@@ -28,8 +28,11 @@ class AssetsTableTest extends TestCase
         'app.asset_types',
         'app.users',
         'app.addresses',
+        'app.asset_ads',
         'app.asset_images',
-        'app.asset_options'
+        'app.asset_options',
+        'app.messages',
+        'app.user_favorites'
     ];
 
     /**

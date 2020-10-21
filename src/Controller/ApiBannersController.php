@@ -21,6 +21,7 @@ class ApiBannersController extends AppController
         $this->viewBuilder()->setLayout('ajax');
 
         $this->Banners = TableRegistry::get('Banners');
+        $this->Packages = TableRegistry::get('Packages');
         $this->BannerLines = TableRegistry::get('banner_lines');
     }
 
@@ -98,7 +99,7 @@ class ApiBannersController extends AppController
             }else if($setpackage == 'c') {
                 $package = 'Banner C';
             }
-            $this->log($package, 'debug');
+            // $this->log($package, 'debug');
             if ($position != '') {
                 $q = $this->BannerLines->find('all')
                         ->contain(['Banners' => ['Positions', 'Payments' => ['Packages']], 'Images'])
@@ -110,8 +111,9 @@ class ApiBannersController extends AppController
                     $data['status'] = 200;
                     $data['bannerlinelist'] = $banner_line;
                 } else {
+                    $packages = $this->Packages->find()->where(['name' => $package])->first();
                     $data['status'] = 100;
-                    $data['message'] = "Banner Line list is empty.";
+                    $data['message'] = $packages;
                 }
             } else {
                 $data['message'] = "Payment id is empty.";

@@ -21,6 +21,7 @@ class ApiAssetsController extends AppController {
     public $Connection = null;
     public $AssetOptions = null;
     public $AssetImages = null;
+    public $AssetAds = null;
 
     public function beforeFilter(Event $event) {
         parent::beforeFilter($event);
@@ -32,6 +33,9 @@ class ApiAssetsController extends AppController {
         $this->AssetTypes = TableRegistry::get('AssetTypes');
         $this->AssetImages = TableRegistry::get('AssetImages');
         $this->AssetAds = TableRegistry::get('AssetAds');
+        $this->Images = TableRegistry::get('Images');
+        $this->UserPackages = TableRegistry::get('UserPackages');
+        $this->UserPackageLines = TableRegistry::get('UserPackageLines');
 
         $this->Connection = ConnectionManager::get('default');
     }
@@ -250,20 +254,320 @@ class ApiAssetsController extends AppController {
         $this->set(compact('json'));
     }
 
+    public function saveNewAsset () {
+        $data = ['message' => '', 'status' => 400];
+        if ($this->request->is(['post', 'ajax'])) {
+            $postData = $this->request->getData();
+            $announce_data = json_decode($postData['announce_data']);
+            $announce_position = json_decode($postData['announce_position']);
+            $default_image = $postData['default_image'] == null ? 0 : $postData['default_image'];
+            // $this->log(json_decode($postData['announce_data'])->{'name'}, 'debug');
+            // $this->log($announce_data, 'debug');
+
+            // Check & Set Discount Package Credit From FronEnd
+            $isDiscount = 0;
+            $isLink = null;
+            $isPublicDay = 0;
+            if($announce_data->{'userpackage'} != '') {
+                if($announce_data->{'project'} == 'ขายด่วน') {
+                    $minDiscount = number_format(($announce_data->{'price'}*20)/100);
+                    $isDiscount = ($announce_data->{'discount'} < $minDiscount) ? $minDiscount : $announce_data->{'discount'};
+                }else if($announce_data->{'project'} == 'โครงการใหม่') {
+                    $isDiscount = $announce_data->{'discount'};
+                }
+
+                $isPublicDay = ($announce_data->{'duration'} != '') ? $announce_data->{'duration'} : 30;
+                $isLink = 'AD';
+            }else{
+                $isDiscount = $announce_data->{'discount'};
+                $isPublicDay = 30;
+                $isLink = 'FREE';
+            }
+            // $this->log($announce_data->{'userpackage'}, 'debug');
+            // $this->log($isDiscount, 'debug');
+
+            $this->Addresses = TableRegistry::get('Addresses');
+            $address = $this->Addresses->newEntity();
+            $address->subdistrict_id = $announce_position->{'subdistrict'};
+            $address->district_id = $announce_position->{'district'};
+            $address->province_id = $announce_position->{'province'};
+            $address->latitude = $announce_position->{'lat'};
+            $address->longitude = $announce_position->{'lng'};
+
+            if($this->Addresses->save($address)) {
+                $this->loadComponent('Sequent');
+                $code = $this->Sequent->getNextSequent();
+
+                $asset = $this->Assets->newEntity();
+                $asset->code = $code;
+                $asset->announce = $announce_data->{'announce'};
+                $asset->name = $announce_data->{'name'};
+                $asset->asset_type_id = $announce_data->{'type'};
+                $asset->user_id = $postData['user_id'];
+                $asset->bedroom = $announce_data->{'bedroom'};
+                $asset->bathroom = $announce_data->{'bathroom'};
+                $asset->address_id = $address->id;
+                $asset->isactive = 'Y';
+                $asset->landsize_1 = $announce_data->{'landsize'};
+                $asset->landsize_2 = $announce_data->{'ngan'};
+                $asset->landsize_3 = $announce_data->{'tarangwa'};
+                $asset->usefulspace = $announce_data->{'size'};
+                $asset->type = $announce_data->{'project'};
+                $asset->total_publish_day = $isPublicDay;
+                $asset->startdate = date('Y-m-d');
+                $asset->up_to_top = date('Y-m-d H:i:s');
+                $asset->status = 'CO';
+                $asset->price = $announce_data->{'price'};
+                $asset->discount = $isDiscount;
+                $asset->rental = $announce_data->{'rental'};
+                if($announce_data->{'announce'} == 'ขาย') $asset->issales = 'Y';
+                if($announce_data->{'announce'} == 'ให้เช่า') $asset->isrent = 'Y';
+                if($announce_data->{'announce'} == 'ขายและให้เช่า') {
+                    $asset->issales = 'Y';
+                    $asset->isrent = 'Y';
+                }
+                $asset->description = $announce_data->{'description'};
+
+                // $this->log($asset, 'debug');
+                if($this->Assets->save($asset)) {
+
+                    if($announce_data->{'userpackage'} !== '') $this->saveUserPackageAd($asset->id, $announce_data->{'userpackage'});
+                    
+                    $this->loadComponent('UploadImage');
+                    foreach($postData['announce_images'] as $key => $image) {
+                        $result = $this->UploadImage->upload($image, 800, 500, $asset->code . '/');
+                        $image_id = $result['image_id'];
+
+                        $assetImage = $this->AssetImages->newEntity();
+                        $assetImage->asset_id = $asset->id;
+                        $assetImage->image_id = $image_id;
+                        $assetImage->isdefault = $default_image == $key ? 'Y' : 'N';
+                        $assetImage->seq = 1;
+
+                        $this->AssetImages->save($assetImage);
+                    }
+
+                    if($announce_data->{'project'} != 'มือสอง') {
+                        $user_package = $this->UserPackages->find()->where(['id' => $announce_data->{'userpackage'}, 'user_id' => $postData['user_id'], 'isexpire' => 'N'])->first();
+                        if(sizeof($user_package) > 0) {
+                            if($user_package->used < $user_package->credit) {
+                                $upUsed = $user_package->used + 1;
+                                $user_package->used = $upUsed;
+                            }
+                        }
+                        $this->UserPackages->save($user_package);
+                    }
+
+                    $data['message'] = "Complete.";
+                    $data['status'] = 200;
+                    $data['link'] = $isLink;
+                }else{
+                    $data['message'] = 'error asset';
+                }
+            }else{
+                $data['message'] = 'error address';
+            }
+            
+        } else {
+            $data['message'] = "incorrect method.";
+        }
+
+        $json = json_encode($data);
+        $this->set(compact('json'));
+    }
+
+    private function saveUserPackageAd($asset_id, $userpackage_id) {
+        $asset_ad = $this->AssetAds->newEntity();
+        $asset_ad->asset_id = $asset_id;
+        $asset_ad->user_package_id = $userpackage_id;
+
+        $this->AssetAds->save($asset_ad);
+    }
+
+    public function saveUpdateAsset() {
+        $data = ['message' => '', 'status' => 400];
+        if ($this->request->is(['post', 'ajax'])) {
+            $postData = $this->request->getData();
+
+            $announce_data = json_decode($postData['announce_update']);
+            $announce_position = json_decode($postData['announce_position_update']);
+
+            $asset = $this->Assets->get($postData['id']);
+            $asset->announce = $announce_data->{'announce'};
+            $asset->name = $announce_data->{'name'};
+            $asset->asset_type_id = $announce_data->{'type'};
+            $asset->user_id = $postData['user_id'];
+            $asset->bedroom = $announce_data->{'bedroom'};
+            $asset->bathroom = $announce_data->{'bathroom'};
+            $asset->landsize_1 = $announce_data->{'landsize'};
+            $asset->landsize_2 = $announce_data->{'ngan'};
+            $asset->landsize_3 = $announce_data->{'tarangwa'};
+            $asset->usefulspace = $announce_data->{'size'};
+            $asset->type = $announce_data->{'project'};
+            $asset->price = $announce_data->{'price'};
+            $asset->discount = $announce_data->{'discount'};
+            $asset->rental = $announce_data->{'rental'};
+            if($announce_data->{'announce'} == 'ขาย') $asset->issales = 'Y';
+            if($announce_data->{'announce'} == 'ให้เช่า') $asset->isrent = 'Y';
+            if($announce_data->{'announce'} == 'ขายและให้เช่า') {
+                $asset->issales = 'Y';
+                $asset->isrent = 'Y';
+            }
+            $asset->description = $announce_data->{'description'};
+            $this->Assets->save($asset);
+
+
+            $this->Addresses = TableRegistry::get('Addresses');
+            $address = $this->Addresses->get($asset->address_id);
+            $address->subdistrict_id = $announce_position->{'subdistrict'};
+            $address->district_id = $announce_position->{'district'};
+            $address->province_id = $announce_position->{'province'};
+            $address->latitude = $announce_position->{'lat'};
+            $address->longitude = $announce_position->{'lng'};
+            $this->Addresses->save($address);
+
+            if(isset($postData['announce_images'])){
+                $this->loadComponent('UploadImage');
+                foreach($postData['announce_images'] as $key => $image) {
+                    $result = $this->UploadImage->upload($image, 800, 500, $asset->code . '/');
+                    $image_id = $result['image_id'];
+
+                    $assetImage = $this->AssetImages->newEntity();
+                    $assetImage->asset_id = $asset->id;
+                    $assetImage->image_id = $image_id;
+                    $assetImage->isdefault = 'N';
+                    $assetImage->seq = 1;
+
+                    $this->AssetImages->save($assetImage);
+                }
+            }
+
+            $data['message'] = "Complete.";
+            $data['status'] = 200;
+
+        } else {
+            $data['message'] = "incorrect method.";
+        }
+
+        $json = json_encode($data);
+        $this->set(compact('json'));
+    }
+
+    public function removeimage() {
+        $data = ['message' => '', 'status' => 400];
+        if ($this->request->is(['post', 'ajax'])) {
+            $postData = $this->request->getData();
+            $id = $postData['id'];
+
+            $asset_image = $this->AssetImages->get($id);
+            if($this->AssetImages->delete($asset_image)){
+                $image = $this->Images->get($asset_image->image_id);
+                if($this->Images->delete($image)){
+                    $data['status'] = 200;
+                }else{
+                    $data['status'] = 400;
+                }
+            }else{
+                $data['status'] = 400;
+            }
+        }
+
+        $json = json_encode($data);
+        $this->set(compact('json'));
+    }
+
+    public function defaultimage() {
+        $data = ['message' => '', 'status' => 400];
+        if ($this->request->is(['post', 'ajax'])) {
+            $postData = $this->request->getData();
+            $id = $postData['id'];
+
+            $q = $this->AssetImages->get($id);
+            $asset_image = $this->AssetImages->find()->where(['asset_id' => $q->asset_id, 'isdefault' => 'Y'])->first();
+            if($asset_image){
+                $asset_image->isdefault = 'N';
+                if($this->AssetImages->save($asset_image)){
+                    $q->isdefault = 'Y';
+                    if($this->AssetImages->save($q)) $data['status'] = 200;
+                }
+            }else{
+                $q->isdefault = 'Y';
+                if($this->AssetImages->save($q)) $data['status'] = 200;
+            }
+        }
+
+        $json = json_encode($data);
+        $this->set(compact('json'));
+    }
+
     public function listassetads () {
         $data = ['message' => '', 'status' => 400];
         if ($this->request->is(['get', 'ajax'])) {
+            $assetAds = [];
+            $assetPackages = [];
+            $imgAds = [];
             $getUser = $this->request->getQuery('user');
             $user = isset($getUser) ? $getUser : '';
             $asset_ads = $this->AssetAds->find('all')
-                        ->contain(['Assets'])
+                        ->contain(['Assets', 'UserPackages' => ['UserPackageLines']])
                         ->where(['Assets.user_id' => $user])
+                        ->order(['AssetAds.created' => 'DESC'])
                         ->toArray();
             if(sizeof($asset_ads)) {
+                foreach($asset_ads as $asset) {
+                    $asset_image = $this->AssetImages->find()
+                                    ->contain(['Images'])
+                                    ->select(['Images.url'])
+                                    ->where(['AssetImages.asset_id' => $asset->asset_id, 'AssetImages.isdefault' => 'Y'])
+                                    ->order(['AssetImages.created' => 'DESC'])
+                                    ->first();
+
+                    array_push($imgAds, $asset_image);
+                    array_push($assetAds, $asset->asset);
+                    array_push($assetPackages, $asset->user_package);
+                }
                 $data['status'] = 200;
-                $data['list_ads'] = $asset_ads;
+                $data['list_ads'] = $assetAds;
+                $data['list_ad_imgs'] = $imgAds;
+                $data['list_ad_packages'] = $assetPackages;
             } else {
                 $data['message'] = 'Ads is null.';
+            }
+        }
+
+        $json = json_encode($data);
+        $this->set(compact('json'));
+    }
+
+    public function closeAsset() {
+        $data = ['message' => '', 'status' => 400];
+        if ($this->request->is(['post', 'ajax'])) {
+            $postData = $this->request->getData();
+
+            $asset = $this->Assets->get($postData['id']);
+            $asset->status = 'CX';
+            if($this->Assets->save($asset)){
+                $data['status'] = 200;
+            }else{
+                $data['status'] = 400;
+            }
+        }
+
+        $json = json_encode($data);
+        $this->set(compact('json'));
+    }
+
+    public function upAssetToTop() {
+        $data = ['message' => '', 'status' => 400];
+        if ($this->request->is(['post', 'ajax'])) {
+            $postData = $this->request->getData();
+
+            $asset = $this->Assets->get($postData['id']);
+            $asset->up_to_top = date('Y-m-d H:i:s');
+            if($this->Assets->save($asset)){
+                $data['status'] = 200;
+            }else{
+                $data['status'] = 400;
             }
         }
 
@@ -276,25 +580,35 @@ class ApiAssetsController extends AppController {
         if ($this->request->is(['get', 'ajax'])) {
             $newList = [];
             $newListAds = [];
+            $imageList = [];
             $getUser = $this->request->getQuery('user');
             $user = isset($getUser) ? $getUser : '';
             $assets = $this->Assets->find('all')
                         ->where(['user_id' => $user])
+                        ->order(['created' => 'DESC'])
                         ->toArray();
             if(sizeof($assets)) {
                 foreach($assets as $asset) {
                     $asset_ads = $this->AssetAds->find('all')
-                                ->contain(['Assets', 'Payments'])
+                                ->contain(['Assets'])
                                 ->where(['AssetAds.asset_id' => $asset->id])
                                 ->first();
                     if(sizeof($asset_ads) > 0) {
                         array_push($newListAds,$asset_ads);
                     } else {
+                        $asset_image = $this->AssetImages->find()
+                                    ->contain(['Images'])
+                                    ->select(['Images.url'])
+                                    ->where(['AssetImages.asset_id' => $asset->id, 'AssetImages.isdefault' => 'Y'])
+                                    ->first();
+
+                        array_push($imageList, $asset_image);
                         array_push($newList,$asset);
                     }
                 }
                 $data['status'] = 200;
                 $data['list'] = $newList;
+                $data['list_image'] = $imageList;
                 $data['ads'] = $newListAds;
             } else {
                 $data['message'] = 'Ads is null.';
@@ -370,8 +684,10 @@ class ApiAssetsController extends AppController {
                         array_push($imgAds,$this->getimglistaddress($asset->id));
                         array_push($adsAsset,$asset_ads);
                     } else {
-                        array_push($imgAsset,$this->getimglistaddress($asset->id));
-                        array_push($listAsset,$asset);
+                        if($asset->status == 'CO'){
+                            array_push($imgAsset,$this->getimglistaddress($asset->id));
+                            array_push($listAsset,$asset);
+                        }
                     }
                 }
                     $data['status'] = 200;
@@ -527,19 +843,27 @@ class ApiAssetsController extends AppController {
 
     public function checkDueDate () {
         if ($this->request->is(['get', 'ajax'])) {
-            // $postData = $this->request->getData();
-            $date_now = date('Y-m-d');
+            $date_now = date_create(date('Y-m-d'));
             $assets = $this->Assets->find('all')->where(['status' => 'CO'])->toArray();
             if(sizeof($assets) > 0) {
                 foreach($assets as $asset) {
-                    $duedate = date('Y-m-d', strtotime($asset->startdate. ' + '. $asset->total_publish_date .'days'));
-                    if($date_now >= $duedate) {
+                    $startdate = date_create(date_format($asset->startdate, "Y-m-d"));
+                    $date_plus = date_add($startdate,date_interval_create_from_date_string($asset->total_publish_day." days"));
+                    $duedate = date_create(date_format($date_plus,"Y-m-d"));
+                    $diff = date_diff($date_now,$duedate);
+                    $set_diff = $diff->format("%R%a");
+                    if($set_diff < 0) {
                         $asset->status = 'EX';
                         $this->Assets->save($asset);
                     }
                 }
+                $data['status'] = 200;
+            }else{
+                $data['status'] = 400;
             }
         }
+        $json = json_encode($data);
+        $this->set(compact('json'));
     }
     
     public function loadassets() {
@@ -594,6 +918,26 @@ class ApiAssetsController extends AppController {
                 $data['status'] = 200;
                 $data['listasset'] = $assets;
                 $data['imgasset'] = $imgAssets;
+            }
+        }
+
+        $json = json_encode($data);
+        $this->set(compact('json'));
+    }
+
+    public function getAsset () {
+        if ($this->request->is(['get', 'ajax'])) {
+            $asset_id = $this->request->getQuery('id');
+
+            $asset = $this->Assets->find()
+                    ->contain(['AssetTypes', 'Addresses' => ['Subdistricts', 'Districts', 'Provinces']])
+                    ->where(['Assets.id' => $asset_id])->first();
+            if($asset) {
+                $data['status'] = 200;
+                $data['asset'] = $asset;
+                $data['img'] = $this->getimglistasset($asset->id);
+            }else{
+                $data['status'] = 400;
             }
         }
 
@@ -778,6 +1122,14 @@ class ApiAssetsController extends AppController {
                 $asset->address_id = $address->id;
             }
             //$this->log($postData,'debug');
+
+            if($postData['type'] == 'ขาย') {
+                $asset->issales = 'Y';
+            }else if($postData['type'] == 'มือสอง') {
+                $asset->isrent = 'Y';
+            }else if($postData['type'] == 'โครงการใหม่') {
+                $asset->isnewproject = 'Y';
+            }
             $asset = $this->Assets->patchEntity($asset, $postData);
             if (is_null($asset->code)) {
                 $code = $this->Sequent->getNextSequent();
@@ -818,10 +1170,12 @@ class ApiAssetsController extends AppController {
                     $asset->startdate = $this->Util->convertDate($postData['startdate']);
                 }
 
-                if (isset($postData['isnewproject']) && $postData['isnewproject'] != '') {
+                if($postData['type'] == 'ขาย') {
+                    $asset->issales = 'Y';
+                }else if($postData['type'] == 'มือสอง') {
+                    $asset->isrent = 'Y';
+                }else if($postData['type'] == 'โครงการใหม่') {
                     $asset->isnewproject = 'Y';
-                } else {
-                    $asset->isnewproject = 'N';
                 }
 
 
@@ -878,6 +1232,7 @@ class ApiAssetsController extends AppController {
     public function asset() {
         $data = ['message' => '', 'status' => 400];
         $id = $this->request->getQuery('id');
+        $ads_detail = [];
         if ($this->request->is(['get', 'ajax'])) {
             $assetid = isset($id) ? $id : '';
 
@@ -891,8 +1246,16 @@ class ApiAssetsController extends AppController {
                     $q->startdate = $q->startdate->i18nFormat(DATE_FORMATE, null);
                 }
 
+                $asset_ads = $this->AssetAds->find()->where(['asset_id' => $assetid])->first();
+                if(sizeof($asset_ads) > 0) {
+                    // $this->log($asset_ads, 'debug');
+                    $user_package = $this->UserPackages->find()->contain(['UserPackageLines'])->where(['UserPackages.id' => $asset_ads->user_package_id])->first();
+                    // $this->log($user_package, 'debug');
+                }
+
                 $data['status'] = 200;
                 $data['detail'] = $q;
+                if(sizeof($asset_ads) > 0) $data['ads_detail'] = $user_package;
             } else {
                 $data['message'] = "Asset id is empty.";
             }
@@ -1104,12 +1467,13 @@ class ApiAssetsController extends AppController {
 
     public function setassetads () {
         $data = ['message' => '', 'status' => 400];
+        $asset_ads = null;
 
         if ($this->request->is(['post', 'ajax'])) {
             $postData = $this->request->getData();
             $asset_ads = $this->AssetAds->newEntity();
             $asset_ads = $this->AssetAds->patchEntity($asset_ads, $postData);
-            $asset_ads->status = 'DR';
+            $asset_ads->status = 'DW';
 
             // $this->log($postData, 'debug');
 

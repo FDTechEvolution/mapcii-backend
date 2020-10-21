@@ -24,6 +24,7 @@ class ApiPaymentsController extends AppController {
         $this->Payments = TableRegistry::get('Payments');
         $this->PaymentLines = TableRegistry::get('payment_lines');
         $this->AssetAds = TableRegistry::get('AssetAds');
+        $this->UserPayments = TableRegistry::get('UserPayments');
     }
 
     public function listpayment() {
@@ -40,7 +41,9 @@ class ApiPaymentsController extends AppController {
                 if (sizeof($payment) > 0) {
                     $newPayment = [];
                     foreach($payment as $index=>$item){
-                        $ads = $this->AssetAds->find()->where(['payment_id' => $item->id])->first();
+                        $ads = $this->AssetAds->find()
+                                ->contain(['Assets'])
+                                ->where(['payment_id' => $item->id])->first();
                         if($ads){
                             $item['ads'] = $ads;
                             array_push($newPayment, $item);
@@ -294,6 +297,33 @@ class ApiPaymentsController extends AppController {
         } else {
             $data['message'] = "incorrect method.";
         }
+        $json = json_encode($data);
+        $this->set(compact('json'));
+    }
+
+    public function userPackagePayment() {
+        $data = ['message' => '', 'status' => 400];
+        if ($this->request->is(['post', 'ajax'])) {
+            $postData = $this->request->getData();
+            $payment = $this->UserPayments->find()->where(['user_package_line_id' => $postData['id']])->first();
+            $payment->documentno = 'PAY_'.date('ymdhsi');
+            $payment->payment_method = 'BANK';
+            $payment->payment_date = date('Y-m-d');
+            if($postData['image_id']['tmp_name'] !=''){
+                $this->loadComponent('UploadImage');
+                $imageId = $this->UploadImage->uploadSlip($postData['image_id']);
+                $payment->image_id = $imageId['image_id'];
+            }
+            $payment->status = 'CK';
+
+            if($this->UserPayments->save($payment)) {
+                $data['status'] = 200;
+                $data['message'] = 'complete.';
+            }
+        } else {
+            $data['message'] = "incorrect method.";
+        }
+
         $json = json_encode($data);
         $this->set(compact('json'));
     }

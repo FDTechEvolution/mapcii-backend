@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
 
 /**
@@ -14,29 +15,38 @@ use Cake\ORM\TableRegistry;
  */
 class PaymentsController extends AppController {
 
-    /**
-     * Index method
-     *
-     * @return \Cake\Http\Response|void
-     */
+    public function beforeFilter(Event $event) {
+        parent::beforeFilter($event);
+
+        $this->UserPayments = TableRegistry::get('user_payments');
+        $this->UserPackageLines = TableRegistry::get('user_package_lines');
+    }
+
     public function index() {
 
-        $docStatusList = $this->Core->getStatusCode();
-        $docStatusPayment = $this->Core->getStatusCodePayment();
-        $notificationPayment = $this->loadComponent('Notification');
+        // $docStatusList = $this->Core->getStatusCode();
+        // $docStatusPayment = $this->Core->getStatusCodePayment();
+        // $notificationPayment = $this->loadComponent('Notification');
 
-        $q = $this->Payments->find()
-                ->contain(['Users', 'Packages'])
-                ->order(['Payments.modified' => 'DESC']);
-        $payments = $q->toArray();
-        $this->set(compact('payments', 'docStatusPayment', 'notificationPayment'));
+        $payments = $this->UserPayments->find('all')
+                    ->contain(['UserPackageLines' => ['UserPackages' => ['Users']], 'Images'])
+                    ->where(['status !=' => 'DR',])
+                    ->order(['user_payments.modified' => 'DESC']);
 
-        $this->PaymentLines = TableRegistry::get('payment_lines');
-        $query = $this->PaymentLines->find()
-                    ->contain(['Payments' => ['Users'], 'FinancialAccounts', 'Images'])
-                    ->order(['payment_lines.created' => 'DESC']);
-        $paymentlines = $query->toArray();
-        $this->set(compact('paymentlines', 'docStatusList'));
+        $this->set(compact('payments'));
+
+        // $q = $this->Payments->find()
+        //         ->contain(['Users', 'Packages'])
+        //         ->order(['Payments.modified' => 'DESC']);
+        // $payments = $q->toArray();
+        // $this->set(compact('payments', 'docStatusPayment', 'notificationPayment'));
+
+        // $this->PaymentLines = TableRegistry::get('payment_lines');
+        // $query = $this->PaymentLines->find()
+        //             ->contain(['Payments' => ['Users'], 'FinancialAccounts', 'Images'])
+        //             ->order(['payment_lines.created' => 'DESC']);
+        // $paymentlines = $query->toArray();
+        // $this->set(compact('paymentlines', 'docStatusList'));
     }
 
     /**
@@ -83,21 +93,32 @@ class PaymentsController extends AppController {
      * @throws \Cake\Network\Exception\NotFoundException When record not found.
      */
     public function edit($id = null) {
-        $payment = $this->Payments->get($id, [
-            'contain' => []
-        ]);
+        // $payment = $this->UserPayments->get($id, [
+        //     'contain' => []
+        // ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
-            $payment = $this->Payments->patchEntity($payment, $this->request->getData());
+            $Date = date('Y-m-d');
+            $payment = $this->UserPayments->get($id);
+            $payment->status = 'CO';
             if ($this->Payments->save($payment)) {
-                $this->Flash->success(__('The payment has been saved.'));
+                $package = $this->UserPackageLines->get($payment->user_package_line_id);
+                $package->paid_date = $Date;
+                $package->start_date = $Date;
+                $package->end_date = date('Y-m-d', strtotime($Date. ' + '. $package->duration .'days'));
+                $package->ispaid = 'Y';
+                if ($this->UserPackageLines->save($package)) {
 
-                return $this->redirect(['action' => 'index']);
+                    $this->Flash->success(__('The payment has been saved.'));
+
+                    return $this->redirect(['action' => 'index']);
+                }
+                $this->Flash->error(__('The payment line could not be saved. Please, try again.'));
             }
             $this->Flash->error(__('The payment could not be saved. Please, try again.'));
         }
-        $users = $this->Payments->Users->find('list', ['limit' => 200]);
-        $financialAccounts = $this->Payments->FinancialAccounts->find('list', ['limit' => 200]);
-        $this->set(compact('payment', 'users', 'financialAccounts'));
+        // $users = $this->Payments->Users->find('list', ['limit' => 200]);
+        // $financialAccounts = $this->Payments->FinancialAccounts->find('list', ['limit' => 200]);
+        // $this->set(compact('payment', 'users', 'financialAccounts'));
     }
 
     /**
@@ -140,6 +161,29 @@ class PaymentsController extends AppController {
         $this->Flash->error(__('The payment line could not be paid. Please, try again.'));
 
         $this->set(compact('payment'));
+    }
+
+    public function paymentconfirm($id = null) {
+        if ($this->request->is(['get'])) {
+            $Date = date('Y-m-d');
+            $payment = $this->UserPayments->find()->where(['id' => $id])->first();
+            $payment->status = 'CO';
+            if ($this->UserPayments->save($payment)) {
+                $package = $this->UserPackageLines->find()->where(['id' => $payment->user_package_line_id])->first();
+                $package->paid_date = $Date;
+                $package->start_date = $Date;
+                $package->end_date = date('Y-m-d', strtotime($Date. ' + '. $package->duration .'days'));
+                $package->ispaid = 'Y';
+                if ($this->UserPackageLines->save($package)) {
+
+                    $this->Flash->success(__('The payment has been saved.'));
+
+                    return $this->redirect(['action' => 'index']);
+                }
+                $this->Flash->error(__('The payment line could not be saved. Please, try again.'));
+            }
+            $this->Flash->error(__('The payment could not be saved. Please, try again.'));
+        }
     }
 
 }

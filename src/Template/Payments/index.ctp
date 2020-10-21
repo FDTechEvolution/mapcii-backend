@@ -6,120 +6,34 @@
 
             <div class="card-body">
                 <div class="row" style="padding: 0 20px; font-weight: 700;">
-                    <div class="col-md-3">Package</div>
-                    <div class="col-md-4">ลูกค้า</div>
-                    <div class="col-md-2 text-center">วันหมดอายุ</div>
+                    <div class="col-md-2"># หมายเลขใบเสร็จ</div>
+                    <div class="col-md-2">ลูกค้า</div>
+                    <div class="col-md-2 text-center">การชำระ</div>
+                    <div class="col-md-2 text-center">วันที่</div>
                     <div class="col-md-2 text-center">สถานะ</div>
-                    <div class="col-md-1"></div>
+                    <div class="col-md-2"></div>
                 </div>
                 <hr>
-                <div id="sidebar-menu" style="padding-top: 0;">
-                    <ul>
-                    <?php foreach ($payments as $index => $payment): ?>
-                    <?php $notice = $notificationPayment->getNoificationPayment($payment->id) ?>
-                    <li class="has_sub <?php if($notice == 1) { ?>notification-alert<?php } ?>" style="margin: 10px 0;">
-                            <a href="javascript:void(0);" class="waves-effect waves-primary left-border">
-                                <div class="row">
-                                    <?php
-                                        $duration = '-';
-                                        if (!is_null($payment->duration)) {
-                                            $duration = $payment->duration->i18nFormat(DATE_FORMATE, null, TH_DATE);
-                                        }
-                                    ?>
-                                    <div class="col-md-3">
-                                        <?= $payment->package->name ?> <br> <span class="payment-second-text">( <?= $payment->package_duration ?> : <?= number_format($payment->package_amount) ?> บาท )</span>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <?= h($payment->user->firstname) ?> <?= h($payment->user->lastname) ?><br>
-                                        <span class="payment-second-text-2">( <?= h($payment->user->email) ?> - <?= h($payment->user->phone) ?> )</span>
-                                    </div>
-                                    <div class="col-md-2 text-center">
-                                        <?= h($duration) ?>
-                                    </div>
-                                    <div class="col-md-2 text-center">
-                                        <span class="badge badge-<?php
-                                        $displaynone = 'text-align: center';
-                                        if ($payment->status == 'CO') {
-                                            echo 'success';
-                                            $displaynone = 'text-align: center;display: none';
-                                        } else if ($payment->status == 'VO') {
-                                            echo 'warning';
-                                            $displaynone = 'text-align: center;display: none';
-                                        } else if ($payment->status == 'EX') {
-                                            echo 'danger';
-                                        } else {
-                                            echo 'secondary';
-                                        }
-                                        ?>">
-                                              <?= h($docStatusPayment[$payment->status]['name']) ?>
-                                        </span>
-                                    </div>
-                                    <div class="col-md-1"><span class="menu-arrow"></span></div>
-                                </div>
-                            </a>
-                            <ul class="list-unstyled" style="padding: 2%; margin-left: 10px; border-left: 1px solid rgb(59, 175, 218); background-color: #fafeff;">
-                                <div class="row" style="padding: 0 20px; font-weight: 700;">
-                                    <div class="col-md-3">เลขที่</div>
-                                    <div class="col-md-4">รายละเอียด</div>
-                                    <div class="col-md-1 text-center">สลิป</div>
-                                    <div class="col-md-2 text-center">สถานะ</div>
-                                    <div class="col-md-1 text-center">ยกเลิก</div>
-                                    <div class="col-md-1 text-center">รับเงิน</div>
-                                </div>
-                                <hr style="border: 1px solid #333;">
-                                <?php foreach ($paymentlines as $index => $paymentline): ?>
-                                <li>
-                                    <?php if ($payment->id == $paymentline->payment_id) { ?>
-                                        <?php
-                                            $date = '';
-                                            if (!is_null($paymentline->payment_date)) {
-                                                $date = $paymentline->payment_date->i18nFormat(DATE_FORMATE, null, TH_DATE);
-                                            }
-                                        ?>
-                                        <div class="row <?php if ($paymentline->status == 'DR') {?> payment-notification <?php } ?>" style="padding: 15px 20px;">
-                                            <div class="col-md-3">
-                                                <?= $paymentline->documentno ?>
-                                            </div>
-                                            <div class="col-md-4" style="line-height: 20px;">
-                                                วันที่ : <?= h($date) ?><br>
-                                                <?= $paymentline->package_name ?> - <?= $paymentline->package_duration ?> : <?= number_format($paymentline->amount) ?> บาท<br>
-                                                <span class="payment-second-text-2"><?= h($paymentline->description) ?></span>
-                                            </div>
-                                            <div class="col-md-1 text-center">
-                                                <button class="g-px-0 g-pt-0 g-pb-2 openImageDialog" type="button" data-toggle="modal" data-target="#modalSlip" data-id="<?= $paymentline->image->url ?>"><i class="fa fa-image g-font-size-20"></i></button>
-                                            </div>
-                                            <div class="col-md-2 text-center">
-                                                <span class="badge badge-<?php
-                                                    $displaynone = 'text-align: center';
-                                                        if ($paymentline->status == 'CO') {
-                                                            echo 'success';
-                                                            $displaynone = 'text-align: center;display: none';
-                                                        } else if ($paymentline->status == 'VO') {
-                                                            echo 'warning';
-                                                            $displaynone = 'text-align: center;display: none';
-                                                        } else {
-                                                            echo 'secondary';
-                                                        }
-                                                    ?>">
-                                                    <?= h($docStatusList[$paymentline->status]['name']) ?>
-                                                </span>
-                                            </div>
-                                            <div class="col-md-1 text-center">
-                                                <?= $this->Form->postLink('<button type="button" class="btn btn-sm btn-danger waves-effect"><i class="fa fa-trash-o" style="margin-right: 3px;"></i></button> ', ['action' => 'delete', $paymentline->id], ['style' => 'padding: 0;', 'confirm' => __('ท่านต้องการยกเลิกรายการชำระเงิน ใช่ หรือ ไม่ '), 'escape' => false]) ?>
-                                            </div>
-                                            <div class="col-md-1 text-center" style="<?= $displaynone ?>">
-                                                <?= $this->Form->postLink('<button type="button" class="btn btn-sm btn-success waves-effect"><i class="fa fa-check" style="margin-right: 3px;"></i></button> ', ['action' => 'approve', $paymentline->id], ['style' => 'padding: 0;', 'escape' => false, 'label' => false]) ?>
-                                            </div>
-                                        </div>
-                                        <hr>
-                                    <?php } ?>
-                                </li>
-                                <?php endforeach; ?>
-                            </ul>
-                        </li>
-                    <?php endforeach; ?>
-                    </ul>
-                </div>
+                <?php foreach ($payments as $index => $payment): ?>
+                    <div class="row" style="padding: 7px 20px;">
+                        <div class="col-md-2"><?= h($index + 1) ?>. <?= h($payment->documentno) ?></div>
+                        <div class="col-md-2"><?= h($payment->user_package_line->user_package->user->firstname) ?> <?= h($payment->user_package_line->user_package->user->lastname) ?></div>
+                        <div class="col-md-2 text-center"><?= h($payment->payment_method) ?> <a href="<?= h($payment->image->url) ?>" target="_blank"><img src="<?= h($payment->image->url) ?>" style="width: 26px; height: 26px; border-radius: 5px;"></a></div>
+                        <div class="col-md-2 text-center"><?= h($payment->modified) ?></div>
+                        <div class="col-md-2 text-center">
+                            <?php 
+                                if($payment->status == 'CK') { ?> <span class="text-warning">รอตรวจสอบ</span> <?php } 
+                                if($payment->status == 'CO') { ?> <span class="text-success">เรียบร้อย</span> <?php }
+                            ?>
+                        </div>
+                        <div class="col-md-2">
+                            <?php if($payment->status == 'CK') { ?>
+                                <?= $this->Html->link(__('<i class="fa fa-check"></i>'), ['action' => 'paymentconfirm', $payment->id], ['class' => 'btn btn-success btn-sm', 'escape' => false]) ?> 
+                                <?= $this->Html->link(__('<i class="fa fa-times"></i>'), ['action' => 'delete', $payment->id], ['class' => 'btn btn-danger btn-sm', 'escape' => false]) ?>
+                            <?php } ?>
+                        </div>
+                    </div>
+                <?php endforeach ?>
             </div>
 
             <div class="modal fade" id="modalSlip" role="dialog">

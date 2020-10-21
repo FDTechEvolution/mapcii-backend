@@ -59,6 +59,17 @@ Router::scope('/', function (RouteBuilder $routes) {
      */
   
 $routes->connect('/', ['controller' => 'home', 'action' => 'index', 'index']);
+$routes->connect('/packages/announce-ad', array('controller' => 'packages', 'action'=> 'announce-ad-index'));
+$routes->connect('/packages/announce-ad/add', array('controller' => 'packages', 'action'=> 'announce-ad-add'));
+$routes->connect('/packages/announce-ad/edit', array('controller' => 'packages', 'action'=> 'announce-ad-edit'));
+
+$routes->connect('/packages/banner-a', array('controller' => 'packages', 'action'=> 'banner-a-index'));
+$routes->connect('/packages/banner-a/add', array('controller' => 'packages', 'action'=> 'banner-a-add'));
+$routes->connect('/packages/banner-a/edit', array('controller' => 'packages', 'action'=> 'banner-a-edit'));
+
+$routes->connect('/packages/banner-b', array('controller' => 'packages', 'action'=> 'banner-b-index'));
+$routes->connect('/packages/banner-b/add', array('controller' => 'packages', 'action'=> 'banner-b-add'));
+$routes->connect('/packages/banner-b/edit', array('controller' => 'packages', 'action'=> 'banner-b-edit'));
     /**
      * Connect catchall routes for all controllers.
      *

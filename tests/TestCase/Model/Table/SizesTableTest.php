@@ -24,7 +24,8 @@ class SizesTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
-        'app.sizes'
+        'app.sizes',
+        'app.packages'
     ];
 
     /**

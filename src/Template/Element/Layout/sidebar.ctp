@@ -42,6 +42,16 @@
                     <a href="<?= SITE_URL . 'packages' ?>" class="waves-effect waves-primary"><i
                             class="ti-package"></i><span> Package </span></a>
                 </li>
+                <li class="has_sub">
+                    <a href="javascript:void(0);" class="waves-effect waves-primary">
+                        <i class="ti-package"></i> <span> Packages </span>
+                        <span class="menu-arrow"></span></a>
+                    <ul class="list-unstyled">
+                        <li><a href="<?= SITE_URL . 'packages/banner-a/' ?>">Banner A</a></li>
+                        <li><a href="<?= SITE_URL . 'packages/banner-b/' ?>">Banner B</a></li>
+                        <li><a href="<?= SITE_URL . 'packages/announce-ad/' ?>">ประกาศ AD</a></li>
+                    </ul>
+                </li>
                 <li>
                     <a href="<?= SITE_URL . 'articles' ?>" class="waves-effect waves-primary"><i
                             class="ti-package"></i><span> บทความ </span></a>

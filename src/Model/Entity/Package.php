@@ -9,21 +9,22 @@ use Cake\ORM\Entity;
  * @property string $id
  * @property string $name
  * @property string $description
- * @property float $monthly_price
- * @property float $quarterly_price
- * @property float $semiannual_price
- * @property float $annual_price
+ * @property float $isprice
+ * @property int $isqty
+ * @property float $proprice
+ * @property int $proqty
  * @property string $showpage
  * @property string $showcase
  * @property string $size_id
- * @property string $position_id
+ * @property string $package_duration_id
  * @property string $package_type_id
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
  * @property string $createdby
  *
  * @property \App\Model\Entity\Size $size
- * @property \App\Model\Entity\Position $position
+ * @property \App\Model\Entity\PackageDuration $package_duration
+ * @property \App\Model\Entity\PackageType $package_type
  * @property \App\Model\Entity\Payment[] $payments
  * @property \App\Model\Entity\UserPackage[] $user_packages
  */
@@ -42,20 +43,21 @@ class Package extends Entity
     protected $_accessible = [
         'name' => true,
         'description' => true,
-        'monthly_price' => true,
-        'quarterly_price' => true,
-        'semiannual_price' => true,
-        'annual_price' => true,
+        'isprice' => true,
+        'isqty' => true,
+        'proprice' => true,
+        'proqty' => true,
         'showpage' => true,
         'showcase' => true,
         'size_id' => true,
-        'position_id' => true,
+        'package_duration_id' => true,
         'package_type_id' => true,
         'created' => true,
         'modified' => true,
         'createdby' => true,
         'size' => true,
-        'position' => true,
+        'package_duration' => true,
+        'package_type' => true,
         'payments' => true,
         'user_packages' => true
     ];

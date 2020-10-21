@@ -1,8 +1,8 @@
 <?php
 namespace App\Model\Entity;
 use Cake\Auth\DefaultPasswordHasher;
-
 use Cake\ORM\Entity;
+// use Cake\Auth;
 
 /**
  * User Entity
@@ -17,6 +17,7 @@ use Cake\ORM\Entity;
  * @property string $email
  * @property string $phone
  * @property string $lineid
+ * @property string $facebook
  * @property string $fax
  * @property string $isactive
  * @property string $isverify
@@ -33,8 +34,13 @@ use Cake\ORM\Entity;
  * @property \Cake\I18n\FrozenDate $locktime
  *
  * @property \App\Model\Entity\Image $image
+ * @property \App\Model\Entity\Access[] $accesses
  * @property \App\Model\Entity\Asset[] $assets
+ * @property \App\Model\Entity\Banner[] $banners
+ * @property \App\Model\Entity\PaymentBackup[] $payment_backups
+ * @property \App\Model\Entity\Payment[] $payments
  * @property \App\Model\Entity\UserAddress[] $user_addresses
+ * @property \App\Model\Entity\UserFavorite[] $user_favorites
  * @property \App\Model\Entity\UserPackage[] $user_packages
  */
 class User extends Entity
@@ -59,6 +65,7 @@ class User extends Entity
         'email' => true,
         'phone' => true,
         'lineid' => true,
+        'facebook' => true,
         'fax' => true,
         'isactive' => true,
         'isverify' => true,
@@ -74,8 +81,13 @@ class User extends Entity
         'issubscription' => true,
         'locktime' => true,
         'image' => true,
+        'accesses' => true,
         'assets' => true,
+        'banners' => true,
+        'payment_backups' => true,
+        'payments' => true,
         'user_addresses' => true,
+        'user_favorites' => true,
         'user_packages' => true
     ];
 
@@ -91,6 +103,4 @@ class User extends Entity
     protected function _setPassword($password) {
         return (new DefaultPasswordHasher)->hash($password);
     }
-
-
 }
