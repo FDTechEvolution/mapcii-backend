@@ -20,6 +20,9 @@ class PaymentsController extends AppController {
 
         $this->UserPayments = TableRegistry::get('user_payments');
         $this->UserPackageLines = TableRegistry::get('user_package_lines');
+        $this->UserPackages = TableRegistry::get('user_packages');
+        $this->Assets = TableRegistry::get('assets');
+        $this->AssetAds = TableRegistry::get('asset_ads');
     }
 
     public function index() {
@@ -30,7 +33,7 @@ class PaymentsController extends AppController {
 
         $payments = $this->UserPayments->find('all')
                     ->contain(['UserPackageLines' => ['UserPackages' => ['Users']], 'Images'])
-                    ->where(['status !=' => 'DR',])
+                    ->where(['user_payments.status !=' => 'DR',])
                     ->order(['user_payments.modified' => 'DESC']);
 
         $this->set(compact('payments'));
@@ -175,14 +178,29 @@ class PaymentsController extends AppController {
                 $package->end_date = date('Y-m-d', strtotime($Date. ' + '. $package->duration .'days'));
                 $package->ispaid = 'Y';
                 if ($this->UserPackageLines->save($package)) {
-
-                    $this->Flash->success(__('The payment has been saved.'));
-
-                    return $this->redirect(['action' => 'index']);
+                    $user_package = $this->UserPackages->find()->where(['id' => $package->user_package_id])->first();
+                    $user_package->isexpire = 'N';
+                    if($this->UserPackages->save($user_package)) {
+                        $this->Flash->success(__('The payment has been saved.'));
+                        $this->restoreAsset($package->user_package_id, $package->duration, $package->start_date, $package->end_date);
+                        return $this->redirect(['action' => 'index']);
+                    }
                 }
                 $this->Flash->error(__('The payment line could not be saved. Please, try again.'));
             }
             $this->Flash->error(__('The payment could not be saved. Please, try again.'));
+        }
+    }
+
+    private function restoreAsset($user_package_id, $publish_day, $start_date, $end_date) {
+        $asset_ads = $this->AssetAds->find()->where(['user_package_id' => $user_package_id])->toArray();
+        foreach ($asset_ads as $ads) {
+            $asset = $this->Assets->get($ads->asset_id);
+            $asset->total_publish_day = $publish_day;
+            $asset->startdate = $start_date;
+            $asset->enddate = $end_date;
+            $asset->status = 'CO';
+            $this->Assets->save($asset);
         }
     }
 

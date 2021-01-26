@@ -26,6 +26,15 @@
         <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
         <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
+        <!-- Vue Charts -->
+        <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js" type="module"></script> -->
+        <!-- <script src="https://unpkg.com/vue-chartjs/dist/vue-chartjs.min.js" type="module"></script> -->
+        <!-- <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script> -->
+
+        <!-- JS Charts -->
+        <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/vue-apexcharts@1.6.0/dist/vue-apexcharts.min.js"></script> -->
+
         <script>
 
             var site_url = '<?= SITE_URL ?>';
@@ -85,6 +94,7 @@
 
         <!-- circliful Chart -->
 
+        <?= ''//$this->Html->script('/assetdist/pages/jquery.charts-sparkline.js'); ?>
         <?= $this->Html->script('/assetdist/plugins/jquery-circliful/js/jquery.circliful.min.js'); ?>
         <?= $this->Html->script('/assetdist/plugins/jquery-sparkline/jquery.sparkline.min.js'); ?>
         <!-- skycons -->

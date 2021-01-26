@@ -6,9 +6,9 @@
 
             <div class="card-body">
                 <div class="row" style="padding: 0 20px; font-weight: 700;">
+                    <div class="col-md-2">รูปแบนเนอร์</div>
                     <div class="col-md-2">Package</div>
                     <div class="col-md-3">ลูกค้า</div>
-                    <div class="col-md-2 text-center">ตำแหน่ง</div>
                     <div class="col-md-2 text-center">วันหมดอายุ</div>
                     <div class="col-md-2 text-center">สถานะ</div>
                     <div class="col-md-1"></div>
@@ -18,24 +18,24 @@
                     <ul>
                     <?php foreach ($banners as $index => $banner): ?>
                     <?php $notice = $notificationBanner->getNoificationBanner($banner->id) ?>
-                    <li class="has_sub <?php if($notice == 1) { ?>notification-alert<?php } ?>" style="margin: 10px 0;">
+                        <li class="has_sub <?php if($notice == 1) { ?>notification-alert<?php } ?>" style="margin: 10px 0;">
                             <a href="javascript:void(0);" class="waves-effect waves-primary left-border">
                                 <div class="row">
                                     <?php
                                         $duration = '-';
-                                        if (!is_null($banner->payment->duration)) {
-                                            $duration = $banner->payment->duration->i18nFormat(DATE_FORMATE, null, TH_DATE);
+                                        if (!is_null($banner->user_package->duration)) {
+                                            $duration = $banner->user_package->duration;
                                         }
                                     ?>
+                                    <div class="col-md-2 text-center">
+                                        <button class="g-px-0 g-pt-0 g-pb-2 openImageDialog" type="button" data-toggle="modal" data-target="#modalSlide" data-id="<?= $banner->image->url ?>"><img class="d-block w-75" style="height: 100px; overflow-y: hidden;" src="<?= $banner->image->url ?>"></button>
+                                    </div>
                                     <div class="col-md-2">
-                                        <?= $banner->payment->package->name ?> <br> <span class="payment-second-text">( <?= $banner->payment->package_duration ?> : <?= number_format($banner->payment->package_amount) ?> บาท )</span>
+                                        <?= $banner->topic ?> <br/> <small class="text-danger">(<?= $banner->user_package->order_code ?> : <?= $banner->user_package->duration ?> วัน)</small>
                                     </div>
                                     <div class="col-md-3">
                                         <?= h($banner->user->firstname) ?> <?= h($banner->user->lastname) ?><br>
                                         <span class="payment-second-text-2">( <?= h($banner->user->email) ?> - <?= h($banner->user->phone) ?> )</span>
-                                    </div>
-                                    <div class="col-md-2 text-center">
-                                        <?= h($banner->position->position) ?>
                                     </div>
                                     <div class="col-md-2 text-center">
                                         <?= h($duration) ?>
@@ -43,19 +43,19 @@
                                     <div class="col-md-2 text-center">
                                         <span class="badge badge-<?php
                                         $displaynone = 'text-align: center';
-                                        if ($banner->payment->status == 'CO') {
+                                        if ($banner->user_package->status == 'CO') {
                                             echo 'success';
                                             $displaynone = 'text-align: center;display: none';
-                                        } else if ($banner->payment->status == 'VO') {
+                                        } else if ($banner->user_package->status == 'VO') {
                                             echo 'warning';
                                             $displaynone = 'text-align: center;display: none';
-                                        } else if ($banner->payment->status == 'EX') {
+                                        } else if ($banner->user_package->status == 'EX') {
                                             echo 'danger';
                                         } else {
                                             echo 'secondary';
                                         }
                                         ?>">
-                                            <?= h($docStatusPayment[$banner->payment->status]['name']) ?>
+                                            <?= h($docStatusPayment[$banner->user_package->status]['name']) ?>
                                         </span>
                                     </div>
                                     <div class="col-md-1"><span class="menu-arrow"></span></div>
@@ -64,29 +64,29 @@
                             <ul class="list-unstyled" style="padding: 2%; margin-left: 10px; border-left: 1px solid rgb(59, 175, 218); background-color: #fafeff;">
                                 <div class="row" style="padding: 0 20px; font-weight: 700;">
                                     <div class="col-md-1">#</div>
-                                    <div class="col-md-5">รูปสไลด์</div>
+                                    <div class="col-md-5">หลักฐาน</div>
                                     <div class="col-md-2 text-center">สถานะ</div>
                                     <div class="col-md-1 text-center">ยกเลิก</div>
                                     <div class="col-md-1 text-center">ตรวจสอบ</div>
                                 </div>
                                 <hr style="border: 1px solid #333;">
-                                <?php foreach ($banner_lines as $index => $bannerline): ?>
+                                <?php foreach ($user_package_lines as $index => $upk_line): ?>
                                 <li>
-                                    <?php if ($banner->id == $bannerline->banner_id) { ?>
-                                        <div class="row <?php if ($bannerline->isactive == 'N') {?> banner-notification <?php } ?>" style="padding: 15px 20px;">
+                                    <?php if ($banner->user_package_id == $upk_line->user_package_id) { ?>
+                                        <div class="row <?php if ($upk_line->isexpire == 'Y') {?> banner-notification <?php } ?>" style="padding: 15px 20px;">
                                             <div class="col-md-1">
                                                 <?= $index + 1 ?>
                                             </div>
                                             <div class="col-md-5">
-                                                <button class="g-px-0 g-pt-0 g-pb-2 openImageDialog" type="button" data-toggle="modal" data-target="#modalSlide" data-id="<?= $bannerline->image->url ?>"><img class="d-block w-75" style="height: 100px; overflow-y: hidden;" src="<?= $bannerline->image->url ?>"></button>
+                                                <button class="g-px-0 g-pt-0 g-pb-2 openImageDialog" type="button" data-toggle="modal" data-target="#modalSlide" data-id="<?= $upk_line->user_payments[0]->image->url ?>"><img class="d-block w-75" src="<?= $upk_line->user_payments[0]->image->url ?>"></button>
                                             </div>
                                             <div class="col-md-2 text-center">
-                                                <?php if($banner->payment->status == 'EX') { 
+                                                <?php if($upk_line->isexpire == 'Y') { 
                                                     $displaynone = 'text-align: center; display: none;';
                                                 ?>
                                                     <span class="badge badge-danger text-center">หมดอายุ</span>
                                                 <?php }else{ ?>
-                                                    <?php if ($bannerline->isactive == 'Y') {
+                                                    <?php if ($upk_line->isexpire == 'N') {
                                                         $displaynone = 'text-align: center; display: none;';
                                                     ?>
                                                         <span class="badge badge-success text-center">เผยแพร่แล้ว</span>
@@ -98,10 +98,10 @@
                                                     } ?>
                                             </div>
                                             <div class="col-md-1 text-center">
-                                                <?= $this->Form->postLink('<button type="button" class="btn btn-sm btn-danger waves-effect"><i class="fa fa-trash-o" style="margin-right: 3px;"></i></button> ', ['action' => 'delete', $bannerline->id], ['style' => 'padding: 0;', 'confirm' => __('ท่านต้องการยกเลิกรายการสไลด์นี้ ใช่ หรือ ไม่ '), 'escape' => false]) ?>
+                                                <?= $this->Form->postLink('<button type="button" class="btn btn-sm btn-danger waves-effect"><i class="fa fa-trash-o" style="margin-right: 3px;"></i></button> ', ['action' => 'delete', $upk_line->id], ['style' => 'padding: 0;', 'confirm' => __('ท่านต้องการยกเลิกรายการสไลด์นี้ ใช่ หรือ ไม่ '), 'escape' => false]) ?>
                                             </div>
                                             <div class="col-md-1 text-center" style="<?= $displaynone ?>">
-                                                <?= $this->Form->postLink('<button type="button" class="btn btn-sm btn-success waves-effect"><i class="fa fa-check" style="margin-right: 3px;"></i></button> ', ['action' => 'approve', $bannerline->id], ['style' => 'padding: 0;', 'escape' => false, 'label' => false]) ?>
+                                                <?= $this->Form->postLink('<button type="button" class="btn btn-sm btn-success waves-effect"><i class="fa fa-check" style="margin-right: 3px;"></i></button> ', ['action' => 'approve', $upk_line->id], ['style' => 'padding: 0;', 'escape' => false, 'label' => false]) ?>
                                             </div>
                                         </div>
                                         <hr>

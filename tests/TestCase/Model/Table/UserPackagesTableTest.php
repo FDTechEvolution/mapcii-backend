@@ -26,7 +26,7 @@ class UserPackagesTableTest extends TestCase
     public $fixtures = [
         'app.user_packages',
         'app.users',
-        'app.package_lines',
+        'app.asset_ads',
         'app.user_package_lines'
     ];
 

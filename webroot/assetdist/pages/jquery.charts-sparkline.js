@@ -30,6 +30,18 @@ $( document ).ready(function() {
                 highlightSpotColor: 'rgba(0,0,0,.2)'
             });
 
+            $('#sparkline1').sparkline([0, 12, 55, 42, 44, 58, 66, 24, 47], {
+                type: 'line',
+                width:'100%',
+                height: '165',
+                chartRangeMax: 50,
+                lineColor: '#dd0000',
+                fillColor: 'rgba(59,175,218,0.3)',
+                composite: true,
+                highlightLineColor: 'rgba(0,0,0,.1)',
+                highlightSpotColor: 'rgba(0,0,0,.2)'
+            });
+
             $('#sparkline2').sparkline([3, 6, 7, 8, 6, 4, 7, 10, 12, 7, 4, 9, 12, 13, 11, 12], {
                 type: 'bar',
                 height: '165',

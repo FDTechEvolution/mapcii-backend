@@ -32,20 +32,121 @@ class AssetsController extends AppController {
 
     public function ads() {
         $this->AssetAds = TableRegistry::get('AssetAds');
-        $this->PaymentLines = TableRegistry::get('PaymentLines');
-        $q = $this->AssetAds->find()
-                ->contain(['Assets' => ['AssetTypes'], 'Payments'])
-                ->order(['AssetAds.id' => 'DESC']);
+        // $this->PaymentLines = TableRegistry::get('PaymentLines');
+        $this->UserPackages = TableRegistry::get('UserPackages');
+        $this->AssetImages = TableRegistry::get('AssetImages');
+        $this->UserPackageLines = TableRegistry::get('UserPackageLines');
+        $this->Banners = TableRegistry::get('Banners');
+        $q = $this->AssetAds->find();
+                $q->select([
+                    'id' => 'Assets.id', 
+                    'code' => 'Assets.code', 
+                    'topic' => 'Assets.name',
+                    'startdate' => 'Assets.startdate', 
+                    'name' => 'Users.firstname', 
+                    'lname' => 'Users.lastname',
+                    'type' => 'AssetTypes.name',
+                    'user_package_id' => 'UserPackages.id',
+                    'order_code' => 'UserPackages.order_code',
+                    'price' => 'Assets.price',
+                    'discount' => 'Assets.discount',
+                    'rental' => 'Assets.rental'
+                ])
+                ->contain(['Assets' => ['AssetTypes', 'Users', 'AssetImages' => ['Images']], 'UserPackages' => ['UserPackageLines' => ['UserPayments']]])
+                ->where(['Assets.status !=' => 'DL'])
+                ->order(['AssetAds.created' => 'DESC']);
         $ads = $q->toArray();
-        $paymentline = [];
+        // $this->log($ads, 'debug');
+        $userpackage = [];
+        $assetImage = [];
         foreach($ads as $ad) {
-            $query = $this->PaymentLines->find()
-                        ->contain(['Images'])
-                        ->where(['PaymentLines.payment_id' => $ad->payment_id])
+            $query = $this->UserPackageLines->find()
+                        ->where(['user_package_id' => $ad->user_package_id])
                         ->last();
-            array_push($paymentline, $query);
+            array_push($userpackage, $query);
+
+            $img = $this->AssetImages->find()
+                        ->contain(['Images'])
+                        ->where(['AssetImages.asset_id' => $ad->id, 'AssetImages.isdefault' => 'Y'])
+                        ->first();
+            array_push($assetImage, $img);
         }
-        $this->set(compact('ads', 'paymentline'));
+        $this->set(compact('ads', 'userpackage', 'assetImage'));
+
+        //Banner Query
+        $b = $this->Banners->find();
+            $b->select([
+                'id' => 'Banners.id',
+                'topic' => 'Banners.topic',
+                'startdate' => 'Banners.created',
+                'name' => 'Users.firstname',
+                'type' => 'Banners.type',
+                'user_package_id' => 'UserPackages.id',
+                'order_code' => 'UserPackages.order_code',
+                'image' => 'Images.url'
+            ])
+            ->contain(['Users', 'Images', 'UserPackages' => ['UserPackageLines']])
+            ->where(['Banners.status !=' => 'DL'])
+            ->order(['Banners.created' => 'DESC']);
+        $banners = $b->toArray();
+        $user_banner_package = [];
+        foreach($banners as $banner) {
+            $query = $this->UserPackageLines->find()
+                        ->where(['user_package_id' => $banner->user_package_id])
+                        ->last();
+            array_push($user_banner_package, $query);
+        }
+        $this->set(compact('banners', 'user_banner_package'));
+    }
+
+    public function freeAssets() {
+        $this->AssetAds = TableRegistry::get('AssetAds');
+        $this->AssetImages = TableRegistry::get('AssetImages');
+        $assets = $this->Assets->find()
+                ->contain(['AssetTypes', 'Users', 'AssetImages' => ['Images']])
+                ->where(['Assets.status !=' => 'DL'])
+                ->order(['Assets.created' => 'DESC'])
+                ->toArray();
+
+        $assetFreeImage = [];
+        $assetFree = [];
+        foreach($assets as $asset) {
+            $ads = $this->AssetAds->find()->where(['asset_id' => $asset->id])->first();
+            if(sizeof($ads) == 0) {
+                array_push($assetFree, $asset);
+            }
+            $img = $this->AssetImages->find()
+                        ->contain(['Images'])
+                        ->where(['AssetImages.asset_id' => $asset->id, 'AssetImages.isdefault' => 'Y'])
+                        ->first();
+            array_push($assetFreeImage, $img);
+        }
+
+        $this->set(compact('assetFree', 'assetFreeImage'));
+    }
+
+    public function unAssetAds() {
+        $this->Assets = TableRegistry::get('Assets');
+        if ($this->request->is('post')) {
+            $postData = $this->request->getData();
+            $asset = $this->Assets->get($postData['ads_id']);
+            $asset->status = 'DL';
+            $this->Assets->save($asset);
+
+            return $this->redirect(['action' => 'ads']);
+        }
+    }
+
+    public function unBannerAds() {
+        $this->Banners = TableRegistry::get('Banners');
+        if ($this->request->is('post')) {
+            $postData = $this->request->getData();
+            $banner = $this->Banners->get($postData['banner_id']);
+            $banner->status = 'DL';
+            $this->Banners->save($banner);
+
+            return $this->redirect(['action' => 'ads']);
+        }
     }
 
     public function adsapprove ($id = null) {

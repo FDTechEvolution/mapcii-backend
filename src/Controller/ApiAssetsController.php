@@ -23,6 +23,13 @@ class ApiAssetsController extends AppController {
     public $AssetImages = null;
     public $AssetAds = null;
 
+    private $Complete = 'CO';
+    private $Expire = 'EX';
+    private $Draft = 'DR';
+    private $Delete = 'DL';
+    private $Y = 'Y';
+    private $N = 'N';
+
     public function beforeFilter(Event $event) {
         parent::beforeFilter($event);
         $this->Auth->allow();
@@ -36,6 +43,7 @@ class ApiAssetsController extends AppController {
         $this->Images = TableRegistry::get('Images');
         $this->UserPackages = TableRegistry::get('UserPackages');
         $this->UserPackageLines = TableRegistry::get('UserPackageLines');
+        $this->UserFavorites = TableRegistry::get('UserFavorites');
 
         $this->Connection = ConnectionManager::get('default');
     }
@@ -317,7 +325,7 @@ class ApiAssetsController extends AppController {
                 $asset->startdate = date('Y-m-d');
                 $asset->up_to_top = date('Y-m-d H:i:s');
                 $asset->status = 'CO';
-                $asset->price = $announce_data->{'price'};
+                $asset->price = ($announce_data->{'price'} != '') ? $announce_data->{'price'} : 0;
                 $asset->discount = $isDiscount;
                 $asset->rental = $announce_data->{'rental'};
                 if($announce_data->{'announce'} == 'ขาย') $asset->issales = 'Y';
@@ -347,7 +355,7 @@ class ApiAssetsController extends AppController {
                         $this->AssetImages->save($assetImage);
                     }
 
-                    if($announce_data->{'project'} != 'มือสอง') {
+                    if($announce_data->{'userpackage'} != '') {
                         $user_package = $this->UserPackages->find()->where(['id' => $announce_data->{'userpackage'}, 'user_id' => $postData['user_id'], 'isexpire' => 'N'])->first();
                         if(sizeof($user_package) > 0) {
                             if($user_package->used < $user_package->credit) {
@@ -545,8 +553,51 @@ class ApiAssetsController extends AppController {
             $postData = $this->request->getData();
 
             $asset = $this->Assets->get($postData['id']);
+            $asset->enddate = date('Y-m-d');
             $asset->status = 'CX';
             if($this->Assets->save($asset)){
+                if($asset->type != 'มือสอง') {
+                    $asset_ad = $this->AssetAds->find()->where(['asset_id' => $asset->id])->first();
+                    $user_package = $this->UserPackages->find()->where(['id' => $asset_ad->user_package_id])->first();
+
+                    $upUsed = $user_package->used - 1;
+                    $user_package->used = $upUsed;
+                    
+                    $this->UserPackages->save($user_package);
+                }
+
+                $data['status'] = 200;
+            }else{
+                $data['status'] = 400;
+            }
+        }
+
+        $json = json_encode($data);
+        $this->set(compact('json'));
+    }
+
+    public function renewAsset() {
+        $data = ['message' => '', 'status' => 400];
+        if ($this->request->is(['post', 'ajax'])) {
+            $postData = $this->request->getData();
+
+            $asset = $this->Assets->get($postData['id']);
+            $asset->status = 'CO';
+            if($asset->type == 'มือสอง') {
+                $asset->total_publish_day = 10;
+                $asset->startdate = date('Y-m-d');
+            }
+            if($this->Assets->save($asset)){
+                if($asset->type != 'มือสอง') {
+                    $asset_ad = $this->AssetAds->find()->where(['asset_id' => $asset->id])->first();
+                    $user_package = $this->UserPackages->find()->where(['id' => $asset_ad->user_package_id])->first();
+
+                    $downUsed = $user_package->used + 1;
+                    $user_package->used = $downUsed;
+                    
+                    $this->UserPackages->save($user_package);
+                }
+
                 $data['status'] = 200;
             }else{
                 $data['status'] = 400;
@@ -564,6 +615,25 @@ class ApiAssetsController extends AppController {
 
             $asset = $this->Assets->get($postData['id']);
             $asset->up_to_top = date('Y-m-d H:i:s');
+            if($this->Assets->save($asset)){
+                $data['status'] = 200;
+            }else{
+                $data['status'] = 400;
+            }
+        }
+
+        $json = json_encode($data);
+        $this->set(compact('json'));
+    }
+
+    public function extendAsset() {
+        $data = ['message' => '', 'status' => 400];
+        if ($this->request->is(['post', 'ajax'])) {
+            $postData = $this->request->getData();
+
+            $asset = $this->Assets->get($postData['id']);
+            $asset->total_publish_day = 30;
+            $asset->startdate = date('Y-m-d');
             if($this->Assets->save($asset)){
                 $data['status'] = 200;
             }else{
@@ -652,10 +722,17 @@ class ApiAssetsController extends AppController {
             $getSubdistrict = $this->request->getQuery('search_sub_district_id');
             $getPriceStart = $this->request->getQuery('price_start');
             $getPriceEnd = $this->request->getQuery('price_end');
+            $getAssetType = $this->request->getQuery('asset_type');
 
             $sales = ($getSale != 'null' && $getSale != '') ? (['Assets.issales' => $getSale]) : '';
             $rent = ($getRent != 'null' && $getRent != '') ? (['Assets.isrent' => $getRent]) : '';
-            $newproject = ($getNewProject != 'null' && $getNewProject != '') ? (['Assets.isnewproject' => $getNewProject]) : '';
+            $saleORrent = '';
+            if($getSale != '' || $getRent != '') {
+                if($getSale == 'Y' && $getRent == 'N') $saleORrent = (['Assets.issales' => 'Y', 'Assets.isrent' => 'N'] AND ['Assets.issales' => 'Y', 'Assets.isrent' => 'Y']);
+                if($getSale == 'N' && $getRent == 'Y') $saleORrent = (['Assets.issales' => 'N', 'Assets.isrent' => 'Y'] AND ['Assets.issales' => 'Y', 'Assets.isrent' => 'Y']);
+                if($getSale == 'Y' && $getRent == 'Y') $saleORrent = (['Assets.issales' => 'Y', 'Assets.isrent' => 'Y'] AND ['Assets.issales' => 'Y', 'Assets.isrent' => 'N'] AND ['Assets.issales' => 'N', 'Assets.isrent' => 'Y']);
+            }
+            // $newproject = ($getNewProject != 'null' && $getNewProject != '') ? (['Assets.isnewproject' => $getNewProject]) : '';
             // $this->log($sales, 'debug');
             // $this->log($newproject, 'debug');
             // $type = ($getType != 'null' && $getType != '') ? (['Assets.asset_type_id' => $getType]) : '';
@@ -665,20 +742,21 @@ class ApiAssetsController extends AppController {
             $subdistrict = ($getSubdistrict != 'null' && $getSubdistrict != '') ? (['Addresses.subdistrict_id' => $getSubdistrict]) : '';
             $pricestart = ($getPriceStart != 'null' && $getPriceStart != '') ? (['Assets.price >=' => $getPriceStart]) : (['Assets.price >=' => '0']);
             $priceend = ($getPriceEnd != 'null' && $getPriceEnd != '') ? (['Assets.price <=' => $getPriceEnd]) : (['Assets.price <=' => '1000000000']);
+            $assetType = ($getAssetType != 'null' && $getAssetType != '') ? (['Assets.type' => $getAssetType]) : '';
 
             // $this->log($type, 'debug');
             // $this->log($district, 'debug');
             $asset_address = $this->Assets->find('all')
                             ->contain(['Addresses' => ['Provinces']])
-                            ->where([$sales, $rent, $newproject, $province, $district, $subdistrict, $pricestart, $priceend])
+                            ->where([$saleORrent, $province, $district, $subdistrict, $pricestart, $priceend, $assetType])
                             ->where([$type])
                             ->toArray();
             // $this->log($asset_address, 'debug');
             if(sizeof($asset_address) > 0) {
                 foreach($asset_address as $asset){
                     $asset_ads = $this->AssetAds->find('all')
-                                ->contain(['Assets' => ['Addresses' => ['Provinces']], 'Payments', 'Positions'])
-                                ->where(['AssetAds.asset_id' => $asset->id, 'Payments.status' => 'CO'])
+                                ->contain(['Assets' => ['Addresses' => ['Provinces']], 'UserPackages'])
+                                ->where(['AssetAds.asset_id' => $asset->id, 'UserPackages.status' => 'CO'])
                                 ->first();
                     if(sizeof($asset_ads) > 0) {
                         array_push($imgAds,$this->getimglistaddress($asset->id));
@@ -726,12 +804,15 @@ class ApiAssetsController extends AppController {
         $getType = [];
         $imgProvince = [];
         $imgDistrict = [];
+        $imgAssets = [];
         if ($this->request->is(['get', 'ajax'])) {
             $getSale = $this->request->getQuery('issales');
             $getRent = $this->request->getQuery('isrent');
-            $getNewProject = $this->request->getQuery('isnewproject');
+            // $getNewProject = $this->request->getQuery('isnewproject');
             $getType = $this->request->getQuery('type');
-            // $this->log($getType, 'debug');
+            $limit = $this->request->getQuery('limit');
+            $getAssetType = $this->request->getQuery('asset_type');
+            // $this->log($getAssetType, 'debug');
             if(isset($getType) && $getType != '') {
                 $array_type = [];
                 $type = '';
@@ -753,7 +834,14 @@ class ApiAssetsController extends AppController {
 
             $sales = ($getSale != 'null' && $getSale != '') ? (['Assets.issales' => $getSale]) : '';
             $rent = ($getRent != 'null' && $getRent != '') ? (['Assets.isrent' => $getRent]) : '';
-            $newproject = ($getNewProject != 'null' && $getNewProject != '') ? (['Assets.isnewproject' => $getNewProject]) : '';
+            $saleORrent = '';
+            if($getSale != '' || $getRent != '') {
+                if($getSale == 'Y' && $getRent == 'N') $saleORrent = (['Assets.issales' => 'Y', 'Assets.isrent' => 'N'] AND ['Assets.issales' => 'Y', 'Assets.isrent' => 'Y']);
+                if($getSale == 'N' && $getRent == 'Y') $saleORrent = (['Assets.issales' => 'N', 'Assets.isrent' => 'Y'] AND ['Assets.issales' => 'Y', 'Assets.isrent' => 'Y']);
+                if($getSale == 'Y' && $getRent == 'Y') $saleORrent = (['Assets.issales' => 'Y', 'Assets.isrent' => 'Y'] AND ['Assets.issales' => 'Y', 'Assets.isrent' => 'N'] AND ['Assets.issales' => 'N', 'Assets.isrent' => 'Y']);
+            }
+            // $this->log($saleORrent, 'debug');
+            // $newproject = ($getNewProject != 'null' && $getNewProject != '') ? (['Assets.isnewproject' => $getNewProject]) : '';
             // $type = ($getType != 'null' && $getType != '') ? (['Assets.asset_type_id' => $getType]) : '';
             // $this->log($type, 'debug');
             // $text = ($getText != '' ? (['Assets.asset_type_id' => $getText]) : '');
@@ -762,27 +850,35 @@ class ApiAssetsController extends AppController {
             $subdistrict = ($getSubdistrict != 'null' && $getSubdistrict != '') ? (['Addresses.subdistrict_id' => $getSubdistrict]) : '';
             $pricestart = ($getPriceStart != 'null' && $getPriceStart != '') ? (['Assets.price >=' => $getPriceStart]) : (['Assets.price >=' => '0']);
             $priceend = ($getPriceEnd != 'null' && $getPriceEnd != '') ? (['Assets.price <=' => $getPriceEnd]) : (['Assets.price <=' => '1000000000']);
+            $assetType = ($getAssetType != 'null' && $getAssetType != '') ? (['Assets.type' => $getAssetType]) : '';
+            // $this->log($assetType, 'debug');
 
             $asset_ads = $this->AssetAds->find('all')
-                            ->contain(['Assets' => ['Addresses'], 'Payments', 'Positions'])
-                            ->order(['AssetAds.modified' => 'DESC'])
-                            ->where([$sales, $rent, $newproject, $province, $district, $subdistrict, $pricestart, $priceend, 'Payments.status' => 'CO'])
+                            ->contain(['Assets' => ['Addresses', 'AssetImages' => ['Images']], 'UserPackages'])
+                            ->order(['Assets.up_to_top' => 'DESC'])
+                            ->where([$saleORrent, $province, $district, $subdistrict, $pricestart, $priceend, $assetType, 'UserPackages.status' => 'CO'])
                             ->where([$type])
-                            ->limit(5)
+                            ->limit($limit)
                             ->toArray();
-            // $this->log($type, 'debug');
             // $this->log($asset_ads, 'debug');
             if(sizeof($asset_ads) > 0) {
-                foreach($asset_ads as $ads){
-                    if($ads->position->position == 'province'){
-                        array_push($provinces, $ads);
-                        array_push($imgProvince, $this->getimglistasset($ads->asset->id));
-                    }else if($ads->position->position == 'district'){
-                        array_push($districts, $ads);
-                        array_push($imgDistrict, $this->getimglistasset($ads->asset->id));
-                    }
+                // foreach($asset_ads as $ads){
+                //     if($ads->position->position == 'province'){
+                //         array_push($provinces, $ads);
+                //         array_push($imgProvince, $this->getimglistasset($ads->asset->id));
+                //     }else if($ads->position->position == 'district'){
+                //         array_push($districts, $ads);
+                //         array_push($imgDistrict, $this->getimglistasset($ads->asset->id));
+                //     }
+                // }
+                foreach ($asset_ads as $asset_ad) {
+                    array_push($imgAssets, $this->getimglistasset($asset_ad->asset_id));
                 }
+
+
                 $data['status'] = 200;
+                $data['asset_ads'] = $asset_ads;
+                $data['asset_ads_img'] = $imgAssets;
                 $data['listprovince'] = $provinces;
                 $data['listdistrict'] = $districts;
                 $data['imgprovince'] = $imgProvince;
@@ -833,7 +929,7 @@ class ApiAssetsController extends AppController {
             if(sizeof($assets) > 0) {
                 foreach($assets as $asset) {
                     if($asset->startdate == $date_now) {
-                        $asset->status = 'CO';
+                        $asset->status = $this->Complete;
                         $this->Assets->save($asset);
                     }
                 }
@@ -872,10 +968,11 @@ class ApiAssetsController extends AppController {
         $districts = [];
         $getType = [];
         $imgAssets = [];
+        $setAssets = [];
         if ($this->request->is(['get', 'ajax'])) {
             $getSale = $this->request->getQuery('issales');
             $getRent = $this->request->getQuery('isrent');
-            $getNewProject = $this->request->getQuery('isnewproject');
+            // $getNewProject = $this->request->getQuery('isnewproject');
             $getType = $this->request->getQuery('type');
             if(isset($getType) && $getType != '') {
                 $array_type = [];
@@ -893,30 +990,48 @@ class ApiAssetsController extends AppController {
             $getSubdistrict = $this->request->getQuery('search_sub_district_id');
             $getPriceStart = $this->request->getQuery('price_start');
             $getPriceEnd = $this->request->getQuery('price_end');
+            $getAssetType = $this->request->getQuery('asset_type');
+            $getFrom = $this->request->getQuery('from');
 
             $sales = ($getSale != 'null' && $getSale != '') ? (['Assets.issales' => $getSale]) : '';
             $rent = ($getRent != 'null' && $getRent != '') ? (['Assets.isrent' => $getRent]) : '';
-            $newproject = ($getNewProject != 'null' && $getNewProject != '') ? (['Assets.isnewproject' => $getNewProject]) : '';
+            $saleORrent = '';
+            if($getSale != '' || $getRent != '') {
+                if($getSale == 'Y' && $getRent == 'N') $saleORrent = (['Assets.issales' => 'Y', 'Assets.isrent' => 'N']);
+                if($getSale == 'N' && $getRent == 'Y') $saleORrent = (['Assets.issales' => 'N', 'Assets.isrent' => 'Y']);
+                if($getSale == 'Y' && $getRent == 'Y') $saleORrent = (['Assets.issales' => 'Y', 'Assets.isrent' => 'Y'] OR ['Assets.issales' => 'Y', 'Assets.isrent' => 'N'] OR ['Assets.issales' => 'N', 'Assets.isrent' => 'Y']);
+            }
+            // $newproject = ($getNewProject != 'null' && $getNewProject != '') ? (['Assets.isnewproject' => $getNewProject]) : '';
             $province = ($getProvince != 'null' && $getProvince != '') ? (['Addresses.province_id' => $getProvince]) : '';
             $district = ($getDistrict != 'null' && $getDistrict != '') ? (['Addresses.district_id' => $getDistrict]) : '';
             $subdistrict = ($getSubdistrict != 'null' && $getSubdistrict != '') ? (['Addresses.subdistrict_id' => $getSubdistrict]) : '';
             $pricestart = ($getPriceStart != 'null' && $getPriceStart != '') ? (['Assets.price >=' => $getPriceStart]) : (['Assets.price >=' => '0']);
             $priceend = ($getPriceEnd != 'null' && $getPriceEnd != '') ? (['Assets.price <=' => $getPriceEnd]) : (['Assets.price <=' => '1000000000']);
+            $assetType = ($getAssetType != 'null' && $getAssetType != '') ? (['Assets.type' => $getAssetType]) : '';
+            $setOrder = (isset($getFrom)) ? (['Assets.created' => 'DESC']) : (['Assets.up_to_top' => 'DESC']);
 
             $assets = $this->Assets->find('all')
-                            ->contain(['Addresses'])
-                            ->order(['Assets.created' => 'DESC'])
-                            ->where([$sales, $rent, $newproject, $province, $district, $subdistrict, $pricestart, $priceend, 'status' => 'CO'])
+                            ->contain(['Addresses', 'AssetAds', 'AssetImages' => ['Images']])
+                            ->order($setOrder)
+                            ->where([$saleORrent, $province, $district, $subdistrict, $pricestart, $priceend, $assetType,'Assets.status' => 'CO'])
                             ->where([$type])
                             ->limit(20)
                             ->toArray();
-                            $this->log($assets, 'debug');
+                            // $this->log($assets, 'debug');
             if(sizeof($assets) > 0) {
                 foreach ($assets as $asset) {
                     array_push($imgAssets, $this->getimglistasset($asset->id));
+                    // $this->log($asset->asset_ads, 'debug');
+                    if(!isset($getFrom)) {
+                        if(!$asset->asset_ads) {
+                            array_push($setAssets, $asset);
+                        }
+                    }else{
+                        array_push($setAssets, $asset);
+                    }
                 }
                 $data['status'] = 200;
-                $data['listasset'] = $assets;
+                $data['listasset'] = $setAssets;
                 $data['imgasset'] = $imgAssets;
             }
         }
@@ -949,7 +1064,6 @@ class ApiAssetsController extends AppController {
         $asset_image = $this->AssetImages->find('all')
                     ->contain(['Images'])
                     ->where(['asset_id' => $asset_id, 'isdefault' => 'Y'])
-                    ->order(['AssetImages.created' => 'DESC'])
                     ->first();
         return $image_url['img_url'] = $asset_image->image->url;
     }
@@ -962,7 +1076,7 @@ class ApiAssetsController extends AppController {
             $user_id = $this->request->getQuery('id');
             $favorite_array = [];
 
-            $favorites = $this->UserFavorites->find('all')->where(['user_id' => $user_id])->toArray();
+            $favorites = $this->UserFavorites->find('all')->where(['user_id' => $user_id, 'isactive' => 'Y'])->toArray();
             if(sizeof($favorites) > 0) {
                 foreach($favorites as $favorite){
                     array_push($favorite_array, $favorite->asset_id);
@@ -1171,11 +1285,11 @@ class ApiAssetsController extends AppController {
                 }
 
                 if($postData['type'] == 'ขาย') {
-                    $asset->issales = 'Y';
+                    $asset->issales = $this->Y;
                 }else if($postData['type'] == 'มือสอง') {
-                    $asset->isrent = 'Y';
+                    $asset->isrent = $this->Y;
                 }else if($postData['type'] == 'โครงการใหม่') {
-                    $asset->isnewproject = 'Y';
+                    $asset->isnewproject = $this->Y;
                 }
 
 
@@ -1397,7 +1511,7 @@ class ApiAssetsController extends AppController {
                 $assetImage = $this->AssetImages->newEntity();
                 $assetImage->asset_id = $asset_id;
                 $assetImage->image_id = $image_id;
-                $assetImage->isdefault = 'N';
+                $assetImage->isdefault = $this->N;
                 $assetImage->seq = 1;
 
                 $this->AssetImages->save($assetImage);
@@ -1419,15 +1533,15 @@ class ApiAssetsController extends AppController {
         $asset_id = $this->request->getQuery('asset_id');
 
         $q = $this->AssetImages->find()
-                ->where(['asset_id' => $asset_id, 'isdefault' => 'Y']);
+                ->where(['asset_id' => $asset_id, 'isdefault' => $this->Y]);
         $assetImages = $q->toArray();
         foreach ($assetImages as $item) {
-            $item->isdefault = 'N';
+            $item->isdefault = $this->N;
             $this->AssetImages->save($item);
         }
 
         $assetImage = $this->AssetImages->get($asset_image_id);
-        $assetImage->isdefault = 'Y';
+        $assetImage->isdefault = $this->Y;
         if ($this->AssetImages->save($assetImage)) {
             $data['status'] = 200;
         }
@@ -1484,6 +1598,29 @@ class ApiAssetsController extends AppController {
                 $data['message'] = 'Asset Ads Saved.';
             } else {
                 $data['message'] = 'Asset Ads Failed.';
+            }
+        }
+
+        $json = json_encode($data);
+        $this->set(compact('json'));
+    }
+
+    public function userFavoriteAsset() {
+        $data = ['message' => '', 'status' => 400];
+        if ($this->request->is(['get', 'ajax'])) {
+            $userID = $this->request->getQuery('user_id');
+
+            $fav = $this->UserFavorites->find()
+                        ->contain(['Assets' => ['AssetImages' => ['Images']]])
+                        ->where(['UserFavorites.user_id' => $userID, 'UserFavorites.isactive' => 'Y'])
+                        ->order(['UserFavorites.modified' => 'ASC'])
+                        ->toArray();
+            if(sizeof($fav) > 0) {
+                $data['status'] = 200;
+                $data['fav'] = $fav;
+            }else{
+                $data['status'] = 201;
+                $data['message'] = 'No Favorite.';
             }
         }
 

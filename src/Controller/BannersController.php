@@ -25,26 +25,26 @@ class BannersController extends AppController
         $notificationBanner = $this->loadComponent('Notification');
 
         $banners = $this->Banners->find()
-                        ->contain(['Users', 'Positions', 'Payments' => ['Packages']])
+                        ->contain(['Users','UserPackages' => ['UserPackageLines' => ['UserPayments']],'Images'])
                         ->order(['Banners.modified' => 'DESC'])
                         ->toArray();
         $this->set(compact('banners', 'docStatusPayment', 'notificationBanner'));
 
-        $this->BannerLines = TableRegistry::get('banner_lines');
-        $q = $this->BannerLines->find()
-                    ->contain(['Banners' => ['Users','Positions','Payments'], 'Images'])
-                    ->order(['banner_lines.created' => 'DESC']);
-        $banner_lines = $q->toArray();
+        $this->UserPackageLines = TableRegistry::get('user_package_lines');
+        $q = $this->UserPackageLines->find()
+                    ->contain(['UserPayments' => ['Images']])
+                    ->order(['user_package_lines.created' => 'DESC']);
+        $user_package_lines = $q->toArray();
 
-        $this->set(compact('banner_lines', 'docStatusList'));
+        $this->set(compact('user_package_lines', 'docStatusList'));
     }
 
     public function bannerExp() {
         $this->BannerLines = TableRegistry::get('banner_lines');
 
         $q = $this->BannerLines->find()
-                    ->contain(['Banners' => ['Users','Positions','Payments'], 'Images'])
-                    ->where(['Payments.status' => 'EX'])
+                    ->contain(['Banners' => ['Users','UserPackages'], 'Images'])
+                    ->where(['UserPackages.status' => 'EX'])
                     ->order(['banner_lines.created' => 'DESC']);
         $banner_lines = $q->toArray();
         $this->set(compact('banner_lines'));

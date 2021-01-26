@@ -21,7 +21,7 @@ class UsersController extends AppController
     public function index()
     {
         $this->paginate = [
-            'contain' => ['Images']
+            'contain' => ['Images', 'UserPackages']
         ];
         $users = $this->paginate($this->Users);
 
@@ -157,5 +157,17 @@ class UsersController extends AppController
         $this->Users->save($user);
 
         return $this->redirect(['action'=>'index']);
+    }
+
+    public function unMember() {
+        if ($this->request->is(['patch', 'post', 'put'])) {
+            $data = $this->request->getData();
+
+            $user = $this->Users->get($data['user_id']);
+            $user->isactive = 'N';
+            $this->Users->save($user);
+        }
+
+        return $this->redirect(['action' => 'index']);
     }
 }

@@ -25,7 +25,8 @@ class UserPackagesFixture extends TestFixture
         'used' => ['type' => 'integer', 'length' => 4, 'unsigned' => false, 'null' => false, 'default' => '0', 'comment' => '', 'precision' => null, 'autoIncrement' => null],
         'start_date' => ['type' => 'date', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
         'end_date' => ['type' => 'date', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
-        'isexpire' => ['type' => 'string', 'length' => null, 'null' => true, 'default' => 'N', 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
+        'isexpire' => ['type' => 'string', 'length' => null, 'null' => true, 'default' => 'Y', 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
+        'status' => ['type' => 'string', 'length' => 2, 'null' => true, 'default' => 'CO', 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'created' => ['type' => 'datetime', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
         'modified' => ['type' => 'datetime', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
         'description' => ['type' => 'string', 'length' => 255, 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
@@ -48,17 +49,18 @@ class UserPackagesFixture extends TestFixture
     {
         $this->records = [
             [
-                'id' => '207fb39b-532a-486d-a6fa-ea633341ec47',
-                'user_id' => '89c25215-fd38-4770-80fd-7a0f86943bea',
+                'id' => '93be0d4c-0d5a-4d96-93d5-15ed50b77c52',
+                'user_id' => '7e11b03a-7b53-4a0c-86ac-9b22dcc4a594',
                 'order_code' => 'Lorem ipsum dolor ',
                 'duration' => 1,
                 'credit' => 1,
                 'used' => 1,
-                'start_date' => '2020-09-29',
-                'end_date' => '2020-09-29',
+                'start_date' => '2020-12-08',
+                'end_date' => '2020-12-08',
                 'isexpire' => 'Lorem ipsum dolor sit amet',
-                'created' => '2020-09-29 06:42:07',
-                'modified' => '2020-09-29 06:42:07',
+                'status' => '',
+                'created' => '2020-12-08 06:33:47',
+                'modified' => '2020-12-08 06:33:47',
                 'description' => 'Lorem ipsum dolor sit amet'
             ],
         ];

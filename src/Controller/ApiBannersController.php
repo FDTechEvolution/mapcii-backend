@@ -23,6 +23,7 @@ class ApiBannersController extends AppController
         $this->Banners = TableRegistry::get('Banners');
         $this->Packages = TableRegistry::get('Packages');
         $this->BannerLines = TableRegistry::get('banner_lines');
+        $this->UserPackages = TableRegistry::get('user_packages');
     }
 
     public function listbanner () {
@@ -91,7 +92,7 @@ class ApiBannersController extends AppController
             $limit = isset($getLimit)?$limit = $getLimit:$limit = 100;
             $style = isset($getStyle) ? $getStyle : '';
             $setpackage = isset($getPackage) ? $getPackage : '';
-            $this->log($setpackage, 'debug');
+            // $this->log($setpackage, 'debug');
             if($setpackage == 'a') {
                 $package = 'Banner A';
             }else if($setpackage == 'b') {
@@ -119,6 +120,41 @@ class ApiBannersController extends AppController
                 $data['message'] = "Payment id is empty.";
             }
         } else {
+            $data['message'] = "incorrect method.";
+        }
+
+        $json = json_encode($data);
+        $this->set(compact('json'));
+    }
+
+    public function loadBannerAd() {
+        $data = ['message' => '', 'status' => 400];
+        if ($this->request->is(['get', 'ajax'])) {
+            $getPackage = $this->request->getQuery('package');
+            $setpackage = isset($getPackage) ? $getPackage : '';
+            // $this->log($setpackage, 'debug');
+            if($setpackage == 'a') $packageType = 'Banner A';
+            if($setpackage == 'b') $packageType = 'Banner B';
+            if($setpackage == 'c') $packageType = 'Banner C';
+
+            $banners = $this->Banners->find('all')
+                        ->contain(['Images'])
+                        ->where(['Banners.status' => 'CO', 'Banners.type' => $packageType])
+                        ->order(['RAND()'])
+                        ->limit(10)
+                        ->toArray();
+            if(sizeof($banners) > 0) {
+                $banner_img = [];
+                foreach ($banners as $banner) {
+                    array_push($banner_img, $banner->image->url);
+                }
+                $data['status'] = 200;
+                $data['bannerlinelist'] = $banner_img;
+                $data['bannertype'] = $packageType;
+            }else{
+                $data['status'] = 404;
+            }
+        }else{
             $data['message'] = "incorrect method.";
         }
 
@@ -206,6 +242,142 @@ class ApiBannersController extends AppController
         } else {
             $data['message'] = 'เกิดข้อผิดพลาด ไม่สามารถลบ Banner ได้!! กรุณาลองใหม่ในภายหลัง...';
         }
+    }
+
+    public function checkCreditBanner () {
+        $data = ['message' => '', 'status' => 400];
+        $this->request->allowMethod(['get', 'ajax']);
+        $user_id = $this->request->getQuery('id');
+
+        $user_package = $this->UserPackages->find()->contain(['UserPackageLines'])->where(['user_id' => $user_id, 'user_packages.credit >' => 'user_packages.used'])->toArray();
+        if(sizeof($user_package) > 0) {
+            $data['status'] = 200;
+            $data['isUserPackage'] = $user_package;
+        }
+
+        $json = json_encode($data);
+        $this->set(compact('json'));
+    }
+
+    public function saveAndUploadBanner() {
+        $data = ['message' => '', 'status' => 400];
+
+        if ($this->request->is(['post', 'ajax'])) {
+            $postData = $this->request->getData();
+
+            $banner = $this->Banners->newEntity();
+            $banner->type = $postData['type'];
+            $banner->user_id = $postData['user_id'];
+            $banner->user_package_id = $postData['package_id'];
+            $banner->topic = $postData['topic'];
+            $banner->description = $postData['description'];
+
+            if($postData['image']['tmp_name'] !=''){
+                $this->loadComponent('UploadImage');
+                $imageId = $this->UploadImage->uploadBanner($postData['image']);
+                if ($imageId) {
+                    $banner->image_id = $imageId['image_id'];
+                } else {
+                    $data['status'] = 400;
+                    $data['message'] = "banner upload error";
+                }
+            }
+
+            if($this->Banners->save($banner)) {
+                $user_package = $this->UserPackages->get($postData['package_id']);
+                $used = $user_package->used + 1;
+                $user_package->used = $used;
+                if($this->UserPackages->save($user_package)) {
+                    $data['status'] = 200;
+                    $data['message'] = 'Complete.';
+                }else{
+                    $data['message'] = 'Error package used update.';
+                }
+            }else{
+                $data['message'] = 'Error banner upload.';
+            }
+
+        }else{
+            $data['message'] = "incorrect method.";
+        }
+
+        $json = json_encode($data);
+        $this->set(compact('json'));
+    }
+
+    public function loadBannerToMyAccount() {
+        $data = ['message' => '', 'status' => 400];
+
+        if ($this->request->is(['get', 'ajax'])) {
+            $user_id = $this->request->getQuery('user');
+            $user_banners = $this->Banners->find()->contain(['Images', 'UserPackages' => ['UserPackageLines']])->where(['Banners.user_id' => $user_id, 'Banners.status' => 'CO'])->toArray();
+            if(sizeof($user_banners) > 0) {
+                $data['status'] = 200;
+                $data['banners'] = $user_banners;
+            }else{
+                $data['status'] = 404;
+                $data['message'] = 'No Data.';
+            }
+        }else{
+            $data['message'] = "incorrect method.";
+        }
+
+        $json = json_encode($data);
+        $this->set(compact('json'));
+    }
+
+    public function updateBannerImage() {
+        $data = ['message' => '', 'status' => 400];
+
+        if($this->request->is(['post', 'ajax'])) {
+            $postData = $this->request->getData();
+
+            $banner = $this->Banners->get($postData['id']);
+            $banner->topic = $postData['topic'];
+            $banner->description = $postData['description'];
+            if($postData['image'] != '') {
+                $this->loadComponent('UploadImage');
+                $imageId = $this->UploadImage->uploadBanner($postData['image']);
+                if ($imageId) {
+                    $banner->image_id = $imageId['image_id'];
+                } else {
+                    $data['status'] = 400;
+                    $data['message'] = "banner image upload error";
+                }
+            }
+
+            if($this->Banners->save($banner)) {
+                $data['status'] = 200;
+            }
+        }
+
+        $json = json_encode($data);
+        $this->set(compact('json'));
+    }
+
+    public function deleteBannerImage() {
+        $data = ['message' => '', 'status' => 400];
+
+        if($this->request->is(['get', 'ajax'])) {
+            $banner = $this->Banners->get($this->request->getQuery('id'));
+            $package = $this->UserPackages->get($banner->user_package_id);
+            $usedNow = $package->used;
+            $banner->status = 'CX';
+            $package->used = $package->used - 1;
+
+            if($this->Banners->save($banner) && $this->UserPackages->save($package)) {
+                $data['status'] = 200;
+            }else{
+                $banner->status = 'CO';
+                $package->used = $usedNow;
+                $this->Banners->save($banner);
+                $this->UserPackages->save($package);
+                $data['message'] = 'Error.';
+            }
+        }
+
+        $json = json_encode($data);
+        $this->set(compact('json'));
     }
 
 }

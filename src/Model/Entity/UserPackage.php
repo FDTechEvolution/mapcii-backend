@@ -15,12 +15,13 @@ use Cake\ORM\Entity;
  * @property \Cake\I18n\FrozenDate $start_date
  * @property \Cake\I18n\FrozenDate $end_date
  * @property string $isexpire
+ * @property string $status
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
  * @property string $description
  *
  * @property \App\Model\Entity\User $user
- * @property \App\Model\Entity\PackageLine $package_line
+ * @property \App\Model\Entity\AssetAd[] $asset_ads
  * @property \App\Model\Entity\UserPackageLine[] $user_package_lines
  */
 class UserPackage extends Entity
@@ -44,11 +45,12 @@ class UserPackage extends Entity
         'start_date' => true,
         'end_date' => true,
         'isexpire' => true,
+        'status' => true,
         'created' => true,
         'modified' => true,
         'description' => true,
         'user' => true,
-        'package_line' => true,
+        'asset_ads' => true,
         'user_package_lines' => true
     ];
 }

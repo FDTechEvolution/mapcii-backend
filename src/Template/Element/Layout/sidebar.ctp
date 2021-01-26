@@ -9,7 +9,16 @@
                 </li>
                 <li>
                     <a href="<?= SITE_URL . 'users' ?>" class="waves-effect waves-primary"><i
-                            class="ti-user"></i><span> สมาชิก </span></a>
+                            class="ti-user"></i><span> จัดการสมาชิก </span></a>
+                </li>
+                <li>
+                    <?=$this->Html->link('<i class="ti-crown"></i> จัดการโฆษณา', ['controller' => 'assets', 'action' => 'ads'], ['class' => 'waves-effect waves-primary', 'escape' => false]) ?>
+                </li>
+                <li>
+                    <?=$this->Html->link('<i class="ti-crown"></i> จัดการประกาศฟรี', ['controller' => 'assets', 'action' => 'free-assets'], ['class' => 'waves-effect waves-primary', 'escape' => false]) ?>
+                </li>
+                <li>
+                    <?=$this->Html->link('<i class="ti-eraser"></i> ประวัติการจัดการ', ['controller' => 'histories'], ['class' => 'waves-effect waves-primary', 'escape' => false]) ?>
                 </li>
                 <li class="has_sub">
                     <a href="javascript:void(0);" class="waves-effect waves-primary"><i class="ti-home"></i> <span> จัดการอสังหา </span>

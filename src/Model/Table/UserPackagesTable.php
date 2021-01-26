@@ -10,6 +10,8 @@ use Cake\Validation\Validator;
  * UserPackages Model
  *
  * @property \App\Model\Table\UsersTable|\Cake\ORM\Association\BelongsTo $Users
+ * @property \App\Model\Table\AssetAdsTable|\Cake\ORM\Association\HasMany $AssetAds
+ * @property |\Cake\ORM\Association\HasMany $Banners
  * @property \App\Model\Table\UserPackageLinesTable|\Cake\ORM\Association\HasMany $UserPackageLines
  *
  * @method \App\Model\Entity\UserPackage get($primaryKey, $options = [])
@@ -45,6 +47,12 @@ class UserPackagesTable extends Table
         $this->belongsTo('Users', [
             'foreignKey' => 'user_id',
             'joinType' => 'INNER'
+        ]);
+        $this->hasMany('AssetAds', [
+            'foreignKey' => 'user_package_id'
+        ]);
+        $this->hasMany('Banners', [
+            'foreignKey' => 'user_package_id'
         ]);
         $this->hasMany('UserPackageLines', [
             'foreignKey' => 'user_package_id'
@@ -95,6 +103,11 @@ class UserPackagesTable extends Table
         $validator
             ->scalar('isexpire')
             ->allowEmpty('isexpire');
+
+        $validator
+            ->scalar('status')
+            ->maxLength('status', 2)
+            ->allowEmpty('status');
 
         $validator
             ->scalar('description')

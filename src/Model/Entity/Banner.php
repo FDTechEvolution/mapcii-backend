@@ -9,18 +9,19 @@ use Cake\ORM\Entity;
  * @property string $id
  * @property string $type
  * @property string $user_id
- * @property string $payment_id
+ * @property string $user_package_id
+ * @property string $topic
  * @property string $description
- * @property string $position_id
+ * @property string $image_id
  * @property string $isapproved
- * @property int $limit
+ * @property string $status
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
  * @property string $createdby
  *
  * @property \App\Model\Entity\User $user
- * @property \App\Model\Entity\Payment $payment
- * @property \App\Model\Entity\Position $position
+ * @property \App\Model\Entity\UserPackage $user_package
+ * @property \App\Model\Entity\Image $image
  * @property \App\Model\Entity\BannerLine[] $banner_lines
  */
 class Banner extends Entity
@@ -38,17 +39,18 @@ class Banner extends Entity
     protected $_accessible = [
         'type' => true,
         'user_id' => true,
-        'payment_id' => true,
+        'user_package_id' => true,
+        'topic' => true,
         'description' => true,
-        'position_id' => true,
+        'image_id' => true,
         'isapproved' => true,
-        'limit' => true,
+        'status' => true,
         'created' => true,
         'modified' => true,
         'createdby' => true,
         'user' => true,
-        'payment' => true,
-        'position' => true,
+        'user_package' => true,
+        'image' => true,
         'banner_lines' => true
     ];
 }

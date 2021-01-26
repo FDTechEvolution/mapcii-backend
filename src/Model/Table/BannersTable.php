@@ -10,8 +10,8 @@ use Cake\Validation\Validator;
  * Banners Model
  *
  * @property \App\Model\Table\UsersTable|\Cake\ORM\Association\BelongsTo $Users
- * @property \App\Model\Table\PaymentsTable|\Cake\ORM\Association\BelongsTo $Payments
- * @property \App\Model\Table\PositionsTable|\Cake\ORM\Association\BelongsTo $Positions
+ * @property \App\Model\Table\UserPackagesTable|\Cake\ORM\Association\BelongsTo $UserPackages
+ * @property \App\Model\Table\ImagesTable|\Cake\ORM\Association\BelongsTo $Images
  * @property \App\Model\Table\BannerLinesTable|\Cake\ORM\Association\HasMany $BannerLines
  *
  * @method \App\Model\Entity\Banner get($primaryKey, $options = [])
@@ -48,12 +48,12 @@ class BannersTable extends Table
             'foreignKey' => 'user_id',
             'joinType' => 'INNER'
         ]);
-        $this->belongsTo('Payments', [
-            'foreignKey' => 'payment_id',
+        $this->belongsTo('UserPackages', [
+            'foreignKey' => 'user_package_id',
             'joinType' => 'INNER'
         ]);
-        $this->belongsTo('Positions', [
-            'foreignKey' => 'position_id',
+        $this->belongsTo('Images', [
+            'foreignKey' => 'image_id',
             'joinType' => 'INNER'
         ]);
         $this->hasMany('BannerLines', [
@@ -75,8 +75,15 @@ class BannersTable extends Table
 
         $validator
             ->scalar('type')
+            ->maxLength('type', 10)
             ->requirePresence('type', 'create')
             ->notEmpty('type');
+
+        $validator
+            ->scalar('topic')
+            ->maxLength('topic', 255)
+            ->requirePresence('topic', 'create')
+            ->notEmpty('topic');
 
         $validator
             ->scalar('description')
@@ -88,8 +95,9 @@ class BannersTable extends Table
             ->allowEmpty('isapproved');
 
         $validator
-            ->integer('limit')
-            ->allowEmpty('limit');
+            ->scalar('status')
+            ->maxLength('status', 2)
+            ->allowEmpty('status');
 
         $validator
             ->uuid('createdby')
@@ -108,8 +116,8 @@ class BannersTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['user_id'], 'Users'));
-        $rules->add($rules->existsIn(['payment_id'], 'Payments'));
-        $rules->add($rules->existsIn(['position_id'], 'Positions'));
+        $rules->add($rules->existsIn(['user_package_id'], 'UserPackages'));
+        $rules->add($rules->existsIn(['image_id'], 'Images'));
 
         return $rules;
     }

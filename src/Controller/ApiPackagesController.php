@@ -15,6 +15,12 @@ use Cake\ORM\TableRegistry;
 class ApiPackagesController extends AppController {
 
     public $Packages = null;
+    private $Complete = 'CO';
+    private $Expire = 'EX';
+    private $Draft = 'DR';
+    private $Delete = 'DL';
+    private $Y = 'Y';
+    private $N = 'N';
 
     public function beforeFilter(Event $event) {
         parent::beforeFilter($event);
@@ -98,7 +104,7 @@ class ApiPackagesController extends AppController {
         if ($this->request->is(['get', 'ajax'])) {
             $packages = $this->UserPackages->find()
                         ->contain(['UserPackageLines' => ['PackageLines' => ['Packages']]])
-                        ->where(['UserPackages.user_id' => $id])
+                        ->where(['UserPackages.user_id' => $id, 'UserPackages.status' => $this->Complete])
                         ->toArray();
             if(sizeof($packages) > 0) {
                 $data['status'] = 200;
@@ -258,7 +264,8 @@ class ApiPackagesController extends AppController {
                 $Date = date('Y-m-d');
                 $package = json_decode($postData['package']);
                 $credit = $this->PackageLines->find()->contain(['Packages', 'PackageDurations'])->where(['PackageLines.id' => $package->{'ads_package'}])->first();
-                $size = $this->Sizes->find()->where(['id' => $package->{'size'}])->first();
+                $size = (isset($package->{'size'})) ? $this->Sizes->find()->where(['id' => $package->{'size'}])->first() : '';
+                $this->log($size, 'debug');
                 if($package->{'ads_operate'} == 'buy'){
                     $user_package = $this->UserPackages->newEntity();
                     $user_package->user_id = $package->{'uid'};
@@ -272,7 +279,7 @@ class ApiPackagesController extends AppController {
                         $package_line->user_package_id = $user_package->id;
                         $package_line->package_line_id = $package->{'ads_package'};
                         $package_line->package_name = $credit->package->name;
-                        $package_line->size = $size->name;
+                        $package_line->size = ($size != '') ? $size->name : null;
                         $package_line->order_code = 'ADS_'.date('ymdhsi');
                         $package_line->price = $package->{'price'};
                         $package_line->credit = ($credit->procredit != '') ? $credit->procredit : $credit->iscredit;
@@ -328,6 +335,107 @@ class ApiPackagesController extends AppController {
 
         $json = json_encode($data);
         $this->set(compact('json'));
+    }
+
+    public function saveUserRenewPackage() {
+        $data = ['message' => '', 'status' => 400];
+        $Date = date('Y-m-d');
+
+        if($this->request->is('post','ajax')) {
+            $postData = $this->request->getData();
+            $user_package = $this->UserPackages->get($postData['user_package_id']);
+            $duration = $this->PackageDurations->get($postData['duration_id']);
+            $package_line = $this->PackageLines->find()->contain(['Packages'])->where(['PackageLines.id' => $postData['package_line_id']])->first();
+            $size = ($postData['size_id'] != '') ? $this->Sizes->get($postData['size_id']) : NULL;
+
+            $user_package_line = $this->UserPackageLines->newEntity();
+            $user_package_line->user_package_id = $postData['user_package_id'];
+            $user_package_line->package_line_id = $postData['package_line_id'];
+            $user_package_line->package_name = $package_line->package->name;
+            $user_package_line->size = ($size != NULL) ? $size->name : NULL;
+            $user_package_line->order_code = 'ADS_'.date('ymdhsi');
+            $user_package_line->price = ($package_line->proprice != '') ? $package_line->proprice : $package_line->isprice;
+            $user_package_line->credit = ($package_line->proprice != '') ? $package_line->procredit : $package_line->iscredit;
+            $user_package_line->buy_date = $Date;
+            $user_package_line->duration_name = $duration->duration_name;
+            $user_package_line->duration = $duration->duration_exp;
+
+            if($this->UserPackageLines->save($user_package_line)) {
+                $payment = $this->UserPayments->newEntity();
+                $payment->user_package_line_id = $user_package_line->id;
+
+                if($this->UserPayments->save($payment)){
+                    $data['status'] = 200;
+                    $data['message'] = 'complete';
+                }else{
+                    $data['message'] = 'error save user payment';
+                }
+            }else{
+                $data['message'] = 'failed.';
+            }
+        }
+
+        $json = json_encode($data);
+        $this->set(compact('json'));
+    }
+
+    public function closePackageBalance() {
+        $data = ['message' => '', 'status' => 400];
+        if($this->request->is('get', 'ajax')) {
+            $id = $this->request->getQuery('id');
+            $user_package = $this->UserPackages->get($id);
+            $user_package->status = $this->Delete;
+
+            if($this->UserPackages->save($user_package)) {
+                $data['status'] = 200;
+            }
+        }
+
+        $json = json_encode($data);
+        $this->set(compact('json'));
+    }
+
+    public function checkPackageLineDueDate() {
+        if($this->request->is('get', 'ajax')) {
+            $date_now = date_create(date('Y-m-d'));
+            $user_package_line = $this->UserPackageLines->find('all')->where(['isexpire' => 'N'])->toArray();
+            if(sizeof($user_package_line) > 0) {
+                foreach ($user_package_line as $u_pack_ln) {
+                    $startdate = date_create(date_format($u_pack_ln->start_date, "Y-m-d"));
+                    $date_plus = date_add($startdate,date_interval_create_from_date_string($u_pack_ln->duration." days"));
+                    $duedate = date_create(date_format($date_plus,"Y-m-d"));
+                    $diff = date_diff($date_now,$duedate);
+                    $set_diff = $diff->format("%R%a");
+                    if($set_diff < 0) {
+                        $u_pack_ln->isexpire = $this->Y;
+                        $this->UserPackageLines->save($u_pack_ln);
+                        $this->checkPackageDueDate($u_pack_ln->user_package_id);
+                    }
+                }
+            }
+        }
+    }
+
+    private function checkPackageDueDate($u_pack_id) {
+        $user_package = $this->UserPackages->find()->where(['id' => $u_pack_id])->first();
+        if($user_package->isexpire == $this->N) {
+            $user_package->isexpire = $this->Y;
+            $user_package->status = $this->Expire;
+            if($this->UserPackages->save($user_package)) {
+                $this->checkAssetDuedate($user_package->id);
+            }
+        }
+    }
+
+    private function checkAssetDuedate($user_package_id) {
+        $asset_ads = $this->AssetAds->find()->where(['user_package_id' => $user_package_id])->first();
+        $assets = $this->Assets->get($asset_ads->asset_id);
+        if(sizeof($assets) > 0) {
+            foreach ($assets as $asset) {
+                $asset->status = $this->Expire;
+                $this->Assets->save($asset);
+            }
+        }
     }
 
 }

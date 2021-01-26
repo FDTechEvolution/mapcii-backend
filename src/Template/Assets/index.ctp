@@ -1,4 +1,3 @@
-
 <?= $this->element('Lib/data_table') ?>
 <div class="row">
     <div class="col-lg-12">

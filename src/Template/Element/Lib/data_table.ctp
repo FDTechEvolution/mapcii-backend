@@ -27,12 +27,12 @@
 
 
 <script type="text/javascript">
-    $(document).ready(function () {
-        $('#datatable').DataTable({
-            "lengthChange": true
-        });
+    // $(document).ready(function () {
+    //     $('#datatable').DataTable({
+    //         "lengthChange": true
+    //     });
 
 
-    });
+    // });
 
 </script>
