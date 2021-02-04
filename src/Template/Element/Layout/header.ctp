@@ -38,7 +38,7 @@
 
 
                         <!-- item-->
-                        <?= $this->Html->link('<i class=" fa fa-key "></i>  <span>Change Password</span>', ['controller' => 'users', 'action' => 'changepassword', $userid],['class' => 'dropdown-item notify-item', 'escape' => false]) ?>
+                        <?= ''//$this->Html->link('<i class=" fa fa-key "></i>  <span>Change Password</span>', ['controller' => 'users', 'action' => 'changepassword', $userid],['class' => 'dropdown-item notify-item', 'escape' => false]) ?>
                         <?= $this->Html->link('<i class="mdi mdi-logout"></i> <span>Logout</span>', ['controller' => 'logout'], ['class' => 'dropdown-item notify-item', 'escape' => false]) ?>
                     </div>
                 </li>

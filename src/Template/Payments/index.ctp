@@ -1,4 +1,4 @@
-<?= $this->element('Lib/data_table') ?>
+<?= ''//$this->element('Lib/data_table') ?>
 <div class="row">
     <div class="col-lg-12">
         <div class="card m-b-20 card-body">
@@ -8,7 +8,8 @@
                 <div class="row" style="padding: 0 20px; font-weight: 700;">
                     <div class="col-md-2"># หมายเลขใบเสร็จ</div>
                     <div class="col-md-2">ลูกค้า</div>
-                    <div class="col-md-2 text-center">การชำระ</div>
+                    <div class="col-md-1 text-center">รูปแบบ</div>
+                    <div class="col-md-1 text-center">หลักฐาน</div>
                     <div class="col-md-2 text-center">วันที่</div>
                     <div class="col-md-2 text-center">สถานะ</div>
                     <div class="col-md-2"></div>
@@ -18,7 +19,12 @@
                     <div class="row" style="padding: 7px 20px;">
                         <div class="col-md-2"><?= h($index + 1) ?>. <?= h($payment->documentno) ?></div>
                         <div class="col-md-2"><?= h($payment->user_package_line->user_package->user->firstname) ?> <?= h($payment->user_package_line->user_package->user->lastname) ?></div>
-                        <div class="col-md-2 text-center"><?= h($payment->payment_method) ?> <a href="<?= h($payment->image->url) ?>" target="_blank"><img src="<?= h($payment->image->url) ?>" style="width: 26px; height: 26px; border-radius: 5px;"></a></div>
+                        <div class="col-md-1 text-center"><?= h($payment->payment_method) ?></div>
+                        <div class="col-md-1 text-center">
+                            <button class="openImageDialog" type="button" data-toggle="modal" data-target="#modalSlip" data-id="<?= h($payment->image->url) ?>">
+                                <img src="<?= h($payment->image->url) ?>" style="width: 26px; height: 26px; border-radius: 5px;">
+                            </button>
+                        </div>
                         <div class="col-md-2 text-center"><?= h($payment->modified) ?></div>
                         <div class="col-md-2 text-center">
                             <?php 
@@ -89,35 +95,19 @@
         position: absolute;
         z-index: 99;
     }
+    .openImageDialog {
+        display: contents;
+        cursor: pointer;
+    }
 </style>
 
-<script>
-    let paymentlines = new Vue ({
-        data () {
-            return {
-
-            }
-        },
-        methods: {
-            loadpaymentline: function (id) {
-                axios.get(site_url + 'payments/paymentline?id=' + id)
-                .then((response) => {
-                    console.log(response)
-                })
-                .catch(e => {
-                    console.log(e)
-                })
-            }
-        }
-    })
-</script>
 
 <script>
     $(document).ready(function () {
         $("input[name = 'isactive']").change(function () {
             var id = $(this).attr('id');
             $.get(site_url + "banners/saveactive/", {id: id}).done(function (_data) {
-                console.log(_data);
+                // console.log(_data);
                 alert(_data);
             });
         });

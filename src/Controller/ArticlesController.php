@@ -24,6 +24,16 @@ class ArticlesController extends AppController {
         $this->set(compact('articles'));
     }
 
+    public function articleIndex() {
+        $articles = $this->Articles->find()
+                    ->contain(['Images', 'Users'])
+                    ->where(['Articles.isactive' => 'Y'])
+                    ->order(['Articles.created' => 'DESC'])
+                    ->toArray();
+
+        $this->set(compact('articles'));
+    }
+
     /**
      * View method
      *
@@ -47,15 +57,39 @@ class ArticlesController extends AppController {
     public function add() {
         $article = $this->Articles->newEntity();
         if ($this->request->is('post')) {
-            $article = $this->Articles->patchEntity($article, $this->request->getData());
+            $postData = $this->request->getData();
+
+            $article = $this->Articles->patchEntity($article, $postData);
+            $article->user_id = $this->request->getSession()->read('Auth.User.id');
+            $article->title = $postData['topic'];
+
+            if($postData['image_file']['tmp_name'] !=''){
+                $this->loadComponent('UploadImage');
+                $imageId = $this->UploadImage->upload($postData['image_file'],740,380,'article');
+                $article->image_id = $imageId['image_id'];
+            }
+
+            $article->isactive = 'Y';
             if ($this->Articles->save($article)) {
                 $this->Flash->success(__('The article has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
+                return $this->redirect(['action' => 'article-index']);
             }
             $this->Flash->error(__('The article could not be saved. Please, try again.'));
         }
         $this->set(compact('article'));
+    }
+
+    public function unArticle() {
+        if ($this->request->is('post')) {
+            $article = $this->Articles->get($this->request->getData('article_id'));
+            $article->isactive = 'N';
+            if($this->Articles->save($article)) {
+                $this->Flash->success(__('The article has been deleted.'));
+                return $this->redirect(['action' => 'article-index']);
+            }
+            $this->Flash->error(__('The article could not be deleted. Please, try again.'));
+        }
     }
 
     /**
@@ -65,16 +99,17 @@ class ArticlesController extends AppController {
      * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Network\Exception\NotFoundException When record not found.
      */
-    public function edit($id = null) {
-        $article = $this->Articles->get($id, [
+    public function edit() {
+        $postData = $this->request->getData();
+        $article = $this->Articles->get($postData['article_id'], [
             'contain' => ['Images']
         ]);
-        $this->log($article,'debug');
+        // $this->log($article,'debug');
         if ($this->request->is(['patch', 'post', 'put'])) {
-            $postData = $this->request->getData();
             $article = $this->Articles->patchEntity($article,$postData );
-            
-            //$this->log($postData,'debug');
+            $article->user_id = $this->request->getSession()->read('Auth.User.id');
+            $article->title = $postData['topic'];
+
             if($postData['image_file']['tmp_name'] !=''){
                 $this->loadComponent('UploadImage');
                 $imageId = $this->UploadImage->upload($postData['image_file'],740,380,'article');
@@ -82,11 +117,10 @@ class ArticlesController extends AppController {
                 $article->image_id = $imageId['image_id'];
             }
             
-            
             if ($this->Articles->save($article)) {
                 $this->Flash->success(__('The article has been saved.'));
 
-                return $this->redirect(['action' => 'edit',$id]);
+                return $this->redirect(['action' => 'article-index']);
             }
             $this->Flash->error(__('The article could not be saved. Please, try again.'));
         }

@@ -103,6 +103,11 @@ class BannersTable extends Table
             ->uuid('createdby')
             ->allowEmpty('createdby');
 
+        $validator
+            ->scalar('reason_del')
+            ->maxLength('reason_del', 255)
+            ->allowEmpty('reason_del');
+
         return $validator;
     }
 

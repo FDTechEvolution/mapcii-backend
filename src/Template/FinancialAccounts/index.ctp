@@ -1,4 +1,4 @@
-<?= $this->element('Lib/data_table') ?>
+<?= ''//$this->element('Lib/data_table') ?>
 <div id="financial" class="row">
     <div class="col-lg-12">
         <div class="card m-b-20 ">

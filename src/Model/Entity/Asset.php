@@ -42,6 +42,7 @@ use Cake\ORM\Entity;
  * @property string $isnewproject
  * @property string $issales
  * @property string $isrent
+ * @property string $reason_del
  *
  * @property \App\Model\Entity\AssetType $asset_type
  * @property \App\Model\Entity\User $user
@@ -100,6 +101,7 @@ class Asset extends Entity
         'isnewproject' => true,
         'issales' => true,
         'isrent' => true,
+        'reason_del' => true,
         'asset_type' => true,
         'user' => true,
         'address' => true,

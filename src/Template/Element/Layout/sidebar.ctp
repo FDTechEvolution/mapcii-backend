@@ -3,9 +3,15 @@
         <!--- Divider -->
         <div id="sidebar-menu">
             <ul>
-                <li>
+                <!-- <li>
                     <a href="<?= SITE_URL . 'home' ?>" class="waves-effect waves-primary"><i
                             class="ti-home"></i><span> Dashboard </span></a>
+                </li> -->
+                <li>
+                    <?=$this->Html->link('<i class="ti-dashboard"></i> สถิติ', ['controller' => 'Home'], ['class' => 'waves-effect waves-primary', 'escape' => false]) ?>
+                </li>
+                <li>
+                    <?=$this->Html->link('<i class="ti-id-badge"></i> ข้อมูลส่วนตัว', ['controller' => 'Users', 'action' => 'personal'], ['class' => 'waves-effect waves-primary', 'escape' => false]) ?>
                 </li>
                 <li>
                     <a href="<?= SITE_URL . 'users' ?>" class="waves-effect waves-primary"><i
@@ -15,12 +21,21 @@
                     <?=$this->Html->link('<i class="ti-crown"></i> จัดการโฆษณา', ['controller' => 'assets', 'action' => 'ads'], ['class' => 'waves-effect waves-primary', 'escape' => false]) ?>
                 </li>
                 <li>
-                    <?=$this->Html->link('<i class="ti-crown"></i> จัดการประกาศฟรี', ['controller' => 'assets', 'action' => 'free-assets'], ['class' => 'waves-effect waves-primary', 'escape' => false]) ?>
+                    <?=$this->Html->link('<i class="ti-announcement"></i> จัดการประกาศฟรี', ['controller' => 'assets', 'action' => 'free-assets'], ['class' => 'waves-effect waves-primary', 'escape' => false]) ?>
+                </li>
+                <li>
+                    <?=$this->Html->link('<i class="ti-write"></i> จัดการบทความ/ข่าว', ['controller' => 'articles', 'action' => 'article-index'], ['class' => 'waves-effect waves-primary', 'escape' => false]) ?>
+                </li>
+                <li>
+                    <?=$this->Html->link('<i class="ti-comments"></i> จัดการถาม/ตอบ', ['controller' => 'messages', 'action' => 'contact'], ['class' => 'waves-effect waves-primary', 'escape' => false]) ?>
+                </li>
+                <li>
+                    <?=$this->Html->link('<i class="ti-comment-alt"></i> จัดการรีวิว', ['controller' => 'messages', 'action' => 'review'], ['class' => 'waves-effect waves-primary', 'escape' => false]) ?>
                 </li>
                 <li>
                     <?=$this->Html->link('<i class="ti-eraser"></i> ประวัติการจัดการ', ['controller' => 'histories'], ['class' => 'waves-effect waves-primary', 'escape' => false]) ?>
                 </li>
-                <li class="has_sub">
+                <!-- <li class="has_sub">
                     <a href="javascript:void(0);" class="waves-effect waves-primary"><i class="ti-home"></i> <span> จัดการอสังหา </span>
                         <span class="menu-arrow"></span></a>
                     <ul class="list-unstyled">
@@ -37,9 +52,9 @@
                     <ul class="list-unstyled">
                         <li><a href="<?= SITE_URL . 'banners' ?>">Banner ทั้งหมด</a></li>
                     </ul>
-                </li>
+                </li> -->
                 <li class="has_sub">
-                    <a href="javascript:void(0);" class="waves-effect waves-primary"><i class="ti-receipt"></i> <span> Invoice/Payment </span>
+                    <a href="javascript:void(0);" class="waves-effect waves-primary"><i class="ti-receipt"></i> <span> จัดการการชำระเงิน </span>
                         <span class="menu-arrow"></span></a>
                     <ul class="list-unstyled">
                         
@@ -47,7 +62,7 @@
                         <li><a href="<?= SITE_URL . 'financial-accounts' ?>">วิธีการชำระเงิน</a></li>
                     </ul>
                 </li>
-                <li>
+                <!-- <li>
                     <a href="<?= SITE_URL . 'packages' ?>" class="waves-effect waves-primary"><i
                             class="ti-package"></i><span> Package </span></a>
                 </li>
@@ -64,14 +79,17 @@
                 <li>
                     <a href="<?= SITE_URL . 'articles' ?>" class="waves-effect waves-primary"><i
                             class="ti-package"></i><span> บทความ </span></a>
-                </li>
+                </li> -->
                 <li>
                     <a href="#" class="waves-effect waves-primary"><i
                             class="ti-settings"></i><span> ตั้งค่าระบบ </span></a>
                 </li>
-                <li>
+                <!-- <li>
                     <a href="<?= SITE_URL . 'email-settings' ?>" class="waves-effect waves-primary"><i
                             class="ti-layout-cta-btn-right"></i><span> Email </span></a>
+                </li> -->
+                <li>
+                    <?= $this->Html->link('<i class="mdi mdi-logout"></i> ออกจากระบบ', ['controller' => 'logout'], ['class' => 'dropdown-item notify-item', 'escape' => false]) ?>
                 </li>
 
             </ul>
@@ -81,3 +99,9 @@
         <div class="clearfix"></div>
     </div>
 </div>
+
+<style scope>
+    #sidebar-menu > ul > li > a {
+        padding: 10px 20px;
+    }
+</style>

@@ -9,6 +9,7 @@ use Cake\ORM\Entity;
  * @property string $id
  * @property string $type
  * @property string $msg
+ * @property string $answer
  * @property string $status
  * @property string $to
  * @property string $to_user
@@ -34,6 +35,7 @@ class Message extends Entity
     protected $_accessible = [
         'type' => true,
         'msg' => true,
+        'answer' => true,
         'status' => true,
         'to' => true,
         'to_user' => true,

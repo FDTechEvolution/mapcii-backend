@@ -1,5 +1,5 @@
 
-<?= $this->element('Lib/data_table') ?>
+<?= ''//$this->element('Lib/data_table') ?>
 <div class="row">
     <div class="col-lg-12">
         <div class="card m-b-20 card-body">
@@ -169,8 +169,8 @@
                 <h4 id="assetAdsContent"></h4>
                 <hr class="mt-4 mb-2"/>
                 <div class="form-group">
-                  <label for="del_reason"><strong>เหตุผลในการยกเลิก <span class="text-danger">*</span></strong></label>
-                  <input type="text" name="del_reason" id="del_reason" class="form-control" placeholder="โปรดระบุสาเหตุ">
+                  <label for="reason_del"><strong>เหตุผลในการยกเลิก <span class="text-danger">*</span></strong></label>
+                  <input type="text" name="reason_del" id="reason_del" class="form-control" placeholder="โปรดระบุสาเหตุ" required>
                   <small class="float-right text-warning">สาเหตุในการยกเลิกจะถูกส่งไปเพื่อแจ้งแก่ผู้ลงโฆษณา...</small>
                 </div>
                 <input type="hidden" name="ads_id" id="ads_id">
@@ -188,15 +188,15 @@
 <!-- DELETE BANNER ---------------------------------->
 <div class="modal fade" id="unBannerAdsModal" role="dialog">
     <div class="modal-dialog modal-banner">
-    <?= $this->Form->create('block', ['url'=>['controller'=>'Assets', 'action'=>'un-banner-ads'], 'class' => 'form-horizontal', 'role' => 'form', 'id' => 'frm_block', 'onsubmit' => 'return reasonToDelete()']) ?>
+    <?= $this->Form->create('block', ['url'=>['controller'=>'Assets', 'action'=>'un-banner-ads'], 'class' => 'form-horizontal', 'role' => 'form', 'id' => 'frm_un_banner', 'onsubmit' => 'return reasonToDeleteBanner()']) ?>
         <div class="modal-content">
             <div class="modal-body text-center">
                 <h5 id="bannerAdsContent"></h5>
                 <img src="" id="bannerImage" class="w-100">
                 <hr class="mt-4 mb-2"/>
                 <div class="form-group">
-                  <label for="del_reason"><strong>เหตุผลในการยกเลิก <span class="text-danger">*</span></strong></label>
-                  <input type="text" name="del_reason" id="del_reason" class="form-control" placeholder="โปรดระบุสาเหตุ">
+                  <label for="reason_del"><strong>เหตุผลในการยกเลิก <span class="text-danger">*</span></strong></label>
+                  <input type="text" name="reason_del" id="reason_del" class="form-control" placeholder="โปรดระบุสาเหตุ" required>
                   <small class="float-right text-warning">สาเหตุในการยกเลิกจะถูกส่งไปเพื่อแจ้งแก่ผู้ลงโฆษณา...</small>
                 </div>
                 <input type="hidden" name="banner_id" id="banner_id">
@@ -245,7 +245,7 @@
             
             document.getElementById("bannerAdsContent").innerHTML = 'ยืนยันการยกเลิกแบนเนอร์โฆษณา<br/><br/> <span class="text-danger">' + Topic + '</span> ?'
             document.getElementById("bannerImage").src = Image
-            $('#frm_block input[id="banner_id"]').val(Id);
+            $('#frm_un_banner input[id="banner_id"]').val(Id);
         });
 
         $('#verifyAssetAdsModal').on('show.bs.modal', function (e) {
@@ -285,7 +285,15 @@
     });
 
     function reasonToDelete() {
-        var x = document.forms["frm_block"]["del_reason"].value;
+        var x = document.forms["frm_block"]["reason_del"].value;
+        if (x == "") {
+            alert("กรุณาระบุเหตุผลในการยกเลิก...");
+            return false;
+        }
+    }
+
+    function reasonToDeleteBanner() {
+        var x = document.forms["frm_un_banner"]["reason_del"].value;
         if (x == "") {
             alert("กรุณาระบุเหตุผลในการยกเลิก...");
             return false;
@@ -293,8 +301,8 @@
     }
 
     function formatNumber(num) {
-            return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
-        }
+        return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+    }
 </script>
 
 <style scope>
@@ -302,8 +310,8 @@
         display: contents;
     }
     .content-modal-verify-ads {
-        width: 40%;
-        margin-left: 30%;
+        width: 60%;
+        margin-left: 20%;
         margin-top: 3%;
     }
     .p-content p {

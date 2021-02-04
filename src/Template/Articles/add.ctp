@@ -3,7 +3,7 @@
         <div class="page-title-box">
             <h4 class="page-title">เพิ่มบทความ</h4>
             <ol class="breadcrumb float-right">
-                <li class="breadcrumb-item"><?= $this->Html->link('บทความ', ['action' => 'index']) ?></li>
+                <li class="breadcrumb-item"><?= $this->Html->link('บทความ', ['action' => 'article-index']) ?></li>
                 <li class="breadcrumb-item active">เพิ่มบทความ</li>
             </ol>
             <div class="clearfix"></div>
@@ -30,6 +30,7 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="form-control-label" for="short_content">รูปหน้าปก</label>
+                        <input type="file" name="image" class="form-control">
                     </div>
                 </div>
             </div>

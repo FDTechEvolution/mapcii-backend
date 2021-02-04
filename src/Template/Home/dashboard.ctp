@@ -11,134 +11,315 @@
     </div>
 </div>
 
-<?php $arr_year = [2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]; ?>
 
-<div id="dashboard" class="row">
-    <div class="col-lg-12">
-        <div class="card-box">
+<div class="row">
+    <div class="col-sm-6 col-lg-3">
+        <div class="widget-simple-chart text-right card-box">
+            <div class="circliful-chart" data-dimension="90" data-text="35%" data-width="5" data-fontsize="14" data-percent="35" data-fgcolor="#5fbeaa" data-bgcolor="#ebeff2"></div>
+            <h3 class="text-success counter m-t-10">2562</h3>
+            <p class="text-muted text-nowrap m-b-10">Total Sales today</p>
+        </div>
+    </div>
 
-            <div class="widget-chart text-center">
-                <div class="row mb-2">
-                    <div class="col-md-9"></div>
-                    <div class="col-md-3">
-                        <select id="year" class="form-control" onChange="selectedYear()">
-                            <option value="" selected disabled>เลือกปี ค.ศ.</option>
-                            <?php foreach($arr_year as $year): ?>
-                                <option value="<?=$year?>"><?=$year?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                </div>
-                <div id="chart"></div>
-            </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="widget-simple-chart text-right card-box">
+            <div class="circliful-chart" data-dimension="90" data-text="75%" data-width="5" data-fontsize="14" data-percent="75" data-fgcolor="#3bafda" data-bgcolor="#ebeff2"></div>
+            <h3 class="text-primary counter m-t-10">5685</h3>
+            <p class="text-muted text-nowrap m-b-10">Daily visitors</p>
+        </div>
+    </div>
 
+    <div class="col-sm-6 col-lg-3">
+        <div class="widget-simple-chart text-right card-box">
+            <div class="circliful-chart" data-dimension="90" data-text="58%" data-width="5" data-fontsize="14" data-percent="58" data-fgcolor="#f76397" data-bgcolor="#ebeff2"></div>
+            <h3 class="text-pink m-t-10">$ <span class="counter">12480</span></h3>
+            <p class="text-muted text-nowrap m-b-10">Total Earning</p>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+        <div class="widget-simple-chart text-right card-box">
+            <div class="circliful-chart" data-dimension="90" data-text="49%" data-width="5" data-fontsize="14" data-percent="49" data-fgcolor="#98a6ad" data-bgcolor="#ebeff2"></div>
+            <h3 class="text-inverse counter m-t-10">62</h3>
+            <p class="text-muted text-nowrap m-b-10">Pending Orders</p>
         </div>
     </div>
 </div>
 <!-- end row -->
+
+
+
+
+<div class="row">
+    <div class="col-lg-4">
+        <div class="card-box">
+            <h4 class="text-dark  header-title m-t-0 m-b-30">Total Revenue</h4>
+
+            <div class="widget-chart text-center">
+                <div id="sparkline1"></div>
+                <ul class="list-inline m-t-15 mb-0">
+                    <li>
+                        <h5 class="text-muted m-t-20">Target</h5>
+                        <h4 class="m-b-0">$56,214</h4>
+                    </li>
+                    <li>
+                        <h5 class="text-muted m-t-20">Last week</h5>
+                        <h4 class="m-b-0">$98,251</h4>
+                    </li>
+                    <li>
+                        <h5 class="text-muted m-t-20">Last Month</h5>
+                        <h4 class="m-b-0">$10,025</h4>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card-box">
+            <h4 class="text-dark  header-title m-t-0 m-b-30">Yearly Sales Report</h4>
+
+            <div class="widget-chart text-center">
+                <div id="sparkline2"></div>
+                <ul class="list-inline m-t-15 mb-0">
+                    <li>
+                        <h5 class="text-muted m-t-20">Target</h5>
+                        <h4 class="m-b-0">$1000</h4>
+                    </li>
+                    <li>
+                        <h5 class="text-muted m-t-20">Last week</h5>
+                        <h4 class="m-b-0">$523</h4>
+                    </li>
+                    <li>
+                        <h5 class="text-muted m-t-20">Last Month</h5>
+                        <h4 class="m-b-0">$965</h4>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card-box">
+            <h4 class="text-dark header-title m-t-0 m-b-30">Weekly Sales Report</h4>
+
+            <div class="widget-chart text-center">
+                <div id="sparkline3"></div>
+                <ul class="list-inline m-t-15 mb-0">
+                    <li>
+                        <h5 class="text-muted m-t-20">Target</h5>
+                        <h4 class="m-b-0">$1,84,125</h4>
+                    </li>
+                    <li>
+                        <h5 class="text-muted m-t-20">Last week</h5>
+                        <h4 class="m-b-0">$50,230</h4>
+                    </li>
+                    <li>
+                        <h5 class="text-muted m-t-20">Last Month</h5>
+                        <h4 class="m-b-0">$87,451</h4>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+<!-- end row -->
+
+
 
 <div class="row">
     <div class="col-lg-6">
         <div class="card-box">
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th scope="col">สถิติ</th>
-                        <th scope="col" class="text-center">จำนวนวันนี้</th>
-                        <th scope="col" class="text-center">จำนวนรวม</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="cls_stat_td w-50"><input type="checkbox" class="form-control cls_chk_size" id="visitors" onClick="checkStatOnCharts();"><label for="visitors">จำนวนผู้เข้าชมเว็บ</label></td>
-                        <td class="text-center w-25"></td>
-                        <td class="text-center w-25"></td>
-                    </tr>
-                    <tr>
-                        <td class="cls_stat_td w-50"><input type="checkbox" class="form-control cls_chk_size" id="members" onClick="checkStatOnCharts();"><label for="members">จำนวนสมาชิก</label></td>
-                        <td class="text-center w-25"><?= h(json_decode($data_user['now'])) ?></td>
-                        <td class="text-center w-25"><?= h(json_decode($data_user['sum'])) ?></td>
-                    </tr>
-                    <tr>
-                        <td class="cls_stat_td w-50"><input type="checkbox" class="form-control cls_chk_size" id="banners_a" onClick="checkStatOnCharts();"><label for="banners_a">จำนวน Banner A</label></td>
-                        <td class="text-center w-25"><?= h(json_decode($data_banner_a['now'])) ?></td>
-                        <td class="text-center w-25"><?= h(json_decode($data_banner_a['sum'])) ?></td>
-                    </tr>
-                    <tr>
-                        <td class="cls_stat_td w-50"><input type="checkbox" class="form-control cls_chk_size" id="banners_b" onClick="checkStatOnCharts();"><label for="banners_b">จำนวน Banner B</label></td>
-                        <td class="text-center w-25"><?= h(json_decode($data_banner_b['now'])) ?></td>
-                        <td class="text-center w-25"><?= h(json_decode($data_banner_b['sum'])) ?></td>
-                    </tr>
-                    <tr>
-                        <td class="cls_stat_td w-50"><input type="checkbox" class="form-control cls_chk_size" id="announces_ad" onClick="checkStatOnCharts();"><label for="announces_ad">จำนวนประกาศ (AD)</label></td>
-                        <td class="text-center w-25"><?= h(json_decode($data_ads['now'])) ?></td>
-                        <td class="text-center w-25"><?= h(json_decode($data_ads['sum'])) ?></td>
-                    </tr>
-                    <tr>
-                        <td class="cls_stat_td w-50"><input type="checkbox" class="form-control cls_chk_size" id="announces_free" onClick="checkStatOnCharts();"><label for="announces_free">จำนวนประกาศฟรี</label></td>
-                        <td class="text-center w-25"><?= h(json_decode($data_free['now'])) ?></td>
-                        <td class="text-center w-25"><?= h(json_decode($data_free['sum'])) ?></td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="row">
+                <div class="col-sm-7">
+                    <div class="row">
+                        <div class="col-6 text-center">
+                            <canvas id="partly-cloudy-day" width="100" height="100"></canvas>
+                        </div>
+                        <div class="col-6">
+                            <h2 class="m-t-0 text-muted"><b>32°</b></h2>
+                            <p class="text-muted">Partly cloudy</p>
+                            <p class="text-muted mb-0">15km/h - 37%</p>
+                        </div>
+                    </div><!-- End row -->
+                </div>
+                <div class="col-sm-5">
+                    <div class="row">
+                        <div class="col-4 text-center">
+                            <h4 class="text-muted m-t-0">SAT</h4>
+                            <canvas id="cloudy" width="35" height="35"></canvas>
+                            <h4 class="text-muted">30<i class="wi wi-degrees"></i></h4>
+                        </div>
+                        <div class="col-4 text-center">
+                            <h4 class="text-muted m-t-0">SUN</h4>
+                            <canvas id="wind" width="35" height="35"></canvas>
+                            <h4 class="text-muted">28<i class="wi wi-degrees"></i></h4>
+                        </div>
+                        <div class="col-4 text-center">
+                            <h4 class="text-muted m-t-0">MON</h4>
+                            <canvas id="clear-day" width="35" height="35"></canvas>
+                            <h4 class="text-muted">33<i class="wi wi-degrees"></i></h4>
+                        </div>
+                    </div><!-- end row -->
+                </div>
+            </div><!-- end row -->
         </div>
-    </div>
+    </div> <!-- end col -->
+
     <div class="col-lg-6">
         <div class="card-box">
-        <table class="table table-bordered">
+            <div class="row">
+                <div class="col-sm-7">
+                    <div class="">
+                        <div class="row">
+                            <div class="col-6 text-center">
+                                <canvas id="snow" width="100" height="100"></canvas>
+                            </div>
+                            <div class="col-6">
+                                <h2 class="m-t-0 text-muted"><b> 23°</b></h2>
+                                <p class="text-muted">Partly cloudy</p>
+                                <p class="text-muted mb-0">15km/h - 37%</p>
+                            </div>
+                        </div><!-- end row -->
+                    </div><!-- weather-widget -->
+                </div>
+                <div class="col-sm-5">
+                    <div class="row">
+                        <div class="col-4 text-center">
+                            <h4 class="text-muted m-t-0">SAT</h4>
+                            <canvas id="sleet" width="35" height="35"></canvas>
+                            <h4 class="text-muted">30<i class="wi wi-degrees"></i></h4>
+                        </div>
+                        <div class="col-4 text-center">
+                            <h4 class="text-muted m-t-0">SUN</h4>
+                            <canvas id="fog" width="35" height="35"></canvas>
+                            <h4 class="text-muted">28<i class="wi wi-degrees"></i></h4>
+                        </div>
+                        <div class="col-4 text-center">
+                            <h4 class="text-muted m-t-0">MON</h4>
+                            <canvas id="partly-cloudy-night" width="35" height="35"></canvas>
+                            <h4 class="text-muted">33<i class="wi wi-degrees"></i></h4>
+                        </div>
+                    </div><!-- End row -->
+                </div> <!-- col-->
+            </div><!-- End row -->
+        </div>
+    </div> <!-- end col -->
+</div>
+<!--end row/ WEATHER -->
+
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card-box">
+            <h4 class="text-dark  header-title m-t-0">Latest Projects</h4>
+            <p class="text-muted m-b-25 font-13">
+                Your awesome text goes here.
+            </p>
+
+            <table class="table mb-0 table-responsive">
                 <thead>
                     <tr>
-                        <th scope="col">สถิติ</th>
-                        <th scope="col" class="text-center">จำนวนวันนี้</th>
-                        <th scope="col" class="text-center">จำนวนรวม</th>
+                        <th>#</th>
+                        <th>Project Name</th>
+                        <th>Start Date</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                        <th>Assign</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td class="cls_stat_td w-50"><input type="checkbox" class="form-control cls_chk_size" id="news" onClick="checkStatOnCharts();"><label for="news">จำนวนบทความ/ข่าว</label></td>
-                        <td class="text-center w-25"><?= h(json_decode($data_article['now'])) ?></td>
-                        <td class="text-center w-25"><?= h(json_decode($data_article['sum'])) ?></td>
+                        <td>1</td>
+                        <td>Minton Admin v1</td>
+                        <td>01/01/2017</td>
+                        <td>26/04/2017</td>
+                        <td><span class="badge badge-info">Released</span></td>
+                        <td>Coderthemes</td>
                     </tr>
                     <tr>
-                        <td class="cls_stat_td w-50"><input type="checkbox" class="form-control cls_chk_size" id="contacts" onClick="checkStatOnCharts();"><label for="contacts">จำนวนคำถาม</label></td>
-                        <td class="text-center w-25"><?= h(json_decode($data_contact['now'])) ?></td>
-                        <td class="text-center w-25"><?= h(json_decode($data_contact['sum'])) ?></td>
+                        <td>2</td>
+                        <td>Minton Frontend v1</td>
+                        <td>01/01/2017</td>
+                        <td>26/04/2017</td>
+                        <td><span class="badge badge-success">Released</span></td>
+                        <td>Minton admin</td>
                     </tr>
                     <tr>
-                        <td class="cls_stat_td w-50"><input type="checkbox" class="form-control cls_chk_size" id="reviewer" onClick="checkStatOnCharts();"><label for="review">จำนวนรีวิว</label></td>
-                        <td class="text-center w-25"><?= h(json_decode($data_message['now'])) ?></td>
-                        <td class="text-center w-25"><?= h(json_decode($data_message['sum'])) ?></td>
+                        <td>3</td>
+                        <td>Minton Admin v1.1</td>
+                        <td>01/05/2017</td>
+                        <td>10/05/2017</td>
+                        <td><span class="badge badge-pink">Pending</span></td>
+                        <td>Coderthemes</td>
                     </tr>
                     <tr>
-                        <td class="cls_stat_td w-50"><input type="checkbox" class="form-control cls_chk_size" id="sales_visitors" onClick="checkStatOnCharts();"><label for="sales_visitors">ผู้เข้าชมอสังหาขายด่วน</label></td>
-                        <td class="text-center w-25"></td>
-                        <td class="text-center w-25"></td>
+                        <td>4</td>
+                        <td>Minton Frontend v1.1</td>
+                        <td>01/01/2017</td>
+                        <td>31/05/2017</td>
+                        <td><span class="badge badge-purple">Work in Progress</span>
+                        </td>
+                        <td>Minton admin</td>
                     </tr>
                     <tr>
-                        <td class="cls_stat_td w-50"><input type="checkbox" class="form-control cls_chk_size" id="new_visitors" onClick="checkStatOnCharts();"><label for="new_visitors">ผู้เข้าชมอสังหาโครงการใหม่</label></td>
-                        <td class="text-center w-25"></td>
-                        <td class="text-center w-25"></td>
+                        <td>5</td>
+                        <td>Minton Admin v1.3</td>
+                        <td>01/01/2017</td>
+                        <td>31/05/2017</td>
+                        <td><span class="badge badge-warning">Coming soon</span></td>
+                        <td>Coderthemes</td>
                     </tr>
-                    <tr>
-                        <td class="cls_stat_td w-50"><input type="checkbox" class="form-control cls_chk_size" id="twohand_visitors" onClick="checkStatOnCharts();"><label for="twohand_visitors">ผู้เข้าชมอสังหามือสอง</label></td>
-                        <td class="text-center w-25"></td>
-                        <td class="text-center w-25"></td>
-                    </tr>
+
                 </tbody>
             </table>
         </div>
     </div>
+    <!-- end col -8 -->
+
+    <div class="col-lg-4">
+        <div class="card-box widget-user">
+            <div>
+                <img src="assets/images/users/avatar-1.jpg" class="img-responsive rounded-circle" alt="user">
+                <div class="wid-u-info">
+                    <h5 class="mt-0 m-b-5 font-16">Chadengle</h5>
+                    <p class="text-muted m-b-5 font-13">coderthemes@gmail.com</p>
+                    <small class="text-warning"><b>Admin</b></small>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-box widget-user">
+            <div>
+                <img src="assets/images/users/avatar-2.jpg" class="img-responsive rounded-circle" alt="user">
+                <div class="wid-u-info">
+                    <h5 class="mt-0 m-b-5 font-16">Tomaslau</h5>
+                    <p class="text-muted m-b-5 font-13">coderthemes@gmail.com</p>
+                    <small class="text-success"><b>User</b></small>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-box widget-user">
+            <div>
+                <img src="assets/images/users/avatar-7.jpg" class="img-responsive rounded-circle" alt="user">
+                <div class="wid-u-info">
+                    <h5 class="mt-0 m-b-5 font-16">Ok</h5>
+                    <p class="text-muted m-b-5 font-13">coderthemes@gmail.com</p>
+                    <small class="text-pink"><b>Admin</b></small>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
 </div>
 <!-- end row -->
 
-
-<div>
-    <ul>
-        <?php foreach ($all_free as $index => $a_ads): ?>
-            <li id="is_data_<?= $index ?>"><?= h($a_ads->count) ?>,<?= h($a_ads->as_date) ?></li>
-        <?php endforeach ?>
-    </ul>
-</div>
 
 </div>
 <!-- end container -->
@@ -155,235 +336,117 @@
 <!-- ============================================================== -->
 
 
-<style scoped>
-  .small {
-    max-width: 600px;
-    margin:  150px auto;
-  }
-  .cls_stat_td {
-    display: -webkit-box;
-    width: 100% !important;
-  }
-  .cls_chk_size {
-      width: 10%;
-      margin-top: 4px;
-      margin-right: 5px;
-  }
-  .table th, .table tr td {
-    padding: 0.3rem !important;
-  }
-  .table tr th {
-    font-size: 13px;
-  }
-  .table tr td label {
-      margin-bottom: 0px;
-      font-size: 12px;
-  }
-  .apexcharts-inactive-legend {
-      display: none !important;
-  }
-</style>
+<!-- Right Sidebar -->
+<div class="side-bar right-bar">
+    <div class="">
+        <ul class="nav nav-tabs tabs-bordered nav-justified">
+            <li class="nav-item">
+                <a href="#home-2" class="nav-link active" data-toggle="tab" aria-expanded="false">
+                    Activity
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#messages-2" class="nav-link" data-toggle="tab" aria-expanded="true">
+                    Settings
+                </a>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="home-2">
+                <div class="timeline-2">
+                    <div class="time-item">
+                        <div class="item-info">
+                            <small class="text-muted">5 minutes ago</small>
+                            <p><strong><a href="#" class="text-info">John Doe</a></strong> Uploaded a photo <strong>"DSC000586.jpg"</strong></p>
+                        </div>
+                    </div>
 
-<script type="text/javascript">
-    let showVisitors = false
-    let is_data = document.getElementById('is_data_1').textContent
-    console.log(is_data)
-    var options = {
-            chart: {
-                height: 380,
-                type: 'line',
-                zoom: {
-                    type: 'x',
-                    enabled: true,
-                    autoScaleYaxis: true
-                }
-            },
-            stroke: {
-                show: true,
-                curve: 'straight',
-                lineCap: 'butt',
-                colors: undefined,
-                width: 3,
-                dashArray: 0,
-            },
-            dataLabels: {
-                enabled: true,
-                style: {
-                    fontSize: '7px',
-                    fontFamily: 'Helvetica, Arial, sans-serif',
-                    fontWeight: 'normal',
-                    colors: undefined
-                }
-            },
-            tooltip: {
-                enabled: true,
-                followCursor: false,
-                style: {
-                    fontSize: '12px',
-                    fontFamily: undefined
-                }
-            },
-            xaxis: {
-                title: {
-                    text: 'เลือกปี ค.ศ.'
-                },
-                categories: ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.']
-            },
-            yaxis: {
-                title: {
-                    text: 'Point'
-                },
-                min: 0,
-                max: 140
-            },
-            legend: {
-                horizontalAlign: 'center',
-                showForNullSeries: false,
-                showForZeroSeries: false,
-                fontSize: '10px',
-                fontFamily: 'Helvetica, Arial',
-                fontWeight: 400,
-                onItemClick: {
-                    toggleDataSeries: false
-                }
-            },
-            theme: {
-                mode: 'light'
-            },
-            title: {
-                text: 'Average High & Low Temperature',
-                align: 'left'
-            },
-            series: [
-                {
-                    name: 'จำนวนผู้เข้าชมเว็บ',
-                    data: [30,40,35,50,49,60,70,91,100]
-                },{
-                    name: 'จำนวนสมาชิก',
-                    data: [20,30,55,40,29,40,60,71,96]
-                },{
-                    name: 'จำนวน Banner A',
-                    data: [32,36,55,32,66,51,82,71,66]
-                },{
-                    name: 'จำนวน Banner B',
-                    data: [22,56,45,44,46,67,62,90,82]
-                },{
-                    name: 'จำนวนประกาศ (AD)',
-                    data: [40,48,62,70,77,68,62,53,105]
-                },{
-                    name: 'จำนวนประกาศฟรี',
-                    data: [88,65,90,78,55,34,58,44,67]
-                },{ // Section 2 ------------------------------------------------------>>>>
-                    name: 'จำนวนบทความ/ข่าว',
-                    data: [20,24,31,35,35,37,38,39,42]
-                },{
-                    name: 'จำนวนคำถาม',
-                    data: [8,12,14,15,15,14,5,10,7]
-                },{
-                    name: 'จำนวนรีวิว',
-                    data: [13,14,20,24,32,23,12,23,8]
-                },{
-                    name: 'ผู้เข้าชมอสังหาขายด่วน',
-                    data: [45,67,98,44,108,120,35,54,69]
-                },{
-                    name: 'ผู้เข้าชมอสังหาโครงการใหม่',
-                    data: [55,78,56,55,68,34,60,87,94]
-                },{
-                    name: 'ผู้เข้าชมอสังหามือสอง',
-                    data: [108,111,105,124,97,55,79,100,80]
-                }
-            ]
-        }
+                    <div class="time-item">
+                        <div class="item-info">
+                            <small class="text-muted">30 minutes ago</small>
+                            <p><a href="" class="text-info">Lorem</a> commented your post.</p>
+                            <p><em>"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam laoreet tellus ut tincidunt euismod. "</em></p>
+                        </div>
+                    </div>
 
-    var chart = new ApexCharts(document.querySelector("#chart"), options);
+                    <div class="time-item">
+                        <div class="item-info">
+                            <small class="text-muted">59 minutes ago</small>
+                            <p><a href="" class="text-info">Jessi</a> attended a meeting with<a href="#" class="text-success">John Doe</a>.</p>
+                            <p><em>"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam laoreet tellus ut tincidunt euismod. "</em></p>
+                        </div>
+                    </div>
 
-    function selectedYear() {
-        chart.updateOptions({
-            xaxis: {
-                title: {
-                    text: 'ค.ศ. ' + document.getElementById('year').value
-                }
-            }
-        })
-    }
+                    <div class="time-item">
+                        <div class="item-info">
+                            <small class="text-muted">1 hour ago</small>
+                            <p><strong><a href="#" class="text-info">John Doe</a></strong>Uploaded 2 new photos</p>
+                        </div>
+                    </div>
 
-    function checkStatOnCharts() {
-        if(document.getElementById('visitors').checked) {
-            chart.showSeries('จำนวนผู้เข้าชมเว็บ')
-        }else{
-            chart.hideSeries('จำนวนผู้เข้าชมเว็บ')
-        }
+                    <div class="time-item">
+                        <div class="item-info">
+                            <small class="text-muted">3 hours ago</small>
+                            <p><a href="" class="text-info">Lorem</a> commented your post.</p>
+                            <p><em>"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam laoreet tellus ut tincidunt euismod. "</em></p>
+                        </div>
+                    </div>
 
-        if(document.getElementById('members').checked) {
-            chart.showSeries('จำนวนสมาชิก')
-        }else{
-            chart.hideSeries('จำนวนสมาชิก')
-        }
+                    <div class="time-item">
+                        <div class="item-info">
+                            <small class="text-muted">5 hours ago</small>
+                            <p><a href="" class="text-info">Jessi</a> attended a meeting with<a href="#" class="text-success">John Doe</a>.</p>
+                            <p><em>"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam laoreet tellus ut tincidunt euismod. "</em></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-        if(document.getElementById('banners_a').checked) {
-            chart.showSeries('จำนวน Banner A')
-        }else{
-            chart.hideSeries('จำนวน Banner A')
-        }
 
-        if(document.getElementById('banners_b').checked) {
-            chart.showSeries('จำนวน Banner B')
-        }else{
-            chart.hideSeries('จำนวน Banner B')
-        }
+            <div class="tab-pane" id="messages-2">
 
-        if(document.getElementById('announces_ad').checked) {
-            chart.showSeries('จำนวนประกาศ (AD)')
-        }else{
-            chart.hideSeries('จำนวนประกาศ (AD)')
-        }
+                <div class="row m-t-20">
+                    <div class="col-8">
+                        <h5 class="m-0 font-15">Notifications</h5>
+                        <p class="text-muted m-b-0"><small>Do you need them?</small></p>
+                    </div>
+                    <div class="col-4 text-right">
+                        <input type="checkbox" checked data-plugin="switchery" data-color="#3bafda" data-size="small"/>
+                    </div>
+                </div>
 
-        if(document.getElementById('announces_free').checked) {
-            chart.showSeries('จำนวนประกาศฟรี')
-        }else{
-            chart.hideSeries('จำนวนประกาศฟรี')
-        }
+                <div class="row m-t-20">
+                    <div class="col-8">
+                        <h5 class="m-0 font-15">API Access</h5>
+                        <p class="m-b-0 text-muted"><small>Enable/Disable access</small></p>
+                    </div>
+                    <div class="col-4 text-right">
+                        <input type="checkbox" checked data-plugin="switchery" data-color="#3bafda" data-size="small"/>
+                    </div>
+                </div>
 
-        // Section 2 -------------------------------------------->>>>>>
+                <div class="row m-t-20">
+                    <div class="col-8">
+                        <h5 class="m-0 font-15">Auto Updates</h5>
+                        <p class="m-b-0 text-muted"><small>Keep up to date</small></p>
+                    </div>
+                    <div class="col-4 text-right">
+                        <input type="checkbox" checked data-plugin="switchery" data-color="#3bafda" data-size="small"/>
+                    </div>
+                </div>
 
-        if(document.getElementById('news').checked) {
-            chart.showSeries('จำนวนบทความ/ข่าว')
-        }else{
-            chart.hideSeries('จำนวนบทความ/ข่าว')
-        }
+                <div class="row m-t-20">
+                    <div class="col-8">
+                        <h5 class="m-0 font-15">Online Status</h5>
+                        <p class="m-b-0 text-muted"><small>Show your status to all</small></p>
+                    </div>
+                    <div class="col-4 text-right">
+                        <input type="checkbox" checked data-plugin="switchery" data-color="#3bafda" data-size="small"/>
+                    </div>
+                </div>
 
-        if(document.getElementById('contacts').checked) {
-            chart.showSeries('จำนวนคำถาม')
-        }else{
-            chart.hideSeries('จำนวนคำถาม')
-        }
+            </div>
 
-        if(document.getElementById('reviewer').checked) {
-            chart.showSeries('จำนวนรีวิว')
-        }else{
-            chart.hideSeries('จำนวนรีวิว')
-        }
 
-        if(document.getElementById('sales_visitors').checked) {
-            chart.showSeries('ผู้เข้าชมอสังหาขายด่วน')
-        }else{
-            chart.hideSeries('ผู้เข้าชมอสังหาขายด่วน')
-        }
 
-        if(document.getElementById('new_visitors').checked) {
-            chart.showSeries('ผู้เข้าชมอสังหาโครงการใหม่')
-        }else{
-            chart.hideSeries('ผู้เข้าชมอสังหาโครงการใหม่')
-        }
 
-        if(document.getElementById('twohand_visitors').checked) {
-            chart.showSeries('ผู้เข้าชมอสังหามือสอง')
-        }else{
-            chart.hideSeries('ผู้เข้าชมอสังหามือสอง')
-        }
-    }
-
-    chart.render();
-</script>
-
-<?='' //$this->Html->script('dashboard/main.js', ['type' => 'module']) ?>

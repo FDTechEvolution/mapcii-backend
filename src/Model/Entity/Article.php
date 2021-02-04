@@ -12,7 +12,9 @@ use Cake\ORM\Entity;
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
  * @property string $image_id
+ * @property string $user_id
  * @property string $short_content
+ * @property string $isactive
  *
  * @property \App\Model\Entity\Image $image
  */
@@ -34,7 +36,9 @@ class Article extends Entity
         'created' => true,
         'modified' => true,
         'image_id' => true,
+        'user_id' => true,
         'short_content' => true,
+        'isactive' => true,
         'image' => true
     ];
 }

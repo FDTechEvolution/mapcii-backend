@@ -168,7 +168,7 @@ class ApiAuthenController extends AppController {
                         ->first();
                 if (!is_null($user)) {
                     $checkOldPassword = DefaultPasswordHasher::check($oldpass, $user->password);
-                    $this->log($checkOldPassword, 'debug');
+                    // $this->log($checkOldPassword, 'debug');
                     if($checkOldPassword){
                         $user->password = $newpass;
                         $this->Users->save($user);

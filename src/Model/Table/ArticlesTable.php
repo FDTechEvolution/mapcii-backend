@@ -10,6 +10,7 @@ use Cake\Validation\Validator;
  * Articles Model
  *
  * @property \App\Model\Table\ImagesTable|\Cake\ORM\Association\BelongsTo $Images
+ * @property |\Cake\ORM\Association\BelongsTo $Users
  *
  * @method \App\Model\Entity\Article get($primaryKey, $options = [])
  * @method \App\Model\Entity\Article newEntity($data = null, array $options = [])
@@ -44,6 +45,10 @@ class ArticlesTable extends Table
         $this->belongsTo('Images', [
             'foreignKey' => 'image_id'
         ]);
+        $this->belongsTo('Users', [
+            'foreignKey' => 'user_id',
+            'joinType' => 'INNER'
+        ]);
     }
 
     /**
@@ -74,6 +79,11 @@ class ArticlesTable extends Table
             ->scalar('short_content')
             ->allowEmpty('short_content');
 
+        $validator
+            ->scalar('isactive')
+            ->requirePresence('isactive', 'create')
+            ->notEmpty('isactive');
+
         return $validator;
     }
 
@@ -87,6 +97,7 @@ class ArticlesTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['image_id'], 'Images'));
+        $rules->add($rules->existsIn(['user_id'], 'Users'));
 
         return $rules;
     }

@@ -19,8 +19,10 @@ class HistoriesController extends AppController
         $this->Users = TableRegistry::get('Users');
         $this->Assets = TableRegistry::get('Assets');
         $this->Banners = TableRegistry::get('Banners');
-        $this->AssetImages = TableRegistry::get('AssetImages');
+        $this->Articles = TableRegistry::get('Articles');
+        $this->Messages = TableRegistry::get('Messages');
         $this->AssetAds = TableRegistry::get('AssetAds');
+        $this->AssetImages = TableRegistry::get('AssetImages');
         $this->UserPackageLines = TableRegistry::get('UserPackageLines');
 
     }
@@ -32,8 +34,11 @@ class HistoriesController extends AppController
         $this->getAds();
         $this->getFreeAssets();
         $this->getBanners();
+        $articles = $this->getArticles();
+        $this->getContacts();
+        $this->getReviews();
 
-        $this->set(compact('users'));
+        $this->set(compact('users', 'articles'));
     }
 
     private function getUsers() {
@@ -60,7 +65,8 @@ class HistoriesController extends AppController
                     'order_code' => 'UserPackages.order_code',
                     'price' => 'Assets.price',
                     'discount' => 'Assets.discount',
-                    'rental' => 'Assets.rental'
+                    'rental' => 'Assets.rental',
+                    'reason_del' => 'Assets.reason_del'
                 ])
                 ->contain(['Assets' => ['AssetTypes', 'Users', 'AssetImages' => ['Images']], 'UserPackages' => ['UserPackageLines' => ['UserPayments']]])
                 ->where(['Assets.status' => 'DL'])
@@ -115,10 +121,12 @@ class HistoriesController extends AppController
                 'topic' => 'Banners.topic',
                 'startdate' => 'Banners.created',
                 'name' => 'Users.firstname',
+                'lname' => 'Users.lastname',
                 'type' => 'Banners.type',
                 'user_package_id' => 'UserPackages.id',
                 'order_code' => 'UserPackages.order_code',
-                'image' => 'Images.url'
+                'image' => 'Images.url',
+                'reason_del' => 'Banners.reason_del'
             ])
             ->contain(['Users', 'Images', 'UserPackages' => ['UserPackageLines']])
             ->where(['Banners.status' => 'DL'])
@@ -132,6 +140,48 @@ class HistoriesController extends AppController
             array_push($user_banner_package, $query);
         }
         $this->set(compact('banners', 'user_banner_package'));
+    }
+
+    private function getArticles() {
+        $articles = $this->Articles->find()
+                ->contain(['Images', 'Users'])
+                ->where(['Articles.isactive' => 'N'])
+                ->order(['Articles.created' => 'DESC'])
+                ->toArray();
+
+        return $articles;
+    }
+
+    private function getContacts() {
+        $contacts = $this->Messages->find()
+                ->contain(['Assets'])
+                ->where(['Messages.status' => 'DL', 'Messages.type' => 'contact'])
+                ->order(['Messages.created' => 'DESC'])
+                ->toArray();
+
+        $usercontacts = [];
+        foreach($contacts as $contact):
+            $users = $this->Users->find()->where(['id' => $contact->from_user])->first();
+            array_push($usercontacts, $users);
+        endforeach;
+
+        $this->set(compact('contacts', 'usercontacts'));
+    }
+
+    private function getReviews() {
+        $reviews = $this->Messages->find()
+                ->contain(['Assets'])
+                ->where(['Messages.status' => 'DL', 'Messages.type' => 'review'])
+                ->order(['Messages.created' => 'DESC'])
+                ->toArray();
+
+        $userreviews = [];
+        foreach($reviews as $review):
+            $users = $this->Users->find()->where(['id' => $review->from_user])->first();
+            array_push($userreviews, $users);
+        endforeach;
+
+        $this->set(compact('reviews', 'userreviews'));
     }
 
 }

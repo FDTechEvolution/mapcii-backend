@@ -131,9 +131,27 @@ class AssetsController extends AppController {
             $postData = $this->request->getData();
             $asset = $this->Assets->get($postData['ads_id']);
             $asset->status = 'DL';
-            $this->Assets->save($asset);
+            $asset->reason_del = $postData['reason_del'];
+            if($this->Assets->save($asset)){
+                $this->Flash->success(__('ข้อมูลถูกยกเลิก และ ย้ายไปยังประวัติการจัดการเรียบร้อยแล้ว'));
+                return $this->redirect(['action' => 'ads']);
+            }
+            $this->Flash->error(__('ไม่สามารถยกเลิกได้ในตอนนี้ กรุณาลองใหม่'));
+        }
+    }
 
-            return $this->redirect(['action' => 'ads']);
+    public function unAssetFree() {
+        $this->Assets = TableRegistry::get('Assets');
+        if ($this->request->is('post')) {
+            $postData = $this->request->getData();
+            $asset = $this->Assets->get($postData['asset_id']);
+            $asset->status = 'DL';
+            $asset->reason_del = $postData['reason_del'];
+            if($this->Assets->save($asset)){
+                $this->Flash->success(__('ข้อมูลถูกยกเลิก และ ย้ายไปยังประวัติการจัดการเรียบร้อยแล้ว'));
+                return $this->redirect(['action' => 'free-assets']);
+            }
+            $this->Flash->error(__('ไม่สามารถยกเลิกได้ในตอนนี้ กรุณาลองใหม่'));
         }
     }
 
@@ -143,9 +161,12 @@ class AssetsController extends AppController {
             $postData = $this->request->getData();
             $banner = $this->Banners->get($postData['banner_id']);
             $banner->status = 'DL';
-            $this->Banners->save($banner);
-
-            return $this->redirect(['action' => 'ads']);
+            $banner->reason_del = $postData['reason_del'];
+            if($this->Banners->save($banner)){
+                $this->Flash->success(__('ข้อมูลถูกยกเลิก และ ย้ายไปยังประวัติการจัดการเรียบร้อยแล้ว'));
+                return $this->redirect(['action' => 'ads']);
+            }
+            $this->Flash->error(__('ไม่สามารถยกเลิกได้ในตอนนี้ กรุณาลองใหม่'));
         }
     }
 

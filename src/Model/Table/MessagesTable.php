@@ -70,6 +70,11 @@ class MessagesTable extends Table
             ->allowEmpty('msg');
 
         $validator
+            ->scalar('answer')
+            ->maxLength('answer', 255)
+            ->allowEmpty('answer');
+
+        $validator
             ->scalar('status')
             ->maxLength('status', 45)
             ->allowEmpty('status');

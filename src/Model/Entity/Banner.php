@@ -18,6 +18,7 @@ use Cake\ORM\Entity;
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
  * @property string $createdby
+ * @property string $reason_del
  *
  * @property \App\Model\Entity\User $user
  * @property \App\Model\Entity\UserPackage $user_package
@@ -48,6 +49,7 @@ class Banner extends Entity
         'created' => true,
         'modified' => true,
         'createdby' => true,
+        'reason_del' => true,
         'user' => true,
         'user_package' => true,
         'image' => true,

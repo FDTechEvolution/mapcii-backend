@@ -3,6 +3,8 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use Cake\Auth\DefaultPasswordHasher;
+use Cake\ORM\TableRegistry;
+
 /**
  * Users Controller
  *
@@ -115,7 +117,8 @@ class UsersController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
-     public function changepassword($id = null) {
+    
+    public function changepassword($id = null) {
         $this->viewBuilder()->setLayout('login');
        
         $id = $this->request->getSession()->read('Auth.User.id');
@@ -125,7 +128,7 @@ class UsersController extends AppController
                 ->where(['id' => $id])
                 ->first();
             
-            $this->log($data['userid'],'debug');
+            // $this->log($data['userid'],'debug');
             if ((new DefaultPasswordHasher)->check($data['opassword'], $user->password)) {
                 $user->password = $data['npassword'];
                 if ($this->Users->save($user)) {
@@ -169,5 +172,64 @@ class UsersController extends AppController
         }
 
         return $this->redirect(['action' => 'index']);
+    }
+
+    public function personal() {
+        $user = $this->Users->get($this->request->getSession()->read('Auth.User.id'), [
+            'contain' => 'Images'
+        ]);
+        $this->set(compact('user'));
+    }
+
+    public function updatePersonalData() {
+        if ($this->request->is(['patch', 'post', 'put'])) {
+            $postData = $this->request->getData();
+
+            $user = $this->Users->get($this->request->getSession()->read('Auth.User.id'));
+            $user = $this->Users->patchEntity($user, $postData);
+
+            if(isset($postData['image_file']['tmp_name'])){
+                if($postData['image_file']['tmp_name'] != ''){
+                    $this->loadComponent('UploadImage');
+                    // $imageId = $this->UploadImage->uploadUserProfile($postData['image_file']);
+                    $imageId = $this->UploadImage->upload($postData['image_file'],316,316,'user_profiles');
+                    if($user->image_id != ''){
+                        $this->Images = TableRegistry::get('Images');
+                        $image = $this->Images->get($user->image_id);
+                        $this->Images->delete($image);
+                    }
+                    $user->image_id = $imageId['image_id'];
+                }
+            }
+
+            if($this->Users->save($user)){
+                $this->Flash->success(__('แก้ไขรายละเอียดเรียบร้อยแล้ว'));
+                return $this->redirect(['action' => 'personal']);
+            }
+            $this->Flash->error(__('ไม่สามารถแก้ไขรายละเอียดได้ในตอนนี้ กรุณาลองใหม่'));
+            return $this->redirect(['action' => 'personal']);
+        }
+    }
+
+    public function updatePersonalPassword() {
+        // $this->viewBuilder()->setLayout('login');
+
+        if ($this->request->is(['patch', 'post', 'put'])) {
+            $postData = $this->request->getData();
+
+            $user = $this->Users->get($this->request->getSession()->read('Auth.User.id'));
+            if (DefaultPasswordHasher::check($postData['old_password'], $user->password)) {
+                $user->password = $postData['new_password'];
+                if ($this->Users->save($user)) {
+                    $this->Flash->success(__('เปลี่ยนรหัสผ่านใหม่เรียบร้อยแล้ว'));
+                    return $this->redirect(['action' => 'personal']);
+                }
+                $this->Flash->error(__('ไม่สามารถเปลี่ยนรหัสผ่านได้ในตอนนี้...กรุณาลองใหม่'));
+                return $this->redirect(['action' => 'personal']);
+            } else {
+                $this->Flash->error(__('รหัสผ่านเดิมไม่ถูกต้อง กรุณาตรวจสอบ'));
+                return $this->redirect(['action' => 'personal']);
+            }
+        }
     }
 }

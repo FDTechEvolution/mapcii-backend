@@ -218,6 +218,11 @@ class AssetsTable extends Table
             ->scalar('isrent')
             ->allowEmpty('isrent');
 
+        $validator
+            ->scalar('reason_del')
+            ->maxLength('reason_del', 255)
+            ->allowEmpty('reason_del');
+
         return $validator;
     }
 

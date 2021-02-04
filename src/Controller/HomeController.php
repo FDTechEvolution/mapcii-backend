@@ -33,10 +33,6 @@ class HomeController extends AppController {
      * @return \Cake\Http\Response|void
      */
     public function index() {
-      
-    }
-
-    public function dashboard() {
         $dateNow = date('Y-m-d');
 
         $this->asset_ads_stat($dateNow);
@@ -52,6 +48,10 @@ class HomeController extends AppController {
         $this->contact_stat($dateNow);
 
         $this->message_stat($dateNow);
+    }
+
+    public function dashboard() {
+        
     }
 
     private function asset_ads_stat($dateNow) {
