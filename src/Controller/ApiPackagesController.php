@@ -35,6 +35,9 @@ class ApiPackagesController extends AppController {
         $this->PackageLines = TableRegistry::get('PackageLines');
         $this->UserPayments = TableRegistry::get('UserPayments');
         $this->Sizes = TableRegistry::get('Sizes');
+        $this->Assets = TableRegistry::get('Assets');
+        $this->AssetAds = TableRegistry::get('AssetAds');
+        $this->Banners = TableRegistry::get('Banners');
     }
 
     public function listpackages() {
@@ -104,7 +107,7 @@ class ApiPackagesController extends AppController {
         if ($this->request->is(['get', 'ajax'])) {
             $packages = $this->UserPackages->find()
                         ->contain(['UserPackageLines' => ['PackageLines' => ['Packages']]])
-                        ->where(['UserPackages.user_id' => $id, 'UserPackages.status' => $this->Complete])
+                        ->where(['UserPackages.user_id' => $id, 'UserPackages.status !=' => $this->Delete])
                         ->toArray();
             if(sizeof($packages) > 0) {
                 $data['status'] = 200;
@@ -404,37 +407,44 @@ class ApiPackagesController extends AppController {
                     $startdate = date_create(date_format($u_pack_ln->start_date, "Y-m-d"));
                     $date_plus = date_add($startdate,date_interval_create_from_date_string($u_pack_ln->duration." days"));
                     $duedate = date_create(date_format($date_plus,"Y-m-d"));
-                    $diff = date_diff($date_now,$duedate);
+                    $diff = date_diff($date_now, $duedate);
                     $set_diff = $diff->format("%R%a");
                     if($set_diff < 0) {
-                        $u_pack_ln->isexpire = $this->Y;
+                        $u_pack_ln->isexpire = 'Y';
                         $this->UserPackageLines->save($u_pack_ln);
-                        $this->checkPackageDueDate($u_pack_ln->user_package_id);
+                        $this->checkPackageDueDate($u_pack_ln->user_package_id, $u_pack_ln->package_name);
                     }
                 }
             }
         }
     }
 
-    private function checkPackageDueDate($u_pack_id) {
+    private function checkPackageDueDate($u_pack_id, $package_name) {
         $user_package = $this->UserPackages->find()->where(['id' => $u_pack_id])->first();
-        if($user_package->isexpire == $this->N) {
-            $user_package->isexpire = $this->Y;
-            $user_package->status = $this->Expire;
+        if($user_package->isexpire == 'N') {
+            $user_package->isexpire = 'Y';
+            $user_package->status = 'EX';
             if($this->UserPackages->save($user_package)) {
-                $this->checkAssetDuedate($user_package->id);
+                if($package_name == 'ประกาศ (AD)') $this->checkAssetDuedate($user_package->id);
+                if($package_name == 'Banner A' || $package_name == 'Banner B') $this->checkBannerDuedate($user_package->id);
             }
         }
     }
 
     private function checkAssetDuedate($user_package_id) {
-        $asset_ads = $this->AssetAds->find()->where(['user_package_id' => $user_package_id])->first();
-        $assets = $this->Assets->get($asset_ads->asset_id);
-        if(sizeof($assets) > 0) {
-            foreach ($assets as $asset) {
-                $asset->status = $this->Expire;
-                $this->Assets->save($asset);
-            }
+        $asset_ads = $this->AssetAds->find()->where(['user_package_id' => $user_package_id])->toArray();
+        foreach($asset_ads as $ads){
+            $assets = $this->Assets->get($ads->asset_id);
+            $assets->status = 'EX';
+            $this->Assets->save($assets);
+        }
+    }
+
+    private function checkBannerDuedate($user_package_id) {
+        $banner = $this->Banners->find()->where(['user_package_id' => $user_package_id])->first();
+        if(sizeof($banner) > 0) {
+            $banner->status = 'EX';
+            $this->Banners->save($banner);
         }
     }
 

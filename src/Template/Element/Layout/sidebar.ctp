@@ -8,7 +8,7 @@
                             class="ti-home"></i><span> Dashboard </span></a>
                 </li> -->
                 <li>
-                    <?=$this->Html->link('<i class="ti-dashboard"></i> สถิติ', ['controller' => 'Home'], ['class' => 'waves-effect waves-primary', 'escape' => false]) ?>
+                    <?=$this->Html->link('<i class="ti-dashboard"></i> สถิติ', ['controller' => 'Home', 'action' => 'index'], ['class' => 'waves-effect waves-primary', 'escape' => false]) ?>
                 </li>
                 <li>
                     <?=$this->Html->link('<i class="ti-id-badge"></i> ข้อมูลส่วนตัว', ['controller' => 'Users', 'action' => 'personal'], ['class' => 'waves-effect waves-primary', 'escape' => false]) ?>
@@ -80,10 +80,10 @@
                     <a href="<?= SITE_URL . 'articles' ?>" class="waves-effect waves-primary"><i
                             class="ti-package"></i><span> บทความ </span></a>
                 </li> -->
-                <li>
+                <!-- <li>
                     <a href="#" class="waves-effect waves-primary"><i
                             class="ti-settings"></i><span> ตั้งค่าระบบ </span></a>
-                </li>
+                </li> -->
                 <!-- <li>
                     <a href="<?= SITE_URL . 'email-settings' ?>" class="waves-effect waves-primary"><i
                             class="ti-layout-cta-btn-right"></i><span> Email </span></a>

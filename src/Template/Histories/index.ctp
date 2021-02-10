@@ -1,8 +1,20 @@
 <?= ''//$this->element('Lib/data_table') ?>
 <div class="row">
+    <div class="col-sm-12">
+        <div class="page-title-box">
+            <h4 class="page-title"><strong><i class="ti-eraser"></i> ประวัติการจัดการ</strong></h4>
+            <!-- <ol class="breadcrumb float-right">
+                <li class="breadcrumb-item"><a href="#">Minton</a></li>
+                <li class="breadcrumb-item active">Dashboard</li>
+            </ol> -->
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
     <div class="col-lg-12">
-        <div class="card m-b-20 card-body">
-            <h3 class="m-t-0 gold-title"><i class="ti-receipt"></i> ประวัติการจัดการ</h3>
+        <div class="card">
             <div class="card-body">
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
                     <li class="nav-item">

@@ -1,12 +1,16 @@
 <div class="row">
     <div class="col-sm-12">
         <div class="page-title-box">
-            <h4 class="page-title">จัดการถาม/ตอบ</h4>
-
+            <h4 class="page-title"><strong><i class="ti-comments"></i> จัดการถาม/ตอบ</strong></h4>
+            <!-- <ol class="breadcrumb float-right">
+                <li class="breadcrumb-item"><a href="#">Minton</a></li>
+                <li class="breadcrumb-item active">Dashboard</li>
+            </ol> -->
             <div class="clearfix"></div>
         </div>
     </div>
 </div>
+
 <div class="row">
     <div class="col-md-12">
         <div class="card-box">

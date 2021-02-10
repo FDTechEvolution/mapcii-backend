@@ -1,9 +1,25 @@
+<div class="row">
+    <div class="col-sm-12">
+        <div class="page-title-box">
+            <h4 class="page-title"><strong><i class="ti-id-badge"></i> ข้อมูลส่วนตัว</strong></h4>
+            <!-- <ol class="breadcrumb float-right">
+                <li class="breadcrumb-item"><a href="#">Minton</a></li>
+                <li class="breadcrumb-item active">Dashboard</li>
+            </ol> -->
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>
+
 <div class="row px-5 py-2">
     <div class="col-md-6">
         <div class="card m-b-20">
             <div class="card-body">
                 <?= $this->Form->create('personaldata', ['controller' => 'Users', 'action' => 'update-personal-data']) ?>
                     <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <h3><strong>รายละเอียดบัญชี</strong></h3>
+                        </div>
                         <div class="col-md-12 mb-3 py-2 px-4">
                             <div class="d-flex mb-2">
                                 <strong class="w-100x mt-8x">ชื่อ</strong> <input type="text" class="form-control no-border" name="firstname" id="firstname" value="<?=$user->firstname ?>" required>
@@ -20,7 +36,7 @@
                                 <strong class="w-100x mt-8x">LINE ID</strong> <input type="text" class="form-control no-border" name="lineid" id="lineid" value="<?=$user->lineid ?>">
                             </div>
                             <div class="d-flex mb-4">
-                                <strong class="w-100x mt-8x">Email</strong> <input type="text" class="form-control no-border" name="email" id="email" value="<?=$user->email ?>" required>
+                                <strong class="w-100x mt-8x">Email</strong> <span class="border-bottom w-100 mt-2 pl-2"><?=$user->email ?></span>
                             </div>
                             <div class="d-flex mb-4">
                                 <strong class="w-100x mt-8x">Facebook</strong> <input type="text" class="form-control no-border" name="facebook" id="facebook" value="<?=$user->facebook ?>">
@@ -138,6 +154,9 @@
     }
     .d-webkit-box {
         display: -webkit-box;
+    }
+    .border-bottom {
+        border-bottom: 1px solid #ddd;
     }
 </style>
 

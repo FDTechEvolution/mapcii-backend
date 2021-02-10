@@ -1,9 +1,21 @@
 <?= ''//$this->element('Lib/data_table') ?>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="page-title-box">
+            <h4 class="page-title"><strong><i class="ti-receipt"></i> วิธีการชำระเงิน</strong></h4>
+            <!-- <ol class="breadcrumb float-right">
+                <li class="breadcrumb-item"><a href="#">Minton</a></li>
+                <li class="breadcrumb-item active">Dashboard</li>
+            </ol> -->
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>
+
 <div id="financial" class="row">
     <div class="col-lg-12">
-        <div class="card m-b-20 ">
-            <h3 class="m-t-0 m-b-20  card-header">วิธีการชำระเงิน </h3>
-            <div class=" col-12 m-b-20"style="text-align: right">
+        <div class="card">
+            <div class=" col-12 my-2"style="text-align: right">
                 <?= $this->Html->link(BT_ADD, ['action' => 'add'], ['escape' => false]) ?>
             </div>
             <table id="datatable" class="table table-responsive-lg " cellspacing="0" width="100%">

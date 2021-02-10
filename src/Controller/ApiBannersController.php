@@ -310,7 +310,7 @@ class ApiBannersController extends AppController
 
         if ($this->request->is(['get', 'ajax'])) {
             $user_id = $this->request->getQuery('user');
-            $user_banners = $this->Banners->find()->contain(['Images', 'UserPackages' => ['UserPackageLines']])->where(['Banners.user_id' => $user_id, 'Banners.status' => 'CO'])->toArray();
+            $user_banners = $this->Banners->find()->contain(['Images', 'UserPackages' => ['UserPackageLines']])->where(['Banners.user_id' => $user_id])->toArray();
             if(sizeof($user_banners) > 0) {
                 $data['status'] = 200;
                 $data['banners'] = $user_banners;

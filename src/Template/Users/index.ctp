@@ -1,9 +1,20 @@
 <?= ''//$this->element('Lib/data_table') ?>
 <div class="row">
-    <div class="col-lg-12">
-        <div class="card m-b-20 card-body">
-            <h2 class="prompt-400 "><i class="fa fa-address-card"></i> จัดการสมาชิก</h2>
+    <div class="col-sm-12">
+        <div class="page-title-box">
+            <h4 class="page-title"><strong><i class="ti-user"></i> จัดการสมาชิก</strong></h4>
+            <!-- <ol class="breadcrumb float-right">
+                <li class="breadcrumb-item"><a href="#">Minton</a></li>
+                <li class="breadcrumb-item active">Dashboard</li>
+            </ol> -->
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>
 
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
             <div class="card-body">
                 <table class="table table-hover">
                     <thead>

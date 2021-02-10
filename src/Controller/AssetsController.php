@@ -127,14 +127,22 @@ class AssetsController extends AppController {
 
     public function unAssetAds() {
         $this->Assets = TableRegistry::get('Assets');
+        $this->UserPackages = TableRegistry::get('UserPackages');
         if ($this->request->is('post')) {
             $postData = $this->request->getData();
-            $asset = $this->Assets->get($postData['ads_id']);
+            $asset = $this->Assets->get($postData['ads_id'], [
+                'contain' => ['AssetAds' => ['UserPackages']]
+            ]);
             $asset->status = 'DL';
             $asset->reason_del = $postData['reason_del'];
             if($this->Assets->save($asset)){
-                $this->Flash->success(__('ข้อมูลถูกยกเลิก และ ย้ายไปยังประวัติการจัดการเรียบร้อยแล้ว'));
-                return $this->redirect(['action' => 'ads']);
+                $user_package = $this->UserPackages->get($asset->asset_ads[0]->user_package->id);
+                $is_used = $user_package->used - 1;
+                $user_package->used = $is_used;
+                if($this->UserPackages->save($user_package)){
+                    $this->Flash->success(__('ข้อมูลถูกยกเลิก และ ย้ายไปยังประวัติการจัดการเรียบร้อยแล้ว'));
+                    return $this->redirect(['action' => 'ads']);
+                }
             }
             $this->Flash->error(__('ไม่สามารถยกเลิกได้ในตอนนี้ กรุณาลองใหม่'));
         }
@@ -157,14 +165,20 @@ class AssetsController extends AppController {
 
     public function unBannerAds() {
         $this->Banners = TableRegistry::get('Banners');
+        $this->UserPackages = TableRegistry::get('UserPackages');
         if ($this->request->is('post')) {
             $postData = $this->request->getData();
             $banner = $this->Banners->get($postData['banner_id']);
-            $banner->status = 'DL';
+            $banner->status = 'CO';
             $banner->reason_del = $postData['reason_del'];
             if($this->Banners->save($banner)){
-                $this->Flash->success(__('ข้อมูลถูกยกเลิก และ ย้ายไปยังประวัติการจัดการเรียบร้อยแล้ว'));
-                return $this->redirect(['action' => 'ads']);
+                $user_package = $this->UserPackages->get($banner->user_package_id);
+                $is_used = $user_package->used - 1;
+                $user_package->used = $is_used;
+                if($this->UserPackages->save($user_package)){
+                    $this->Flash->success(__('ข้อมูลถูกยกเลิก และ ย้ายไปยังประวัติการจัดการเรียบร้อยแล้ว'));
+                    return $this->redirect(['action' => 'ads']);
+                }
             }
             $this->Flash->error(__('ไม่สามารถยกเลิกได้ในตอนนี้ กรุณาลองใหม่'));
         }

@@ -1,17 +1,23 @@
 <div class="row">
     <div class="col-sm-12">
         <div class="page-title-box">
-            <h4 class="page-title">Welcome !</h4>
-            <ol class="breadcrumb float-right">
+            <h4 class="page-title"><strong><i class="ti-dashboard"></i> สถิติ</strong></h4>
+            <!-- <ol class="breadcrumb float-right">
                 <li class="breadcrumb-item"><a href="#">Minton</a></li>
                 <li class="breadcrumb-item active">Dashboard</li>
-            </ol>
+            </ol> -->
             <div class="clearfix"></div>
         </div>
     </div>
 </div>
 
-<?php $arr_year = [2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]; ?>
+<?php 
+    $arr_year = []; 
+    $nowYear = date('Y');
+    for($i = 2018; $i <= $nowYear; $i++) {
+        array_push($arr_year, $i);
+    }
+?>
 
 <div id="dashboard" class="row">
     <div class="col-lg-12">
@@ -22,9 +28,9 @@
                     <div class="col-md-9"></div>
                     <div class="col-md-3">
                         <select id="year" class="form-control" onChange="selectedYear()">
-                            <option value="" selected disabled>เลือกปี ค.ศ.</option>
+                            <option value="" disabled>เลือกปี ค.ศ.</option>
                             <?php foreach($arr_year as $year): ?>
-                                <option value="<?=$year?>"><?=$year?></option>
+                                <option value="<?=$year?>" <?php if($nowYear == $year) { ?> selected <?php } ?>><?=$year?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -51,8 +57,8 @@
                 <tbody>
                     <tr>
                         <td class="cls_stat_td w-50"><input type="checkbox" class="form-control cls_chk_size" id="visitors" onClick="checkStatOnCharts();"><label for="visitors">จำนวนผู้เข้าชมเว็บ</label></td>
-                        <td class="text-center w-25"></td>
-                        <td class="text-center w-25"></td>
+                        <td class="text-center w-25"><?= h(json_decode($data_web['now'])) ?></td>
+                        <td class="text-center w-25"><?= h(json_decode($data_web['sum'])) ?></td>
                     </tr>
                     <tr>
                         <td class="cls_stat_td w-50"><input type="checkbox" class="form-control cls_chk_size" id="members" onClick="checkStatOnCharts();"><label for="members">จำนวนสมาชิก</label></td>
@@ -111,18 +117,18 @@
                     </tr>
                     <tr>
                         <td class="cls_stat_td w-50"><input type="checkbox" class="form-control cls_chk_size" id="sales_visitors" onClick="checkStatOnCharts();"><label for="sales_visitors">ผู้เข้าชมอสังหาขายด่วน</label></td>
-                        <td class="text-center w-25"></td>
-                        <td class="text-center w-25"></td>
+                        <td class="text-center w-25"><?= h(json_decode($data_sale['now'])) ?></td>
+                        <td class="text-center w-25"><?= h(json_decode($data_sale['sum'])) ?></td>
                     </tr>
                     <tr>
                         <td class="cls_stat_td w-50"><input type="checkbox" class="form-control cls_chk_size" id="new_visitors" onClick="checkStatOnCharts();"><label for="new_visitors">ผู้เข้าชมอสังหาโครงการใหม่</label></td>
-                        <td class="text-center w-25"></td>
-                        <td class="text-center w-25"></td>
+                        <td class="text-center w-25"><?= h(json_decode($data_new['now'])) ?></td>
+                        <td class="text-center w-25"><?= h(json_decode($data_new['sum'])) ?></td>
                     </tr>
                     <tr>
                         <td class="cls_stat_td w-50"><input type="checkbox" class="form-control cls_chk_size" id="twohand_visitors" onClick="checkStatOnCharts();"><label for="twohand_visitors">ผู้เข้าชมอสังหามือสอง</label></td>
-                        <td class="text-center w-25"></td>
-                        <td class="text-center w-25"></td>
+                        <td class="text-center w-25"><?= h(json_decode($data_2hand['now'])) ?></td>
+                        <td class="text-center w-25"><?= h(json_decode($data_2hand['sum'])) ?></td>
                     </tr>
                 </tbody>
             </table>
@@ -137,9 +143,9 @@
 </div>
 <!-- end content -->
 
-<footer class="footer">
+<!-- <footer class="footer">
     2016 - 2017 © Minton <span class="hide-phone">- Coderthemes.com</span>
-</footer>
+</footer> -->
 
 </div>
 <!-- ============================================================== -->
@@ -177,9 +183,37 @@
 </style>
 
 <script type="text/javascript">
+    const isDate = new Date();
+
+    const isWebView = <?= $webview_json ?>;
+    const isSaleView = <?= $saleview_json ?>;
+    const isNewView = <?= $newview_json ?>;
+    const isTwoHandView = <?= $twohand_json ?>;
+
+    const isAds = <?= $ads_json ?>;
+    const isFree = <?= $free_json ?>;
+    const isUser = <?= $user_json ?>;
+    const isBannerA = <?= $banner_a_json ?>;
+    const isBannerB = <?= $banner_b_json ?>;
+    const isArticle = <?= $article_json ?>;
+    const isContact = <?= $contact_json ?>;
+    const isMessage = <?= $message_json ?>;
+
+    let webOnNow = getYearData(isWebView, isDate.getFullYear())
+    let saleOnNow = getYearData(isSaleView, isDate.getFullYear())
+    let newOnNow = getYearData(isNewView, isDate.getFullYear())
+    let twohandOnNow = getYearData(isTwoHandView, isDate.getFullYear())
+
+    let freeOnNow = getYearData(isFree, isDate.getFullYear())
+    let adsOnNow = getYearData(isAds, isDate.getFullYear())
+    let userOnNow = getYearData(isUser, isDate.getFullYear())
+    let bannerA_onNow = getYearData(isBannerA, isDate.getFullYear())
+    let bannerB_onNow = getYearData(isBannerB, isDate.getFullYear())
+    let articleOnNow = getYearData(isArticle, isDate.getFullYear())
+    let contactOnNow = getYearData(isContact, isDate.getFullYear())
+    let messageOnNow = getYearData(isMessage, isDate.getFullYear())
+
     let showVisitors = false
-    // let is_data = document.getElementById('is_data_1').textContent
-    // console.log(is_data)
     var options = {
             chart: {
                 height: 380,
@@ -217,7 +251,7 @@
             },
             xaxis: {
                 title: {
-                    text: 'เลือกปี ค.ศ.'
+                    text: 'ปี ค.ศ. ' + isDate.getFullYear()
                 },
                 categories: ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.']
             },
@@ -249,54 +283,152 @@
             series: [
                 {
                     name: 'จำนวนผู้เข้าชมเว็บ',
-                    data: [30,40,35,50,49,60,70,91,100]
-                },{
+                    data: webOnNow
+                },
+                {
                     name: 'จำนวนสมาชิก',
-                    data: [20,30,55,40,29,40,60,71,96]
-                },{
+                    data: userOnNow
+                },
+                {
                     name: 'จำนวน Banner A',
-                    data: [32,36,55,32,66,51,82,71,66]
-                },{
+                    data: bannerA_onNow
+                },
+                {
                     name: 'จำนวน Banner B',
-                    data: [22,56,45,44,46,67,62,90,82]
-                },{
+                    data: bannerB_onNow
+                },
+                {
                     name: 'จำนวนประกาศ (AD)',
-                    data: [40,48,62,70,77,68,62,53,105]
-                },{
+                    data: adsOnNow
+                },
+                {
                     name: 'จำนวนประกาศฟรี',
-                    data: [88,65,90,78,55,34,58,44,67]
-                },{ // Section 2 ------------------------------------------------------>>>>
+                    data: freeOnNow
+                },
+                { // Section 2 ------------------------------------------------------>>>>
                     name: 'จำนวนบทความ/ข่าว',
-                    data: [20,24,31,35,35,37,38,39,42]
-                },{
+                    data: articleOnNow
+                },
+                {
                     name: 'จำนวนคำถาม',
-                    data: [8,12,14,15,15,14,5,10,7]
-                },{
+                    data: contactOnNow
+                },
+                {
                     name: 'จำนวนรีวิว',
-                    data: [13,14,20,24,32,23,12,23,8]
-                },{
+                    data: messageOnNow
+                },
+                {
                     name: 'ผู้เข้าชมอสังหาขายด่วน',
-                    data: [45,67,98,44,108,120,35,54,69]
-                },{
+                    data: saleOnNow
+                },
+                {
                     name: 'ผู้เข้าชมอสังหาโครงการใหม่',
-                    data: [55,78,56,55,68,34,60,87,94]
-                },{
+                    data: newOnNow
+                },
+                {
                     name: 'ผู้เข้าชมอสังหามือสอง',
-                    data: [108,111,105,124,97,55,79,100,80]
+                    data: twohandOnNow
                 }
             ]
         }
 
-    var chart = new ApexCharts(document.querySelector("#chart"), options);
-
     function selectedYear() {
+        let thisYear = document.getElementById('year').value
+
+        let webOnYear = getYearData(isWebView, thisYear)
+        let saleOnYear = getYearData(isSaleView, thisYear)
+        let newOnYear = getYearData(isNewView, thisYear)
+        let twohandOnYear = getYearData(isTwoHandView, thisYear)
+    
+        let freeOnYear = getYearData(isFree, thisYear)
+        let adsOnYear = getYearData(isAds, thisYear)
+        let userOnYear = getYearData(isUser, thisYear)
+        let bannerA_onYear = getYearData(isBannerA, thisYear)
+        let bannerB_onYear = getYearData(isBannerB, thisYear)
+        let articleOnYear = getYearData(isArticle, thisYear)
+        let contactOnYear = getYearData(isContact, thisYear)
+        let messageOnYear = getYearData(isMessage, thisYear)
+        
         chart.updateOptions({
             xaxis: {
                 title: {
-                    text: 'ค.ศ. ' + document.getElementById('year').value
+                    text: 'ปี ค.ศ. ' + document.getElementById('year').value
+                },
+                categories: ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.']
+            },
+            series: [
+                {
+                    name: 'จำนวนผู้เข้าชมเว็บ',
+                    data: webOnYear
+                },
+                {
+                    name: 'จำนวนสมาชิก',
+                    data: userOnYear
+                },
+                {
+                    name: 'จำนวน Banner A',
+                    data: bannerA_onYear
+                },
+                {
+                    name: 'จำนวน Banner B',
+                    data: bannerB_onYear
+                },
+                {
+                    name: 'จำนวนประกาศ (AD)',
+                    data: adsOnYear
+                },
+                {
+                    name: 'จำนวนประกาศฟรี',
+                    data: freeOnYear
+                },
+                {
+                    name: 'จำนวนบทความ/ข่าว',
+                    data: articleOnYear
+                },
+                {
+                    name: 'จำนวนคำถาม',
+                    data: contactOnYear
+                },
+                {
+                    name: 'จำนวนรีวิว',
+                    data: messageOnYear
+                },
+                {
+                    name: 'ผู้เข้าชมอสังหาขายด่วน',
+                    data: saleOnYear
+                },
+                {
+                    name: 'ผู้เข้าชมอสังหาโครงการใหม่',
+                    data: newOnYear
+                },
+                {
+                    name: 'ผู้เข้าชมอสังหามือสอง',
+                    data: twohandOnYear
                 }
-            }
+            ]
         })
+    }
+
+    function getYearData(data, getYear) {
+        let exYear = []
+        data.forEach(item => {
+            let year = item.as_date.split('-')
+            if(year[0] == getYear) exYear.push(item)
+        })
+        return getMonthData(exYear)
+    }
+
+    function getMonthData(_exYear) {
+        let perMonth = []
+        for (let i = 1; i <= 12; i ++) {
+            let monthCount = 0
+            _exYear.forEach(item => {
+                let month = item.as_date.split('-')
+                if(i == month[1]) monthCount += item.count
+            })
+            perMonth.push(monthCount)
+        }
+        return perMonth
     }
 
     function checkStatOnCharts() {
@@ -375,6 +507,7 @@
         }
     }
 
+    var chart = new ApexCharts(document.querySelector("#chart"), options);
     chart.render();
 </script>
 
