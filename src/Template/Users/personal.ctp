@@ -15,7 +15,7 @@
     <div class="col-md-6">
         <div class="card m-b-20">
             <div class="card-body">
-                <?= $this->Form->create('personaldata', ['controller' => 'Users', 'action' => 'update-personal-data']) ?>
+                <?= $this->Form->create('personaldata', ['url' => ['controller' => 'Users', 'action' => 'update-personal-data']]) ?>
                     <div class="row">
                         <div class="col-md-12 mb-3">
                             <h3><strong>รายละเอียดบัญชี</strong></h3>
@@ -53,7 +53,7 @@
     <div class="col-md-6">
         <div class="card mb-4">
             <div class="card-body">
-                <?= $this->Form->create('personaldata', ['controller' => 'Users', 'action' => 'update-personal-data', 'enctype' => 'multipart/form-data']) ?>
+                <?= $this->Form->create('personaldisplay', ['url' => ['controller' => 'Users', 'action' => 'update-personal-data', 'enctype' => 'multipart/form-data']]) ?>
                     <div class="row no-gutters px-3">
                         <div class="col-md-4">
                             <?php if ($user->image == ''): ?>
@@ -88,7 +88,7 @@
                         <small>Password</small>
                     </div>
                     <div class="col-md-8">
-                        <?= $this->Form->create('personalpassword', ['controller' => 'Users', 'action' => 'update-personal-password', 'id' => 'frm_password', 'onsubmit' => 'return checkNewPassword()']) ?>
+                        <?= $this->Form->create('personalpassword', ['url' => ['controller' => 'Users', 'action' => 'update-personal-password', 'id' => 'frm_password', 'onsubmit' => 'return checkNewPassword()']]) ?>
                             <div class="mb-3">
                                 <label for="old_password">รหัสผ่านเดิม</label>
                                 <input type="password" name="old_password" class="form-control" id="old_password" required>

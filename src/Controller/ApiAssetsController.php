@@ -281,13 +281,13 @@ class ApiAssetsController extends AppController {
                     $minDiscount = number_format(($announce_data->{'price'}*20)/100);
                     $isDiscount = ($announce_data->{'discount'} < $minDiscount) ? $minDiscount : $announce_data->{'discount'};
                 }else if($announce_data->{'project'} == 'โครงการใหม่') {
-                    $isDiscount = $announce_data->{'discount'};
+                    $isDiscount = isset($announce_data->{'discount'}) ? $announce_data->{'discount'} : 0;
                 }
 
                 $isPublicDay = ($announce_data->{'duration'} != '') ? $announce_data->{'duration'} : 30;
                 $isLink = 'AD';
             }else{
-                $isDiscount = $announce_data->{'discount'};
+                $isDiscount = isset($announce_data->{'discount'}) ? $announce_data->{'discount'} : 0;
                 $isPublicDay = 30;
                 $isLink = 'FREE';
             }
@@ -357,7 +357,7 @@ class ApiAssetsController extends AppController {
 
                     if($announce_data->{'userpackage'} != '') {
                         $user_package = $this->UserPackages->find()->where(['id' => $announce_data->{'userpackage'}, 'user_id' => $postData['user_id'], 'isexpire' => 'N'])->first();
-                        if(sizeof($user_package) > 0) {
+                        if(isset($user_package)) {
                             if($user_package->used < $user_package->credit) {
                                 $upUsed = $user_package->used + 1;
                                 $user_package->used = $upUsed;
@@ -521,7 +521,7 @@ class ApiAssetsController extends AppController {
                         ->where(['Assets.user_id' => $user])
                         ->order(['AssetAds.created' => 'DESC'])
                         ->toArray();
-            if(sizeof($asset_ads)) {
+            if(is_array($asset_ads)) {
                 foreach($asset_ads as $asset) {
                     $asset_image = $this->AssetImages->find()
                                     ->contain(['Images'])
@@ -657,13 +657,13 @@ class ApiAssetsController extends AppController {
                         ->where(['user_id' => $user])
                         ->order(['created' => 'DESC'])
                         ->toArray();
-            if(sizeof($assets)) {
+            if(is_array($assets)) {
                 foreach($assets as $asset) {
                     $asset_ads = $this->AssetAds->find('all')
                                 ->contain(['Assets'])
                                 ->where(['AssetAds.asset_id' => $asset->id])
                                 ->first();
-                    if(sizeof($asset_ads) > 0) {
+                    if(isset($asset_ads)) {
                         array_push($newListAds,$asset_ads);
                     } else {
                         $asset_image = $this->AssetImages->find()
@@ -752,13 +752,13 @@ class ApiAssetsController extends AppController {
                             ->where([$type])
                             ->toArray();
             // $this->log($asset_address, 'debug');
-            if(sizeof($asset_address) > 0) {
+            if(is_array($asset_address)) {
                 foreach($asset_address as $asset){
                     $asset_ads = $this->AssetAds->find('all')
                                 ->contain(['Assets' => ['Addresses' => ['Provinces']], 'UserPackages'])
                                 ->where(['AssetAds.asset_id' => $asset->id, 'UserPackages.status' => 'CO'])
                                 ->first();
-                    if(sizeof($asset_ads) > 0) {
+                    if($asset_ads) {
                         array_push($imgAds,$this->getimglistaddress($asset->id));
                         array_push($adsAsset,$asset_ads);
                     } else {
@@ -861,7 +861,7 @@ class ApiAssetsController extends AppController {
                             ->limit($limit)
                             ->toArray();
             // $this->log($asset_ads, 'debug');
-            if(sizeof($asset_ads) > 0) {
+            if(is_array($asset_ads)) {
                 // foreach($asset_ads as $ads){
                 //     if($ads->position->position == 'province'){
                 //         array_push($provinces, $ads);
@@ -912,7 +912,7 @@ class ApiAssetsController extends AppController {
         if ($this->request->is(['post', 'ajax'])) {
             $postData = $this->request->getData();
             $assetDown = $this->AssetAds->find('all')->where(['status' => 'UP'])->toArray();
-            if(sizeof($assetDown) > 0){
+            if(is_array($assetDown)){
                 foreach($assetDown as $asset_down) {
                     $asset_down->status = 'DW';
                     $this->AssetAds->save($asset_down);
@@ -926,7 +926,7 @@ class ApiAssetsController extends AppController {
             // $postData = $this->request->getData();
             $date_now = date('Y-m-d');
             $assets = $this->Assets->find('all')->where(['status' => 'DR'])->toArray();
-            if(sizeof($assets) > 0) {
+            if(is_array($assets)) {
                 foreach($assets as $asset) {
                     if($asset->startdate == $date_now) {
                         $asset->status = $this->Complete;
@@ -941,7 +941,7 @@ class ApiAssetsController extends AppController {
         if ($this->request->is(['get', 'ajax'])) {
             $date_now = date_create(date('Y-m-d'));
             $assets = $this->Assets->find('all')->where(['status' => 'CO'])->toArray();
-            if(sizeof($assets) > 0) {
+            if(is_array($assets)) {
                 foreach($assets as $asset) {
                     $startdate = date_create(date_format($asset->startdate, "Y-m-d"));
                     $date_plus = date_add($startdate,date_interval_create_from_date_string($asset->total_publish_day." days"));
@@ -1018,7 +1018,7 @@ class ApiAssetsController extends AppController {
                             ->limit(20)
                             ->toArray();
                             // $this->log($assets, 'debug');
-            if(sizeof($assets) > 0) {
+            if(is_array($assets)) {
                 foreach ($assets as $asset) {
                     array_push($imgAssets, $this->getimglistasset($asset->id));
                     // $this->log($asset->asset_ads, 'debug');
@@ -1077,7 +1077,7 @@ class ApiAssetsController extends AppController {
             $favorite_array = [];
 
             $favorites = $this->UserFavorites->find('all')->where(['user_id' => $user_id, 'isactive' => 'Y'])->toArray();
-            if(sizeof($favorites) > 0) {
+            if(is_array($favorites)) {
                 foreach($favorites as $favorite){
                     array_push($favorite_array, $favorite->asset_id);
                 }
@@ -1098,7 +1098,7 @@ class ApiAssetsController extends AppController {
                             ->contain(['Images'])
                             ->where(['asset_id' => $id])
                             ->toArray();
-            if(sizeof($asset_image) > 0) {
+            if(is_array($asset_image)) {
                 $data['status'] = 200;
                 $data['list'] = $asset_image;
             } else {
@@ -1346,10 +1346,11 @@ class ApiAssetsController extends AppController {
     public function asset() {
         $data = ['message' => '', 'status' => 400];
         $id = $this->request->getQuery('id');
+        
         $ads_detail = [];
         if ($this->request->is(['get', 'ajax'])) {
             $assetid = isset($id) ? $id : '';
-
+            
             if ($assetid != '') {
                 $q = $this->Assets->find()
                         ->contain(['Users', 'AssetImages' => ['Images'], 'Addresses' => ['Provinces', 'Districts', 'Subdistricts'], 'AssetOptions' => ['Options']])
@@ -1361,7 +1362,7 @@ class ApiAssetsController extends AppController {
                 }
 
                 $asset_ads = $this->AssetAds->find()->where(['asset_id' => $assetid])->first();
-                if(sizeof($asset_ads) > 0) {
+                if(is_array($asset_ads) > 0) {
                     // $this->log($asset_ads, 'debug');
                     $user_package = $this->UserPackages->find()->contain(['UserPackageLines'])->where(['UserPackages.id' => $asset_ads->user_package_id])->first();
                     // $this->log($user_package, 'debug');
@@ -1369,7 +1370,7 @@ class ApiAssetsController extends AppController {
 
                 $data['status'] = 200;
                 $data['detail'] = $q;
-                if(sizeof($asset_ads) > 0) $data['ads_detail'] = $user_package;
+                if(is_array($asset_ads) > 0) $data['ads_detail'] = $user_package;
             } else {
                 $data['message'] = "Asset id is empty.";
             }
@@ -1395,7 +1396,7 @@ class ApiAssetsController extends AppController {
                     ->where($where)
                     ->order(['Options.name' => 'ASC']);
             $options = $q->toArray();
-            if (sizeof($options) > 0) {
+            if (is_array($options)) {
 
 
                 $data['status'] = 200;
@@ -1419,7 +1420,7 @@ class ApiAssetsController extends AppController {
                     ->select(['id', 'name'])
                     ->order(['AssetTypes.name' => 'ASC']);
             $category = $q->toArray();
-            if (sizeof($category) > 0) {
+            if (is_array($category)) {
 
 
                 $data['status'] = 200;
@@ -1443,7 +1444,7 @@ class ApiAssetsController extends AppController {
                     ->select(['id', 'name'])
                     ->order(['AssetTypes.name' => 'ASC']);
             $assettypes = $q->toArray();
-            if (sizeof($assettypes) > 0) {
+            if (is_array($assettypes)) {
 
 
                 $data['status'] = 200;
@@ -1615,7 +1616,7 @@ class ApiAssetsController extends AppController {
                         ->where(['UserFavorites.user_id' => $userID, 'UserFavorites.isactive' => 'Y'])
                         ->order(['UserFavorites.modified' => 'ASC'])
                         ->toArray();
-            if(sizeof($fav) > 0) {
+            if(is_array($fav)) {
                 $data['status'] = 200;
                 $data['fav'] = $fav;
             }else{

@@ -12,5 +12,7 @@ define('DB_USER', 'mapcii_main');
 define('DB_PASS', 'nLCOPnZGG');
 
 
-define('SITE_URL', 'http://localhost/git/mapcii-backend/');
+define('SITE_URL', 'https://mapcii.com/office/');
+
+// define('SITE_URL', 'http://localhost/git/mapcii-backend/');
 //define('SITE_URL', 'http://localhost:8888/Dropbox/mapcii/');

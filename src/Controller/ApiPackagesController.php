@@ -62,7 +62,7 @@ class ApiPackagesController extends AppController {
                 ->order(['Packages.created' => 'ASC']);
             $packages = $q->toArray();
 
-            if (sizeof($packages) > 0) {
+            if (is_array($packages)) {
                 $data['status'] = 200;
                 $data['packagelist'] = $packages;
             } else {
@@ -109,7 +109,7 @@ class ApiPackagesController extends AppController {
                         ->contain(['UserPackageLines' => ['PackageLines' => ['Packages']]])
                         ->where(['UserPackages.user_id' => $id, 'UserPackages.status !=' => $this->Delete])
                         ->toArray();
-            if(sizeof($packages) > 0) {
+            if(is_array($packages)) {
                 $data['status'] = 200;
                 $data['balance'] = $packages;
             }else{
@@ -131,7 +131,7 @@ class ApiPackagesController extends AppController {
                         ->where(['UserPackageLines.user_package_id' => $id])
                         ->order(['UserPackageLines.created' => 'DESC'])
                         ->toArray();
-            if(sizeof($balancelines) > 0) {
+            if(is_array($balancelines)) {
                 $data['status'] = 200;
                 $data['balance_line'] = $balancelines;
             }else{
@@ -149,7 +149,7 @@ class ApiPackagesController extends AppController {
 
         if ($this->request->is(['get', 'ajax'])) {
             $durations = $this->PackageDurations->find()->toArray();
-            if(sizeof($durations) > 0) {
+            if(is_array($durations)) {
                 $data['status'] = 200;
                 $data['durations'] = $durations;
             }else{
@@ -166,7 +166,7 @@ class ApiPackagesController extends AppController {
 
         if ($this->request->is(['get', 'ajax'])) {
             $sizes = $this->Sizes->find()->toArray();
-            if(sizeof($sizes) > 0) {
+            if(is_array($sizes)) {
                 $data['status'] = 200;
                 $data['sizes'] = $sizes;
             }else{
@@ -183,7 +183,7 @@ class ApiPackagesController extends AppController {
 
         if ($this->request->is(['get', 'ajax'])) {
             $packages = $this->Packages->find()->order(['name' => 'ASC'])->toArray();
-            if(sizeof($packages) > 0) {
+            if(is_array($packages)) {
                 $data['status'] = 200;
                 $data['packages'] = $packages;
             }
@@ -204,7 +204,7 @@ class ApiPackagesController extends AppController {
                         ->contain(['PackageDurations', 'Packages', 'Sizes'])
                         ->where(['Packages.name' => 'ประกาศ (AD)'])
                         ->toArray();
-            if(sizeof($package_lines) > 0) {
+            if(is_array($package_lines)) {
                 $data['status'] = 200;
                 $data['package_ad'] = $package_lines;
             }else{
@@ -225,7 +225,7 @@ class ApiPackagesController extends AppController {
                         ->where(['Packages.name' => 'Banner A'])
                         ->order(['PackageDurations.duration_exp' => 'ASC'])
                         ->toArray();
-            if(sizeof($package_lines) > 0) {
+            if(is_array($package_lines)) {
                 $data['status'] = 200;
                 $data['package_banner_a'] = $package_lines;
             }else{
@@ -246,7 +246,7 @@ class ApiPackagesController extends AppController {
                         ->where(['Packages.name' => 'Banner B'])
                         ->order(['PackageDurations.duration_exp' => 'ASC'])
                         ->toArray();
-            if(sizeof($package_lines) > 0) {
+            if(is_array($package_lines)) {
                 $data['status'] = 200;
                 $data['package_banner_b'] = $package_lines;
             }else{
@@ -311,7 +311,7 @@ class ApiPackagesController extends AppController {
                                 ->where(['package_line_id' => $package->{'ads_package'}, 'isexpire' => 'Y'])
                                 ->order(['created' => 'ASC'])
                                 ->first();
-                    if(sizeof($uPackages) > 0){
+                    if(isset($uPackages)){
                         $package_line = $this->UserPackageLines->newEntity();
                         $package_line->user_package_id = $uPackages->id;
                         $package_line->order_code = 'ADS_'.date('ymdhsi');
@@ -402,7 +402,7 @@ class ApiPackagesController extends AppController {
         if($this->request->is('get', 'ajax')) {
             $date_now = date_create(date('Y-m-d'));
             $user_package_line = $this->UserPackageLines->find('all')->where(['isexpire' => 'N'])->toArray();
-            if(sizeof($user_package_line) > 0) {
+            if(is_array($user_package_line)) {
                 foreach ($user_package_line as $u_pack_ln) {
                     $startdate = date_create(date_format($u_pack_ln->start_date, "Y-m-d"));
                     $date_plus = date_add($startdate,date_interval_create_from_date_string($u_pack_ln->duration." days"));
@@ -442,7 +442,7 @@ class ApiPackagesController extends AppController {
 
     private function checkBannerDuedate($user_package_id) {
         $banner = $this->Banners->find()->where(['user_package_id' => $user_package_id])->first();
-        if(sizeof($banner) > 0) {
+        if(isset($banner)) {
             $banner->status = 'EX';
             $this->Banners->save($banner);
         }

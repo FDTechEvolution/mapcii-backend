@@ -30,6 +30,7 @@ class ApiAccessesController extends AppController {
         $data = ['message' => '', 'status' => 400];
         if($this->request->is(['post','ajax'])){
             $postData = $this->request->getData();
+            // $this->log($postData, 'debug');
             
             $q = $this->Accesses->find()
                     ->contain(['Users'])
@@ -43,6 +44,7 @@ class ApiAccessesController extends AppController {
         }
         
         $json = json_encode($data);
+        // $this->log($json, 'debug');
         $this->set(compact('json'));
     }
     

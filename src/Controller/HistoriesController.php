@@ -101,7 +101,7 @@ class HistoriesController extends AppController
         $assetFree = [];
         foreach($assets as $asset) {
             $ads = $this->AssetAds->find()->where(['asset_id' => $asset->id])->first();
-            if(sizeof($ads) == 0) {
+            if(is_array($ads) == 0) {
                 array_push($assetFree, $asset);
             }
             $img = $this->AssetImages->find()

@@ -6,6 +6,7 @@ use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
 use Cake\Auth\AbstractPasswordHasher;
+use Cake\Auth\DefaultPasswordHasher;
 
 /**
  * ApiAuthen Controller
@@ -32,7 +33,7 @@ class ApiAuthenController extends AppController {
 
         if ($this->request->is(['post', 'ajax'])) {
             $postData = $this->request->getData();
-            $this->log($postData,'debug');
+            // $this->log($postData,'debug');
             $isfacebook = isset($postData['isfacebook']) ? $postData['isfacebook'] : 'N';
             if ($isfacebook == 'N') {
                 $email = isset($postData['email']) ? $postData['email'] : '';
@@ -45,7 +46,7 @@ class ApiAuthenController extends AppController {
                                 ->where(['Users.email' => $email])
                                 ->limit(1);
                         $user = $q->first();
-                        //$this->log($user,'debug');
+                        // $this->log($user,'debug');
                         $verifyCode = $this->Util->generateRandomString(20);
                         $access = $this->Accesses->newEntity();
                         $access->user_id = $user->id;
@@ -137,6 +138,7 @@ class ApiAuthenController extends AppController {
 
         if ($this->request->is(['post', 'ajax'])) {
             $postData = $this->request->getData();
+            $this->log($postData, 'debug');
             $email = isset($postData['email']) ? $postData['email'] : '';
             $code = isset($postData['code']) ? $postData['code'] : '';
             //$this->log($email, 'debug');
@@ -167,8 +169,7 @@ class ApiAuthenController extends AppController {
                         ->where(['id' => $id])
                         ->first();
                 if (!is_null($user)) {
-                    $checkOldPassword = DefaultPasswordHasher::check($oldpass, $user->password);
-                    // $this->log($checkOldPassword, 'debug');
+                    $checkOldPassword = (new DefaultPasswordHasher)->check($oldpass, $user->password);
                     if($checkOldPassword){
                         $user->password = $newpass;
                         $this->Users->save($user);

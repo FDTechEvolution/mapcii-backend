@@ -38,7 +38,7 @@ class ApiPaymentsController extends AppController {
                         ->contain(['Packages' => ['Sizes','Positions','PackageTypes']])
                         ->where(['user_id' => $userid]);
                 $payment = $q->toArray();
-                if (sizeof($payment) > 0) {
+                if (is_array($payment)) {
                     $newPayment = [];
                     foreach($payment as $index=>$item){
                         $ads = $this->AssetAds->find()
@@ -80,7 +80,7 @@ class ApiPaymentsController extends AppController {
                             ->where(['payment_id' => $payid])
                             ->order(['payment_lines.created' => 'DESC']);
                 $paymentline = $query->toArray();
-                if (sizeof($paymentline) > 0) {
+                if (is_array($paymentline)) {
                     $data['status'] = 200;
                     $data['paymentline'] = $paymentline;
                 } else {
@@ -239,7 +239,7 @@ class ApiPaymentsController extends AppController {
             // $this->log($diff->format("%R%a"), 'debug');
             // $this->log($date_now, 'debug');
             $payments = $this->Payments->find('all')->where(['status' => 'CO'])->toArray();
-            if(sizeof($payments) > 0) {
+            if(is_array($payments)) {
                 foreach($payments as $payment) {
                     if($date_now >= $payment->duration) {
                         $payment->status = 'EX';
