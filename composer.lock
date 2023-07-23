@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "hash": "55cf8c4aaf54583ff50985f9c256e4bb",
+    "content-hash": "226c85de8ca341def4f0f5329bb17fb3",
     "packages": [
         {
             "name": "aura/intl",
@@ -50,7 +50,7 @@
                 "l10n",
                 "localization"
             ],
-            "time": "2017-01-20 05:00:11"
+            "time": "2017-01-20T05:00:11+00:00"
         },
         {
             "name": "cakephp/cakephp",
@@ -136,7 +136,7 @@
                 "rapid-development",
                 "validation"
             ],
-            "time": "2018-07-08 18:02:23"
+            "time": "2018-07-08T18:02:23+00:00"
         },
         {
             "name": "cakephp/chronos",
@@ -193,7 +193,7 @@
                 "datetime",
                 "time"
             ],
-            "time": "2018-06-23 01:51:58"
+            "time": "2018-06-23T01:51:58+00:00"
         },
         {
             "name": "cakephp/migrations",
@@ -246,7 +246,7 @@
                 "cakephp",
                 "migrations"
             ],
-            "time": "2018-06-22 13:22:45"
+            "time": "2018-06-22T13:22:45+00:00"
         },
         {
             "name": "cakephp/plugin-installer",
@@ -287,7 +287,7 @@
                 }
             ],
             "description": "A composer installer for CakePHP 3.0+ plugins.",
-            "time": "2017-12-24 21:09:29"
+            "time": "2017-12-24T21:09:29+00:00"
         },
         {
             "name": "josegonzalez/dotenv",
@@ -340,7 +340,7 @@
                 "dotenv",
                 "php"
             ],
-            "time": "2017-09-19 15:49:58"
+            "time": "2017-09-19T15:49:58+00:00"
         },
         {
             "name": "m1/env",
@@ -398,7 +398,7 @@
                 "parser",
                 "support"
             ],
-            "time": "2018-06-19 18:55:08"
+            "time": "2018-06-19T18:55:08+00:00"
         },
         {
             "name": "mobiledetect/mobiledetectlib",
@@ -450,7 +450,7 @@
                 "mobile detector",
                 "php mobile detect"
             ],
-            "time": "2018-06-03 13:13:04"
+            "time": "2018-06-03T13:13:04+00:00"
         },
         {
             "name": "psr/http-message",
@@ -500,7 +500,10 @@
                 "request",
                 "response"
             ],
-            "time": "2016-08-06 14:39:51"
+            "support": {
+                "source": "https://github.com/php-fig/http-message/tree/master"
+            },
+            "time": "2016-08-06T14:39:51+00:00"
         },
         {
             "name": "psr/log",
@@ -547,7 +550,7 @@
                 "psr",
                 "psr-3"
             ],
-            "time": "2016-10-10 12:19:37"
+            "time": "2016-10-10T12:19:37+00:00"
         },
         {
             "name": "robmorgan/phinx",
@@ -621,7 +624,7 @@
                 "migrations",
                 "phinx"
             ],
-            "time": "2018-06-22 12:02:01"
+            "time": "2018-06-22T12:02:01+00:00"
         },
         {
             "name": "symfony/config",
@@ -684,7 +687,7 @@
             ],
             "description": "Symfony Config Component",
             "homepage": "https://symfony.com",
-            "time": "2018-06-20 11:15:17"
+            "time": "2018-06-20T11:15:17+00:00"
         },
         {
             "name": "symfony/console",
@@ -752,7 +755,7 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "https://symfony.com",
-            "time": "2018-05-31 10:17:53"
+            "time": "2018-05-31T10:17:53+00:00"
         },
         {
             "name": "symfony/filesystem",
@@ -802,7 +805,7 @@
             ],
             "description": "Symfony Filesystem Component",
             "homepage": "https://symfony.com",
-            "time": "2018-05-30 07:26:09"
+            "time": "2018-05-30T07:26:09+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
@@ -857,7 +860,7 @@
                 "polyfill",
                 "portable"
             ],
-            "time": "2018-04-30 19:57:29"
+            "time": "2018-04-30T19:57:29+00:00"
         },
         {
             "name": "symfony/polyfill-mbstring",
@@ -916,7 +919,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2018-04-26 10:06:28"
+            "time": "2018-04-26T10:06:28+00:00"
         },
         {
             "name": "symfony/yaml",
@@ -975,20 +978,20 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2018-05-30 07:26:09"
+            "time": "2018-05-30T07:26:09+00:00"
         },
         {
             "name": "zendframework/zend-diactoros",
-            "version": "1.8.0",
+            "version": "1.8.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-diactoros.git",
-                "reference": "11c9c1835e60eef6f9234377a480fcec096ebd9e"
+                "reference": "a85e67b86e9b8520d07e6415fcbcb8391b44a75b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-diactoros/zipball/11c9c1835e60eef6f9234377a480fcec096ebd9e",
-                "reference": "11c9c1835e60eef6f9234377a480fcec096ebd9e",
+                "url": "https://api.github.com/repos/zendframework/zend-diactoros/zipball/a85e67b86e9b8520d07e6415fcbcb8391b44a75b",
+                "reference": "a85e67b86e9b8520d07e6415fcbcb8391b44a75b",
                 "shasum": ""
             },
             "require": {
@@ -1001,15 +1004,14 @@
             "require-dev": {
                 "ext-dom": "*",
                 "ext-libxml": "*",
-                "phpunit/phpunit": "^5.7.16 || ^6.0.8",
+                "php-http/psr7-integration-tests": "dev-master",
+                "phpunit/phpunit": "^5.7.16 || ^6.0.8 || ^7.2.7",
                 "zendframework/zend-coding-standard": "~1.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.8.x-dev",
-                    "dev-develop": "1.9.x-dev",
-                    "dev-release-2.0": "2.0.x-dev"
+                    "dev-release-1.8": "1.8.x-dev"
                 }
             },
             "autoload": {
@@ -1038,7 +1040,12 @@
                 "psr",
                 "psr-7"
             ],
-            "time": "2018-06-27 18:52:43"
+            "support": {
+                "issues": "https://github.com/zendframework/zend-diactoros/issues",
+                "source": "https://github.com/zendframework/zend-diactoros"
+            },
+            "abandoned": "laminas/laminas-diactoros",
+            "time": "2019-08-06T17:53:53+00:00"
         }
     ],
     "packages-dev": [
@@ -1100,7 +1107,7 @@
                 "breakpoint",
                 "twig"
             ],
-            "time": "2017-11-20 13:04:11"
+            "time": "2017-11-20T13:04:11+00:00"
         },
         {
             "name": "aptoma/twig-markdown",
@@ -1157,7 +1164,7 @@
                 "markdown",
                 "twig"
             ],
-            "time": "2015-10-23 20:27:08"
+            "time": "2015-10-23T20:27:08+00:00"
         },
         {
             "name": "asm89/twig-cache-extension",
@@ -1211,7 +1218,7 @@
                 "extension",
                 "twig"
             ],
-            "time": "2017-01-10 22:04:15"
+            "time": "2017-01-10T22:04:15+00:00"
         },
         {
             "name": "cakephp/bake",
@@ -1259,7 +1266,7 @@
                 "bake",
                 "cakephp"
             ],
-            "time": "2018-06-27 00:50:55"
+            "time": "2018-06-27T00:50:55+00:00"
         },
         {
             "name": "cakephp/cakephp-codesniffer",
@@ -1304,7 +1311,7 @@
                 "codesniffer",
                 "framework"
             ],
-            "time": "2018-06-09 16:01:01"
+            "time": "2018-06-09T16:01:01+00:00"
         },
         {
             "name": "cakephp/debug_kit",
@@ -1364,7 +1371,7 @@
                 "debug",
                 "kit"
             ],
-            "time": "2018-06-11 02:33:52"
+            "time": "2018-06-11T02:33:52+00:00"
         },
         {
             "name": "composer/ca-bundle",
@@ -1420,7 +1427,7 @@
                 "ssl",
                 "tls"
             ],
-            "time": "2018-03-29 19:57:20"
+            "time": "2018-03-29T19:57:20+00:00"
         },
         {
             "name": "composer/composer",
@@ -1500,7 +1507,7 @@
                 "dependency",
                 "package"
             ],
-            "time": "2018-05-04 09:44:59"
+            "time": "2018-05-04T09:44:59+00:00"
         },
         {
             "name": "composer/semver",
@@ -1562,7 +1569,7 @@
                 "validation",
                 "versioning"
             ],
-            "time": "2016-08-30 16:08:34"
+            "time": "2016-08-30T16:08:34+00:00"
         },
         {
             "name": "composer/spdx-licenses",
@@ -1623,7 +1630,7 @@
                 "spdx",
                 "validator"
             ],
-            "time": "2018-04-30 10:33:04"
+            "time": "2018-04-30T10:33:04+00:00"
         },
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -1656,7 +1663,7 @@
                 "MIT"
             ],
             "description": "implementation of xdg base directory specification for php",
-            "time": "2014-10-24 07:27:01"
+            "time": "2014-10-24T07:27:01+00:00"
         },
         {
             "name": "jakub-onderka/php-console-color",
@@ -1699,7 +1706,7 @@
                     "homepage": "http://www.acci.cz"
                 }
             ],
-            "time": "2014-04-08 15:00:19"
+            "time": "2014-04-08T15:00:19+00:00"
         },
         {
             "name": "jakub-onderka/php-console-highlighter",
@@ -1743,7 +1750,7 @@
                     "homepage": "http://www.acci.cz/"
                 }
             ],
-            "time": "2015-04-20 18:58:01"
+            "time": "2015-04-20T18:58:01+00:00"
         },
         {
             "name": "jasny/twig-extensions",
@@ -1803,7 +1810,7 @@
                 "text",
                 "time"
             ],
-            "time": "2017-09-13 07:38:01"
+            "time": "2017-09-13T07:38:01+00:00"
         },
         {
             "name": "jdorn/sql-formatter",
@@ -1853,7 +1860,7 @@
                 "highlight",
                 "sql"
             ],
-            "time": "2014-01-12 16:20:24"
+            "time": "2014-01-12T16:20:24+00:00"
         },
         {
             "name": "justinrainbow/json-schema",
@@ -1919,7 +1926,7 @@
                 "json",
                 "schema"
             ],
-            "time": "2018-02-14 22:26:30"
+            "time": "2018-02-14T22:26:30+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -1970,7 +1977,7 @@
                 "parser",
                 "php"
             ],
-            "time": "2018-06-03 11:33:10"
+            "time": "2018-06-03T11:33:10+00:00"
         },
         {
             "name": "psy/psysh",
@@ -2042,7 +2049,7 @@
                 "interactive",
                 "shell"
             ],
-            "time": "2018-06-10 17:57:20"
+            "time": "2018-06-10T17:57:20+00:00"
         },
         {
             "name": "seld/cli-prompt",
@@ -2090,7 +2097,7 @@
                 "input",
                 "prompt"
             ],
-            "time": "2017-03-18 11:32:45"
+            "time": "2017-03-18T11:32:45+00:00"
         },
         {
             "name": "seld/jsonlint",
@@ -2139,7 +2146,7 @@
                 "parser",
                 "validator"
             ],
-            "time": "2018-01-24 12:46:19"
+            "time": "2018-01-24T12:46:19+00:00"
         },
         {
             "name": "seld/phar-utils",
@@ -2183,7 +2190,7 @@
             "keywords": [
                 "phra"
             ],
-            "time": "2015-10-13 18:44:15"
+            "time": "2015-10-13T18:44:15+00:00"
         },
         {
             "name": "squizlabs/php_codesniffer",
@@ -2234,7 +2241,7 @@
                 "phpcs",
                 "standards"
             ],
-            "time": "2018-06-06 23:58:19"
+            "time": "2018-06-06T23:58:19+00:00"
         },
         {
             "name": "symfony/finder",
@@ -2283,7 +2290,7 @@
             ],
             "description": "Symfony Finder Component",
             "homepage": "https://symfony.com",
-            "time": "2018-06-19 21:38:16"
+            "time": "2018-06-19T21:38:16+00:00"
         },
         {
             "name": "symfony/polyfill-php72",
@@ -2338,7 +2345,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2018-04-26 10:06:28"
+            "time": "2018-04-26T10:06:28+00:00"
         },
         {
             "name": "symfony/process",
@@ -2387,7 +2394,7 @@
             ],
             "description": "Symfony Process Component",
             "homepage": "https://symfony.com",
-            "time": "2018-05-31 10:17:53"
+            "time": "2018-05-31T10:17:53+00:00"
         },
         {
             "name": "symfony/var-dumper",
@@ -2462,7 +2469,7 @@
                 "debug",
                 "dump"
             ],
-            "time": "2018-06-23 12:23:56"
+            "time": "2018-06-23T12:23:56+00:00"
         },
         {
             "name": "twig/twig",
@@ -2527,7 +2534,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2018-03-20 04:25:58"
+            "time": "2018-03-20T04:25:58+00:00"
         },
         {
             "name": "umpirsky/twig-php-function",
@@ -2568,7 +2575,7 @@
                 }
             ],
             "description": "Call (almost) any PHP function from your Twig templates.",
-            "time": "2016-03-12 16:36:32"
+            "time": "2016-03-12T16:36:32+00:00"
         },
         {
             "name": "wyrihaximus/twig-view",
@@ -2626,7 +2633,7 @@
                 "twig",
                 "view"
             ],
-            "time": "2018-07-03 15:46:29"
+            "time": "2018-07-03T15:46:29+00:00"
         }
     ],
     "aliases": [],
@@ -2639,5 +2646,6 @@
     "platform": {
         "php": ">=5.6"
     },
-    "platform-dev": []
+    "platform-dev": [],
+    "plugin-api-version": "2.3.0"
 }
